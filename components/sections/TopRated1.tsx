@@ -8,6 +8,8 @@ export default function TopRated1() {
   const [hotels, setHotels] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
+    export const dynamic = "force-dynamic";
+    export const fetchCache = "force-no-store";
     async function getHotels() {
       try {
         const res = await fetch("/api/hotels", {
