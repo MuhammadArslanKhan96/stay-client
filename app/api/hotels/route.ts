@@ -2,6 +2,7 @@
 import clientPromise from "../lib";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
     const client = await clientPromise;
