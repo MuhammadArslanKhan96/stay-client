@@ -48,7 +48,7 @@ export default function TopRated1() {
     console.log(isLoading);
     return hotels.map((hotel: any, index: number) => {
       return (
-        <SwiperSlide>
+        <SwiperSlide key={index}>
           <div className="card-journey-small background-card">
             <div className="card-image">
               {" "}
