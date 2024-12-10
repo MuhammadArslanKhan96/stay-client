@@ -2,22 +2,33 @@
 import clientPromise from "../lib";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "../../../prisma/prisma";
 export const dynamic = "force-dynamic";
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest, res: NextResponse) {
+  // try {
+  //   let client: any;
+  //   try {
+  //     client = await clientPromise;
+  //     console.log("connected to db");
+  //   } catch (error: any) {
+  //     console.error("couldnot connect to db: " + error.message);
+  //   }
+  //   const db = client.db("stay");
+  //   const hotels = await db.collection("hotels").find({}).toArray();
+  //   return NextResponse.json(hotels);
+  // } catch (error: any) {
+  //   console.log(error.message);
+  //   NextResponse.json(error.message);
+  // }
   try {
-    let client: any;
-    try {
-      client = await clientPromise;
-      console.log("connected to db");
-    } catch (error: any) {
-      console.error("couldnot connect to db: " + error.message);
-    }
-    const db = client.db("stay");
-    const hotels = await db.collection("hotels").find({}).toArray();
-    return NextResponse.json(hotels);
+    const hotels = await prisma.hotel.findMany();
+    console.log(hotels);
+    NextResponse.json(hotels);
   } catch (error: any) {
-    console.log(error.message);
-    NextResponse.json(error.message);
+    console.error("error getting hotels: " + error.message);
+    NextResponse.json({
+      error: error.message,
+    });
   }
 }
 
