@@ -72,7 +72,7 @@ export default function TopRated1() {
                   />
                 </svg>
               </Link>
-              <img src={getImageLink(hotel.images.main)} alt="StayChain" />
+              <img src={getImageLink(hotel.image)} alt="StayChain" />
             </div>
             <div className="card-info">
               <div className="card-rating">
@@ -155,7 +155,7 @@ export default function TopRated1() {
                 <div className="endtime">
                   <div className="card-price">
                     <h6 className="heading-6 neutral-1000">
-                      ${hotel.rooms[0].price}
+                      ${hotel.room[0].price}
                     </h6>
                     <p className="text-md-medium neutral-500">/ person</p>
                   </div>

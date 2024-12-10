@@ -21,12 +21,17 @@ export async function GET(req: NextRequest, res: NextResponse) {
   //   NextResponse.json(error.message);
   // }
   try {
-    const hotels = await prisma.hotel.findMany();
+    const hotels = await prisma.hotel.findMany({
+      include: {
+        contact: true, // Include the related contact
+        room: true, // Include all related rooms
+      },
+    });
     console.log(hotels);
-    NextResponse.json(hotels);
+    return NextResponse.json(hotels);
   } catch (error: any) {
     console.error("error getting hotels: " + error.message);
-    NextResponse.json({
+    return NextResponse.json({
       error: error.message,
     });
   }
