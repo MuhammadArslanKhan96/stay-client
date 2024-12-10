@@ -5,8 +5,14 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const client = await clientPromise;
-    const db = client.db("staychain");
+    let client: any;
+    try {
+      client = await clientPromise;
+      console.log("connected to db");
+    } catch (error: any) {
+      console.error("couldnot connect to db: " + error.message);
+    }
+    const db = client.db("stay");
     const hotels = await db.collection("hotels").find({}).toArray();
     return NextResponse.json(hotels);
   } catch (error: any) {
