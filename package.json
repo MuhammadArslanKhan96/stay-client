@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "sass": "sass --watch public/assets/scss/style.scss:public/assets/css/style.css"
+    "sass": "sass --watch public/assets/scss/style.scss:public/assets/css/style.css",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@headlessui/react": "^2.0.3",
