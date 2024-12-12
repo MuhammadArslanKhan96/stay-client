@@ -49,6 +49,7 @@ export default function TopRated1() {
   };
   const displayHotels = () => {
     console.log(isLoading);
+    console.log("price:" + hotels[0].room[0].price);
     return hotels.map((hotel: any, index: number) => {
       return (
         <SwiperSlide key={index}>
@@ -155,7 +156,7 @@ export default function TopRated1() {
                 <div className="endtime">
                   <div className="card-price">
                     <h6 className="heading-6 neutral-1000">
-                      ${hotel.room[0].price}
+                      ${hotel?.room[0]?.price}
                     </h6>
                     <p className="text-md-medium neutral-500">/ person</p>
                   </div>
