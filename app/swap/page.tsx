@@ -26,7 +26,7 @@ export default function Swap() {
         <div className="flex-col-center">
           {/* block-filter-search */}
           <div
-            className="d-flex justify-content-center"
+            className="d-flex flex-column flex-md-row align-items-center justify-content-center"
             style={{ marginBottom: "1rem" }}
           >
             <div className="col-lg-6">
