@@ -16426,3 +16426,45 @@ h2 span {
 .walletMobile {
   margin: auto;
 }
+
+.swap-ball {
+  /* position: absolute; */
+  width: 3.5rem;
+  height: 3.5rem;
+  /* left: 50%; */
+  /* margin-left: -1.7825rem; */
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-top: 2rem;
+  border-radius: 3.1rem;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  background: var(--bs-warning);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  color: var(--color-white);
+}
+
+.swap-ball-icon {
+  text-align: center;
+  display: block;
+  transform: rotate(180deg);
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.flex-col-center{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-style{
+  padding:1rem;
+}

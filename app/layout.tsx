@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Manrope, Merienda } from "next/font/google";
 import { AppKit } from "@/context/appkit";
 import Layout from "@/components/layout/Layout";
+import { Toaster } from "sonner";
 
 const manrope_init = Manrope({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -19,8 +20,8 @@ const merienda_init = Merienda({
 });
 
 export const metadata: Metadata = {
-  title: "Stay Chain - Multipurpose Travel Booking Next.js Template",
-  description: "Multipurpose Travel Booking Next.js Template",
+  title: "Stay Chain",
+  description: "Hotel Management",
 };
 
 export default function RootLayout({
@@ -37,6 +38,13 @@ export default function RootLayout({
         <AppKit>
           <Layout headerStyle={1} footerStyle={1}>
             {children}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                className: "toast-style",
+                duration: 5000,
+              }}
+            />
           </Layout>
         </AppKit>
       </body>
