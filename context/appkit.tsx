@@ -2,7 +2,7 @@
 
 import { createAppKit } from "@reown/appkit/react";
 import { Ethers5Adapter } from "@reown/appkit-adapter-ethers5";
-import { mainnet, arbitrum } from "@reown/appkit/networks";
+import { sepolia, opBNBTestnet, defineChain } from "@reown/appkit/networks";
 import Home from "@/app/page";
 import TourDetail from "@/app/tour-detail/page";
 import Layout from "@/components/layout/Layout";
@@ -18,11 +18,36 @@ const metadata = {
   icons: ["https://avatars.mywebsite.com/"],
 };
 
+const rpcUrl: any = process.env.NEXT_PUBLIC_TBNB_RPCURL;
+const bnbTest = defineChain({
+  id: 97,
+  caipNetworkId: "eip155:97",
+  chainNamespace: "eip155",
+  name: "bnb test",
+  nativeCurrency: {
+    decimals: 18,
+    name: "BNB",
+    symbol: "TBNB",
+  },
+  rpcUrls: {
+    default: {
+      http: [rpcUrl],
+      // webSocket: ["WS_RPC_URL"],
+    },
+  },
+  // blockExplorers: {
+  //   default: { name: "Explorer", url: "BLOCK_EXPLORER_URL" },
+  // },
+  // contracts: {
+  //   // Add the contracts here
+  // },
+});
+
 // 3. Create the AppKit instance
 createAppKit({
   adapters: [new Ethers5Adapter()],
   metadata: metadata,
-  networks: [mainnet, arbitrum],
+  networks: [sepolia, opBNBTestnet, bnbTest],
   projectId,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration

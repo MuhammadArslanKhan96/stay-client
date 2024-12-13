@@ -49,7 +49,7 @@ export default function TopRated1() {
   };
   const displayHotels = () => {
     console.log(isLoading);
-    console.log("price:" + hotels[0].room[0].price);
+    // console.log(hotels[0].room[0].price);
     return hotels.map((hotel: any, index: number) => {
       return (
         <SwiperSlide key={index}>
@@ -212,7 +212,7 @@ export default function TopRated1() {
         <div className="container-slider box-swiper-padding">
           <div className="box-swiper mt-30">
             <div className="swiper-container swiper-group-animate swiper-group-journey">
-              {isLoading ? (
+              {isLoading && hotels.length > 0 ? (
                 displayLoader()
               ) : (
                 <Swiper {...swiperGroupAnimate}>{displayHotels()}</Swiper>
