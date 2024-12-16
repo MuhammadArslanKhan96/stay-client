@@ -47,7 +47,7 @@ const bnbTest = defineChain({
 createAppKit({
   adapters: [new Ethers5Adapter()],
   metadata: metadata,
-  networks: [sepolia, opBNBTestnet, bnbTest],
+  networks: [sepolia, bnbTest],
   projectId,
   features: {
     analytics: true, // Optional - defaults to your Cloud configuration

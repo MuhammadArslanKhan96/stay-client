@@ -45,7 +45,7 @@ export default function Footer1() {
                 </Link>
               </div>
               <div className="col-md-8 text-center text-md-end">
-                <div className="d-flex align-items-center justify-content-center justify-content-md-end">
+                {/* <div className="d-flex align-items-center justify-content-center justify-content-md-end">
                   <Link
                     className="text-md-medium need-help"
                     href="/tel:1-800-222-8888"
@@ -58,7 +58,7 @@ export default function Footer1() {
                   >
                     1-800-222-8888
                   </Link>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
