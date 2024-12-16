@@ -107,26 +107,6 @@ export default function Swap() {
             style={{ marginBottom: "1rem" }}
           >
             {direction ? displayBnbInput() : displayStcInput()}
-            {/* <div className="col-lg-6">
-              <div className="form-group">
-                <label className="text-sm-medium neutral-1000">
-                  {direction ? "tBNB" : "STC"}
-                </label>
-                <input
-                  className="form-control"
-                  type="number"
-                  placeholder={
-                    direction ? "Enter tBNB amount" : "Enter STC Amount"
-                  }
-                  onChange={(e) => {
-                    direction ? setAmount(parseFloat(e.target.value)) : null;
-                  }}
-                  // value={direction ? stcAmount : amount}
-                  value={amount}
-                  // disabled={!direction}
-                />
-              </div>
-            </div> */}
             <div
               className="swap-ball"
               onClick={() => {
@@ -147,29 +127,9 @@ export default function Swap() {
               </svg>
             </div>
             {!direction ? displayBnbInput() : displayStcInput()}
-            {/* <div className="col-lg-6">
-              <div className="form-group">
-                <label className="text-sm-medium neutral-1000">
-                  {direction ? "STC" : "tBNB"}
-                </label>
-                <input
-                  className="form-control"
-                  type="number"
-                  placeholder={direction ? "STC" : "tBNB"}
-                  // disabled={!direction}
-                  disabled
-                  onChange={(e) => {
-                    !direction ? setAmount(parseFloat(e.target.value)) : null;
-                  }}
-                  // value={!direction ? stcAmount : amount}
-                  value={stcAmount}
-                />
-              </div>
-            </div> */}
           </div>
           <button
             onClick={async () => {
-              // console.log(await checkForStc());
               if (isConnected) {
                 const swap = swapToken(
                   walletProvider,
@@ -188,6 +148,7 @@ export default function Swap() {
                   error: "Could Not Swap",
                 });
               } else {
+                toast.error("wallet not connected");
                 console.warn("wallet not connected");
               }
             }}

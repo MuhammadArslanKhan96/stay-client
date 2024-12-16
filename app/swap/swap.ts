@@ -61,6 +61,7 @@ const sendBNBAdmin = async (recipeint: string | undefined, amount: string) => {
       cancel: "Close",
       description: scanUrl(txRes.hash),
     });
+    return true;
   } catch (error: any) {
     console.error("error sending tBNB: " + error.message);
     console.warn(error);
@@ -72,7 +73,7 @@ const sendBNBAdmin = async (recipeint: string | undefined, amount: string) => {
         position: "top-right",
       });
     }
-    throw error;
+    throw new Error("could not send bnb from admin" + error.message);
   }
 };
 
@@ -86,8 +87,8 @@ const sendSTCUser = async (
       config.adminWallet,
       ethers.utils.parseEther(amount)
     );
-    console.log("admin to user(STC): " + scanUrl(stcTx.hash));
     const receipt = await stcTx.wait();
+    console.log("admin to user(STC): " + scanUrl(stcTx.hash));
     console.log(receipt);
     toast("Transaction 1/2 completed", {
       duration: 1000,
@@ -97,7 +98,7 @@ const sendSTCUser = async (
     return true;
   } catch (error: any) {
     console.error(error.message);
-    throw error;
+    throw new Error(error.message);
   }
 };
 
@@ -127,7 +128,7 @@ const sendSTCAdmin = async (
       duration: 5000,
       position: "top-right",
     });
-    throw error;
+    throw new Error("could not send stc from admin" + error.message);
   }
 };
 
