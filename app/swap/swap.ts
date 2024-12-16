@@ -41,7 +41,7 @@ const sendBNBUser = async (
         position: "top-right",
       });
     }
-    throw error;
+    throw new Error("error sending tBNB: " + error.message);
   }
 };
 
@@ -168,7 +168,9 @@ export const swapToken = async (
         ? await sendBNBAdmin(walletAddress, amount)
         : console.warn("user cancelled transactionor error");
     }
+    return Promise.resolve(true);
   } else {
     console.log("Env not loaded");
+    throw new Error("Env not loaded");
   }
 };
