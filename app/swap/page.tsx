@@ -6,6 +6,7 @@ import { useAppKitAccount, useAppKitProvider } from "@reown/appkit/react";
 import { toast } from "sonner";
 import { ethers } from "ethers";
 import { config } from "./constants";
+import ScanLink from "./ScanLink";
 
 export default function Swap() {
   const [amount, setAmount] = useState<number>(0);
@@ -86,10 +87,8 @@ export default function Swap() {
             placeholder="STC"
             disabled={direction}
             onChange={(e) => {
-              // !direction ? setAmount(parseFloat(e.target.value)) : null;
               setStcAmount(parseFloat(e.target.value));
             }}
-            // value={!direction ? stcAmount : amount}
             value={stcAmount}
           />
         </div>
@@ -142,10 +141,26 @@ export default function Swap() {
                   loading: `Swaping ${
                     direction ? "tBNB for STC" : "STC for tBNB"
                   }...`,
-                  success: `You got ${
-                    direction ? `${stcAmount} STC` : `${amount} tBNB`
-                  }`,
-                  error: "Could Not Swap",
+                  // success: `You got ${
+                  //   direction ? `${stcAmount} STC` : `${amount} tBNB`
+                  // }`,
+                  // error: "Could Not Swap",
+                });
+                Promise.resolve(swap).then((swap) => {
+                  if (swap != undefined) {
+                    console.log("swap link: " + swap);
+                    toast.success(
+                      `You got ${
+                        direction ? `${stcAmount} STC` : `${amount} tBNB`
+                      }`,
+                      {
+                        description: <ScanLink scanLink={swap} />,
+                        duration: 10000,
+                      }
+                    );
+                  } else {
+                    toast.error("could not swap");
+                  }
                 });
               } else {
                 toast.error("wallet not connected");
@@ -154,7 +169,7 @@ export default function Swap() {
             }}
             className="btn btn-black-lg"
           >
-            Get STC
+            Get {direction ? "STC" : "tBNB"}
             <svg
               width={16}
               height={16}

@@ -3,6 +3,7 @@ import { Contract, ethers, Signer } from "ethers";
 import abi from "../../stay-token.json";
 import { toast } from "sonner";
 import { config, getContract } from "./constants";
+import ScanLink from "./ScanLink";
 
 const scanUrl = (hash: string) => {
   return `https://testnet.bscscan.com/tx/${hash}`;
@@ -45,7 +46,10 @@ const sendBNBUser = async (
   }
 };
 
-const sendBNBAdmin = async (recipeint: string | undefined, amount: string) => {
+const sendBNBAdmin = async (
+  recipeint: string | undefined,
+  amount: string
+): Promise<string> => {
   const tx = {
     to: recipeint,
     value: ethers.utils.parseEther(amount),
@@ -54,14 +58,14 @@ const sendBNBAdmin = async (recipeint: string | undefined, amount: string) => {
   };
   try {
     const txRes = await config.adminSigner.sendTransaction(tx);
-    const receipt = txRes.wait();
+    const receipt = await txRes.wait();
     console.log("admin to user (BNB): " + scanUrl(txRes.hash));
     toast("Transaction 2/2 completed", {
       duration: 5000,
       cancel: "Close",
-      description: scanUrl(txRes.hash),
+      // description: scanUrl(txRes.hash),
     });
-    return true;
+    return scanUrl(txRes.hash);
   } catch (error: any) {
     console.error("error sending tBNB: " + error.message);
     console.warn(error);
@@ -94,6 +98,7 @@ const sendSTCUser = async (
       duration: 1000,
       cancel: "Close",
       description: scanUrl(stcTx.hash),
+      // description: <ScanLink link={scanUrl(stcTx.hash)} />
     });
     return true;
   } catch (error: any) {
@@ -105,7 +110,7 @@ const sendSTCUser = async (
 const sendSTCAdmin = async (
   recipeint: string | undefined,
   amount: string
-): Promise<boolean> => {
+): Promise<string> => {
   let stcTx;
   try {
     stcTx = await config.contract.transfer(
@@ -119,7 +124,7 @@ const sendSTCAdmin = async (
       duration: 1000,
       cancel: "Close",
     });
-    return true;
+    return scanUrl(stcTx.hash);
   } catch (error: any) {
     console.error("Failed to send STC: " + error.message);
     toast.error("swap failed", {
@@ -138,7 +143,7 @@ export const swapToken = async (
   direction: boolean,
   amount: string,
   stcAmount: string
-) => {
+): Promise<string | undefined> => {
   if (
     process.env.NEXT_PUBLIC_STAY_CONTRACT &&
     process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY &&
@@ -154,22 +159,41 @@ export const swapToken = async (
     const signer = config.provider.getSigner(walletAddress);
     const userSigner = ethersProvider.getSigner(walletAddress);
     if (direction) {
+      let stcTx: string;
       const bnbTx = await sendBNBUser(
         walletAddress,
         amount,
         userSigner,
         config.provider
       );
-      bnbTx
-        ? await sendSTCAdmin(walletAddress, stcAmount)
-        : console.warn("user cancelled transaction or error");
+      // bnbTx
+      //   ? stcTx = await sendSTCAdmin(walletAddress, stcAmount)
+      //   : console.warn("user cancelled transaction or error");
+
+      if (bnbTx) {
+        stcTx = await sendSTCAdmin(walletAddress, stcAmount);
+        console.log(stcTx);
+        return stcTx;
+      } else {
+        console.warn("user cancelled transaction or error");
+        return undefined;
+      }
     } else {
       const stcTx = await sendSTCUser(stcAmount, userSigner);
-      stcTx
-        ? await sendBNBAdmin(walletAddress, amount)
-        : console.warn("user cancelled transactionor error");
+      let bnbTx: string;
+      // stcTx
+      //   ? await sendBNBAdmin(walletAddress, amount)
+      //   : console.warn("user cancelled transactionor error");
+      if (stcTx) {
+        bnbTx = await sendBNBAdmin(walletAddress, amount);
+        console.log(bnbTx);
+        return bnbTx;
+      } else {
+        console.warn("user cancelled transactionor error");
+        return undefined;
+      }
     }
-    return Promise.resolve(true);
+    // return Promise.resolve(true);
   } else {
     console.log("Env not loaded");
     throw new Error("Env not loaded");
