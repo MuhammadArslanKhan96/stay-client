@@ -11,14 +11,19 @@ model Hotel {
   id        String     @id @default(cuid())
   name     String  @unique
   city     String
-  image    String 
-  contact  Contact? 
+  image    String[] 
+  rating   Float
+  rating_count Int
+  packages String[]
+  description String
+  contact  Contact?
   room     Room[] 
+  reviews  Review[]
 }
 
 model Contact{
   id    String     @id @default(cuid())
-  number String
+  number  String
   email String
   hotelId String @unique
   hotel Hotel @relation(fields: [hotelId], references: [id])
@@ -34,7 +39,23 @@ model Room {
   image  String
   available Boolean
   price Int
-  hotelId String
+  rating Float
+  rating_count Int
+  package String
+  reviews Review[]
+  hotelId String @unique
   hotel Hotel @relation(fields:[hotelId], references: [id])
   
+}
+
+model Review{
+  id String @id @default(cuid())
+  author String
+  title String 
+  message String
+  rating Float
+  hotelId String @unique
+  roomId String @unique
+  room Room @relation(fields: [roomId], references: [id])
+  hotel Hotel @relation(fields: [hotelId], references: [id])
 }

@@ -56,7 +56,7 @@ export default function TopRated1() {
           <div className="card-journey-small background-card">
             <div className="card-image">
               {" "}
-              <Link className="wish" href="#">
+              <Link className="wish" href={`/hotel-detail/${hotel.id}`}>
                 <svg
                   width={20}
                   height={18}
@@ -73,7 +73,7 @@ export default function TopRated1() {
                   />
                 </svg>
               </Link>
-              <img src={getImageLink(hotel.image)} alt="StayChain" />
+              <img src={getImageLink(hotel?.image[0])} alt="StayChain" />
             </div>
             <div className="card-info">
               <div className="card-rating">
@@ -81,16 +81,19 @@ export default function TopRated1() {
                 <div className="card-right">
                   {" "}
                   <span className="rating">
-                    4.96{" "}
+                    {hotel?.rating}{" "}
                     <span className="text-sm-medium neutral-500">
-                      (672 reviews)
+                      ({hotel?.rating_count} reviews)
                     </span>
                   </span>
                 </div>
               </div>
               <div className="card-title">
                 {" "}
-                <Link className="heading-6 neutral-1000" href="/hotel-detail">
+                <Link
+                  className="heading-6 neutral-1000"
+                  href={`/hotel-detail/${hotel.id}`}
+                >
                   {hotel.name}
                 </Link>
               </div>
