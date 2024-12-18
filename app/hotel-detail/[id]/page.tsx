@@ -52,7 +52,7 @@ export default function HotelDetail() {
   const displayImages = () => {
     return hotel?.image.map((image: string, index: number) => {
       return (
-        <SwiperSlide>
+        <SwiperSlide key={index}>
           <div
             className="item-banner-box"
             style={{
