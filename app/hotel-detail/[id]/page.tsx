@@ -105,7 +105,7 @@ export default function HotelDetail() {
   const displayRooms = () => {
     return hotel?.room.map((room: any, index: number) => {
       return (
-        <div className="col-lg-4 col-md-6 wow fadeInUp">
+        <div className="col-lg-4 col-md-6 wow fadeInUp" key={index}>
           <div className="card-journey-small card-journey-small-type-3 background-card">
             <div className="card-image">
               {" "}
