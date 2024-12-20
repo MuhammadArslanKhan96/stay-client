@@ -6,12 +6,16 @@ import { swiperGroup1, swiperGroupAnimate } from "@/util/swiperOption";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SearchFilterBottom from "@/components/elements/SearchFilterBottom";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { redirect, usePathname } from "next/navigation";
 import { getImageLink } from "@/util/getImageLink";
 
-const getHotelData = async () => {};
+const displayDescription = (description: string) => {
+  const test = JSON.stringify(description);
+  console.log();
+  return test;
+};
 
 export default function HotelDetail() {
   const [hotel, setHotel] = useState<any>();
@@ -520,14 +524,18 @@ export default function HotelDetail() {
                   <h2 className="title-why mb-25 mt-10 neutral-1000">
                     A New Vision of Luxury
                   </h2>
-                  <p className="text-lg-medium neutral-500 mb-35">
+                  <p
+                    className="text-lg-medium neutral-500 mb-35"
+                    dangerouslySetInnerHTML={{ __html: hotel?.description }}
+                  >
                     {/* Le Meurice is an iconic luxury hotel situated in the heart
                     of Paris, France, renowned for its elegance, sophistication,
                     and rich history. Nestled on the Rue de Rivoli, overlooking
                     the splendid Tuileries Garden and just steps away from the
                     Louvre Museum, this esteemed establishment has been a beacon
                     of opulence and hospitality since its inception in 1835. */}
-                    {hotel?.description}
+                    {/* {hotel?.description} */}
+                    {/* {displayDescription(hotel?.description)} */}
                   </p>
                   <div className="box-telephone-booking">
                     <div className="box-tel-left">
