@@ -19,6 +19,7 @@ model Hotel {
   contact  Contact?
   room     Room[] 
   reviews  Review[]
+  bookings Booking[]
 }
 
 model Contact{
@@ -43,6 +44,7 @@ model Room {
   rating_count Int
   package String
   reviews Review[]
+  bookings Booking[]
   hotelId String 
   hotel Hotel @relation(fields:[hotelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   
@@ -50,12 +52,45 @@ model Room {
 
 model Review{
   id String @id @default(cuid())
-  author String
+  userId String
+  user User @relation(fields: [userId], references: [id])
   title String 
   message String
   rating Float
   hotelId String
   roomId String
+  bookingId String @unique
+  booking Booking @relation(fields: [bookingId], references: [id])
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+
+model User{
+  id String @id @default(cuid())
+  email String @unique
+  password String
+  userName String @unique
+  reviews Review[]
+  bookings Booking[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Booking{
+  id String @id @default(cuid())
+  userId String
+  roomId String
+  hotelId String
+  reviewId String ?
+  review Review ?
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+  hotel Hotel @relation(fields: [hotelId], references: [id])
+  createdAt DateTime @default(now())
+  startTime DateTime
+  endTime DateTime
+  duration Int
+  price Int
+  transactionHash String
 }

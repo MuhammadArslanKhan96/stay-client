@@ -7,12 +7,14 @@ import { toast } from "sonner";
 import { ethers } from "ethers";
 import { config } from "./constants";
 import ScanLink from "./ScanLink";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export default function Swap() {
   const [amount, setAmount] = useState<number>(0);
   const [stcAmount, setStcAmount] = useState<number>(0);
   const [direction, setDirection] = useState<boolean>(true);
   const [stcBalance, setStcBalance] = useState<number>(0);
+  const { primaryWallet } = useDynamicContext();
   /* True for forward(BNB to STC) False for backward (STC to BNB)*/
   useEffect(() => {
     // if (!isNaN(amount) && amount > 0) {
@@ -35,9 +37,12 @@ export default function Swap() {
   }, [amount, direction, stcAmount]);
   const { walletProvider }: any = useAppKitProvider("eip155");
   const { address, caipAddress, isConnected } = useAppKitAccount();
+  // const {primaryWallet} = useDynamicContext();
   // const provider: any = new ethers.providers.Web3Provider(walletProvider);
   const checkForStc = async (): Promise<boolean> => {
-    let balance: number = parseFloat(await config.contract.balanceOf(address));
+    let balance: number = parseFloat(
+      await config.contract.balanceOf(primaryWallet?.address)
+    );
     if (balance > 0) {
       setStcBalance(balance);
       setDirection(!direction);
@@ -97,97 +102,100 @@ export default function Swap() {
   };
 
   return (
-    <div className="container" style={{ padding: "4rem" }}>
-      <div className="d-flex justify-content-center">
-        <div className="flex-col-center">
-          {/* block-filter-search */}
-          <div
-            className="d-flex flex-column flex-md-row align-items-center justify-content-center"
-            style={{ marginBottom: "1rem" }}
-          >
-            {direction ? displayBnbInput() : displayStcInput()}
+    <section className="box-section box-breadcrumb background-body">
+      <div className="container" style={{ padding: "4rem" }}>
+        <div className="d-flex justify-content-center">
+          <div className="flex-col-center">
+            {/* block-filter-search */}
             <div
-              className="swap-ball"
-              onClick={() => {
-                checkForStc();
-              }}
+              className="d-flex flex-column flex-md-row align-items-center justify-content-center"
+              style={{ marginBottom: "1rem" }}
             >
+              {direction ? displayBnbInput() : displayStcInput()}
+              <div
+                className="swap-ball"
+                onClick={() => {
+                  checkForStc();
+                }}
+              >
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  stroke-width="0"
+                  viewBox="0 0 512 512"
+                  className="swap-ball-icon"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M131.3 231.1L32 330.6l99.3 99.4v-74.6h174.5v-49.7H131.3v-74.6zM480 181.4L380.7 82v74.6H206.2v49.7h174.5v74.6l99.3-99.5z"></path>
+                </svg>
+              </div>
+              {!direction ? displayBnbInput() : displayStcInput()}
+            </div>
+            <button
+              onClick={async () => {
+                if (primaryWallet?.address) {
+                  const swap = swapToken(
+                    walletProvider,
+                    address,
+                    direction,
+                    amount.toString(),
+                    stcAmount.toString(),
+                    primaryWallet
+                  );
+                  toast.promise(swap, {
+                    loading: `Swaping ${
+                      direction ? "tBNB for STC" : "STC for tBNB"
+                    }...`,
+                    // success: `You got ${
+                    //   direction ? `${stcAmount} STC` : `${amount} tBNB`
+                    // }`,
+                    // error: "Could Not Swap",
+                  });
+                  Promise.resolve(swap).then((swap) => {
+                    if (swap != undefined) {
+                      console.log("swap link: " + swap);
+                      toast.success(
+                        `You got ${
+                          direction ? `${stcAmount} STC` : `${amount} tBNB`
+                        }`,
+                        {
+                          description: <ScanLink scanLink={swap} />,
+                          duration: 10000,
+                        }
+                      );
+                    } else {
+                      toast.error("could not swap");
+                    }
+                  });
+                } else {
+                  toast.error("wallet not connected");
+                  console.warn("wallet not connected");
+                }
+              }}
+              className="btn btn-black-lg"
+            >
+              Get {direction ? "STC" : "tBNB"}
               <svg
-                stroke="currentColor"
-                fill="currentColor"
-                stroke-width="0"
-                viewBox="0 0 512 512"
-                className="swap-ball-icon"
-                height="1em"
-                width="1em"
+                width={16}
+                height={16}
+                viewBox="0 0 16 16"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <path d="M131.3 231.1L32 330.6l99.3 99.4v-74.6h174.5v-49.7H131.3v-74.6zM480 181.4L380.7 82v74.6H206.2v49.7h174.5v74.6l99.3-99.5z"></path>
+                <path
+                  d="M8 15L15 8L8 1M15 8L1 8"
+                  stroke=""
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
               </svg>
-            </div>
-            {!direction ? displayBnbInput() : displayStcInput()}
+            </button>
           </div>
-          <button
-            onClick={async () => {
-              if (isConnected) {
-                const swap = swapToken(
-                  walletProvider,
-                  address,
-                  direction,
-                  amount.toString(),
-                  stcAmount.toString()
-                );
-                toast.promise(swap, {
-                  loading: `Swaping ${
-                    direction ? "tBNB for STC" : "STC for tBNB"
-                  }...`,
-                  // success: `You got ${
-                  //   direction ? `${stcAmount} STC` : `${amount} tBNB`
-                  // }`,
-                  // error: "Could Not Swap",
-                });
-                Promise.resolve(swap).then((swap) => {
-                  if (swap != undefined) {
-                    console.log("swap link: " + swap);
-                    toast.success(
-                      `You got ${
-                        direction ? `${stcAmount} STC` : `${amount} tBNB`
-                      }`,
-                      {
-                        description: <ScanLink scanLink={swap} />,
-                        duration: 10000,
-                      }
-                    );
-                  } else {
-                    toast.error("could not swap");
-                  }
-                });
-              } else {
-                toast.error("wallet not connected");
-                console.warn("wallet not connected");
-              }
-            }}
-            className="btn btn-black-lg"
-          >
-            Get {direction ? "STC" : "tBNB"}
-            <svg
-              width={16}
-              height={16}
-              viewBox="0 0 16 16"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M8 15L15 8L8 1M15 8L1 8"
-                stroke=""
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </svg>
-          </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -11,6 +11,7 @@ import Testimonials1 from "@/components/sections/Testimonials1";
 import TopRated1 from "@/components/sections/TopRated1";
 import WhyChooseUs1 from "@/components/sections/WhyChooseUs1";
 import YourJourney from "@/components/sections/YourJourney";
+
 export default function Home() {
   return (
     <>

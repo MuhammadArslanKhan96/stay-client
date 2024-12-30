@@ -3,6 +3,7 @@ import CurrencyDropdown from "@/components/elements/CurrencyDropdown";
 import LanguageDropdown from "@/components/elements/LanguageDropdown";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import ConnectButton from "../Connect";
+import { DynamicWidget } from "@dynamic-labs/sdk-react-core";
 
 export default function Sidebar({ isSidebar, handleSidebar }: any) {
   return (
@@ -42,8 +43,8 @@ export default function Sidebar({ isSidebar, handleSidebar }: any) {
             </div>
           </div>
           <div className="sidebar-canvas-content">
-            <div className="box-author-profile">
-              <div className="card-author">
+            <div className="box-author-profile justify-content-center">
+              {/* <div className="card-author">
                 <div className="card-image">
                   {" "}
                   <img
@@ -58,11 +59,10 @@ export default function Sidebar({ isSidebar, handleSidebar }: any) {
               </div>
               <Link className="btn btn-black" href="#">
                 Logout
-              </Link>
+              </Link> */}
+              <DynamicWidget />
             </div>
-            <div className="walletSidebar">
-              <ConnectButton />
-            </div>
+            <div className="walletSidebar">{/* <ConnectButton /> */}</div>
             <div className="box-quicklinks">
               <h6 className="title-quicklinks neutral-1000">Quick Links</h6>
               <div className="box-list-quicklinks">

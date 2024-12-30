@@ -10,11 +10,129 @@ import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { redirect, usePathname } from "next/navigation";
 import { getImageLink } from "@/util/getImageLink";
+import { toast } from "sonner";
+import {
+  useDynamicContext,
+  useUserWallets,
+} from "@dynamic-labs/sdk-react-core";
+import { parseEther } from "viem";
+import ScanLink from "@/app/swap/ScanLink";
+import { scanUrl } from "@/app/swap/swap";
+import { config, getContract } from "@/app/swap/constants";
+import { ethers } from "ethers";
+import { getSigner } from "@dynamic-labs/ethers-v6";
 
 const displayDescription = (description: string) => {
   const test = JSON.stringify(description);
   console.log();
   return test;
+};
+
+const handleBooking = async (room: any, wallet: any) => {
+  if (wallet) {
+    let hash;
+    const walletClient = await wallet.getPublicClient();
+    // const provider = walletClient.connector.getProvider();
+    // const provider = getWeb3Provider();
+    const signer = await getSigner(wallet);
+    // const ethersProvider = new ethers.providers.Web3Provider(provider);
+    // console.log(
+    //   ethersProvider,
+    //   "wallet client",
+    //   typeof ethersProvider.getSigner()
+    // );
+    // const tx = {
+    //   to: process.env.NEXT_PUBLIC_ADMIN_WALLET,
+    //   value: parseEther(room.price),
+    // };
+    const contract = await getContract(signer);
+    const amount = room.price;
+    // const approvedTx = await contract.approve(
+    //   config.adminWallet,
+    //   parseEther(amount.toString())
+    // );
+    // console.log(approvedTx);
+    // const tx = await contract.transfer(
+    //   config.adminWallet,
+    //   parseEther(amount.toString()),
+    //   {
+    //     gasPrice: await signer.estimateGas(),
+    //     gasLimit: 21000,
+    //   }
+    // );
+    const data = config.contractInterface.encodeFunctionData("transfer", [
+      config.adminWallet,
+      parseEther(amount.toString()),
+    ]);
+    const transaction = {
+      to: config.contractAddress,
+      data: data,
+      value: "0",
+    };
+
+    const gasEstimate = await signer.estimateGas(transaction);
+    const txIns = {
+      ...transaction,
+      gasLimit: gasEstimate,
+    };
+    // const tx = await signer.sendTransaction(txIns);
+    // const gas = walletClient.connector.getGasPrice();
+    const gas = await contract.transfer.estimateGas(
+      config.adminWallet,
+      parseEther(amount.toString())
+    );
+    console.log(gas.toString(), "gas");
+    const tx = await contract.transfer(
+      config.adminWallet,
+      parseEther(amount.toString())
+    );
+    try {
+      // hash = await walletClient.sendTransaction(tx);
+      hash = tx.hash;
+      const receipt = await tx.wait();
+      // const receipt = await walletClient.getTransactionReceipt(hash);
+      console.log(receipt, "receipt");
+      toast;
+    } catch (error: any) {
+      // throw new Error();
+      console.error("error in booking tx: ", error.message);
+    }
+
+    // // const walletClient = await wallet.getPublicClient();
+    // // console.log(walletClient, "wallet client");
+    const reqBody = {
+      userId: "cm52lms1u0004ok93vv777b87",
+      roomId: room.id,
+      hotelId: room.hotelId,
+      duration: 86400,
+      startTime: new Date(Date.now() + 86400),
+      endTime: new Date(Date.now() + 86400 + 86400),
+      price: room.price,
+      hash: hash,
+    };
+    try {
+      const newBooking = await fetch("/api/booking/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(reqBody),
+      });
+      console.log(newBooking);
+      if (newBooking.status != 200) {
+        throw new Error();
+      }
+      toast.success("Room Booked", {
+        description: <ScanLink scanLink={scanUrl(hash)} />,
+        duration: 10000,
+      });
+    } catch (error: any) {
+      console.error("error creating booking: ", error.message);
+      toast.error("error creating booking");
+    }
+  } else {
+    toast.error("Please connect your wallet");
+  }
 };
 
 export default function HotelDetail() {
@@ -26,16 +144,16 @@ export default function HotelDetail() {
       if (router) {
         const url = router.split("/");
         const id = url[url.length - 1];
-        console.log(id);
+        // console.log(id);
         const data = await fetch(`/api/hotels/${id}`, {
           method: "GET",
         });
-        console.log(data);
+        // console.log(data);
         if (data.status == 404) {
           redirect("/not-found");
         }
         const hotel = await data.json();
-        console.log(hotel);
+        // console.log(hotel);
         setHotel(hotel);
         setLoading(false);
       }
@@ -90,7 +208,7 @@ export default function HotelDetail() {
                 {displayRating()}
               </span>
               <h1 className="mt-20 mb-20 color-white">
-                Welcom to
+                Welcome to
                 <br className="d-none d-lg-block" />
                 {hotel?.name}
               </h1>
@@ -106,7 +224,7 @@ export default function HotelDetail() {
     });
   };
 
-  const displayRooms = () => {
+  const displayRooms = (wallet: any) => {
     return hotel?.room.map((room: any, index: number) => {
       return (
         <div className="col-lg-4 col-md-6 wow fadeInUp" key={index}>
@@ -178,14 +296,21 @@ export default function HotelDetail() {
                 </div>
                 <div className="endtime">
                   <div className="card-price">
-                    <h6 className="heading-6 neutral-1000">${room.price}</h6>
+                    <h6 className="heading-6 neutral-1000">
+                      {room.price} Stay
+                    </h6>
                     <p className="text-md-medium neutral-500">/ night</p>
                   </div>
                   <div className="card-button">
                     {" "}
-                    <Link className="btn btn-gray" href="#">
+                    <div
+                      className="btn btn-gray"
+                      onClick={() => {
+                        handleBooking(room, wallet);
+                      }}
+                    >
                       Book Now
-                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -195,6 +320,9 @@ export default function HotelDetail() {
       );
     });
   };
+  const { primaryWallet } = useDynamicContext();
+  const userWallet = useUserWallets();
+  // console.log(userWallet, walletClient, "hotel page wallet object");
   return (
     <>
       {/* <Layout headerStyle={1} footerStyle={1}> */}
@@ -620,7 +748,7 @@ export default function HotelDetail() {
           <div className="container">
             <h2 className="neutral-1000 wow fadeInUp">Our Best Rooms</h2>
             <p className="text-xl-medium neutral-500 wow fadeInUp">
-              Book online today and look forward to a relaxing stay with usQ
+              Book online today and look forward to a relaxing stay with us
             </p>
             <div className="box-button-tabs wow fadeInUp">
               {" "}
@@ -647,7 +775,7 @@ export default function HotelDetail() {
               </Link>
             </div>
             <div className="row mt-65">
-              {hotel ? displayRooms() : null}
+              {hotel ? displayRooms(primaryWallet) : null}
               {/* <div className="col-lg-4 col-md-6 wow fadeInUp">
                 <div className="card-journey-small card-journey-small-type-3 background-card">
                   <div className="card-image">

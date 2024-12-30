@@ -31,9 +31,9 @@ export default function Footer1() {
                     <text
                       x="5"
                       y="15"
-                      font-size="25px"
+                      fontSize="25px"
                       fill="white"
-                      font-weight="bold"
+                      fontWeight="bold"
                     >
                       Stay Chain
                     </text>

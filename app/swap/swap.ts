@@ -4,22 +4,26 @@ import abi from "../../stay-token.json";
 import { toast } from "sonner";
 import { config, getContract } from "./constants";
 import ScanLink from "./ScanLink";
+import { getWeb3Provider } from "@dynamic-labs/ethers-v6";
 
-const scanUrl = (hash: string) => {
+export const scanUrl = (hash: string) => {
   return `https://testnet.bscscan.com/tx/${hash}`;
 };
 
 const sendBNBUser = async (
   walletAddress: string | undefined,
   amount: string,
-  signer: ethers.providers.JsonRpcSigner,
+  // signer: ethers.providers.JsonRpcSigner,
+  signer: ethers.JsonRpcSigner,
   provider: any
 ): Promise<boolean> => {
   try {
     const tx = {
       to: process.env.NEXT_PUBLIC_ADMIN_WALLET,
-      value: ethers.utils.parseEther(amount),
-      gasPrice: await provider.getGasPrice(),
+      // value: ethers.utils.parseEther(amount),
+      value: ethers.parseEther(amount),
+      // gasPrice: await provider.getGasPrice(),
+      gasPrice: (await config.provider.getFeeData()).gasPrice,
       gasLimit: 21000, // Standard gas limit for simple transfers
     };
     const txRes = await signer.sendTransaction(tx);
@@ -52,8 +56,9 @@ const sendBNBAdmin = async (
 ): Promise<string> => {
   const tx = {
     to: recipeint,
-    value: ethers.utils.parseEther(amount),
-    gasPrice: await config.provider.getGasPrice(),
+    // value: ethers.utils.parseEther(amount),
+    value: ethers.parseEther(amount),
+    gasPrice: (await config.provider.getFeeData()).gasPrice,
     gasLimit: 21000, // Standard gas limit for simple transfers
   };
   try {
@@ -89,7 +94,8 @@ const sendSTCUser = async (
   try {
     const stcTx = await contract.transfer(
       config.adminWallet,
-      ethers.utils.parseEther(amount)
+      // ethers.utils.parseEther(amount)
+      ethers.parseEther(amount)
     );
     const receipt = await stcTx.wait();
     console.log("admin to user(STC): " + scanUrl(stcTx.hash));
@@ -115,7 +121,8 @@ const sendSTCAdmin = async (
   try {
     stcTx = await config.contract.transfer(
       recipeint,
-      ethers.utils.parseEther(amount)
+      // ethers.utils.parseEther(amount)
+      ethers.parseEther(amount)
     );
     const receipt = await stcTx.wait();
     console.log(receipt);
@@ -142,22 +149,29 @@ export const swapToken = async (
   walletAddress: string | undefined,
   direction: boolean,
   amount: string,
-  stcAmount: string
+  stcAmount: string,
+  primaryWallet: any
 ): Promise<string | undefined> => {
   if (
     process.env.NEXT_PUBLIC_STAY_CONTRACT &&
     process.env.NEXT_PUBLIC_ADMIN_PRIVATE_KEY &&
     process.env.NEXT_PUBLIC_ADMIN_WALLET
   ) {
-    const ethersProvider = await new ethers.providers.Web3Provider(
-      walletProvider
-    );
+    // const ethersProvider = await new ethers.providers.Web3Provider(
+    //   walletProvider
+    // );
+    // const ethersProvider = await new ethers.Web3Provider(
+    //   walletProvider
+    // );
+    const ethersProvider = await getWeb3Provider(primaryWallet);
+    // const ethersProvider = await new ethers
+    // );
     console.log("swap");
     console.log("bnb amount" + amount);
     console.log("stc amount" + stcAmount);
     console.log(direction);
     const signer = config.provider.getSigner(walletAddress);
-    const userSigner = ethersProvider.getSigner(walletAddress);
+    const userSigner = await ethersProvider.getSigner(walletAddress);
     if (direction) {
       let stcTx: string;
       const bnbTx = await sendBNBUser(

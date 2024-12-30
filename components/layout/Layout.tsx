@@ -18,6 +18,10 @@ import Footer5 from "./footer/Footer5";
 import Footer6 from "./footer/Footer6";
 import Header1 from "./header/Header1";
 import Header2 from "./header/Header2";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { DynamicProvider } from "@/context/dynamic_provider";
+import { SessionProvider } from "next-auth/react";
+// import bcrypt from 'bcryptjs'
 
 interface LayoutProps {
   headerStyle?: Number;
@@ -32,6 +36,8 @@ export default function Layout({
   breadcrumbTitle,
   children,
 }: LayoutProps) {
+  // const session: any = useSession();
+  // console.log(session, "session layout");
   const [scroll, setScroll] = useState<boolean>(false);
   // MobileMenu
   const [isMobileMenu, setMobileMenu] = useState<boolean>(false);
@@ -51,10 +57,22 @@ export default function Layout({
   };
   // Login
   const [isLogin, setLogin] = useState<boolean>(false);
-  const handleLogin = (): void => setLogin(!isLogin);
+  const handleLogin = (): void => {
+    // signIn();
+    setLogin(!isLogin);
+  };
   // Register
   const [isRegister, setRegister] = useState<boolean>(false);
-  const handleRegister = (): void => setRegister(!isRegister);
+  const handleRegister = async (
+    userName: string,
+    email: string,
+    password: string,
+    confirmPassword: string
+  ): Promise<void> => {
+    // const hashedPassword = await bcrypt.hash(payload.password, bcrypt.genSalt())
+    console.log(userName, email, password, confirmPassword);
+    // setRegister(!isRegister);
+  };
   console.log(!footerStyle, footerStyle);
 
   useEffect(() => {
@@ -81,70 +99,74 @@ export default function Layout({
   }, [scroll]);
   return (
     <>
-      <div id="top" />
-      <ItemCollapse />
-      <ButtonClick />
-      <TestimonialBlock />
-      {isMobileMenu && (
-        <div className="body-overlay-1" onClick={handleMobileMenu} />
-      )}
-      {isSidebar && <div className="body-overlay-1" onClick={handleSidebar} />}
+      {/* <SessionProvider session={session}> */}
+      <DynamicProvider>
+        <div id="top" />
+        <ItemCollapse />
+        <ButtonClick />
+        <TestimonialBlock />
+        {isMobileMenu && (
+          <div className="body-overlay-1" onClick={handleMobileMenu} />
+        )}
+        {isSidebar && (
+          <div className="body-overlay-1" onClick={handleSidebar} />
+        )}
 
-      {headerStyle == 1 ? (
-        <Header1
-          scroll={scroll}
+        {headerStyle == 1 ? (
+          <Header1
+            scroll={scroll}
+            isMobileMenu={isMobileMenu}
+            handleMobileMenu={handleMobileMenu}
+            isSidebar={isSidebar}
+            handleSidebar={handleSidebar}
+            isLogin={isLogin}
+            handleLogin={handleLogin}
+            isRegister={isRegister}
+            handleRegister={handleRegister}
+          />
+        ) : null}
+        {headerStyle == 2 ? (
+          <Header2
+            scroll={scroll}
+            isMobileMenu={isMobileMenu}
+            handleMobileMenu={handleMobileMenu}
+          />
+        ) : null}
+        <MobileMenu
           isMobileMenu={isMobileMenu}
           handleMobileMenu={handleMobileMenu}
-          isSidebar={isSidebar}
-          handleSidebar={handleSidebar}
+        />
+        <Sidebar isSidebar={isSidebar} handleSidebar={handleSidebar} />
+        <main className="main">
+          {breadcrumbTitle && <Breadcrumb breadcrumbTitle={breadcrumbTitle} />}
+          {children}
+        </main>
+
+        {/* {!footerStyle && <Footer1 />} */}
+        {footerStyle == 1 ? <Footer1 /> : null}
+        {footerStyle == 2 ? <Footer2 /> : null}
+        {footerStyle == 3 ? <Footer3 /> : null}
+        {footerStyle == 4 ? <Footer4 /> : null}
+        {footerStyle == 5 ? <Footer5 /> : null}
+        {footerStyle == 6 ? <Footer6 /> : null}
+
+        {/* <PopupFirstLoad /> */}
+        <PopupSignin
           isLogin={isLogin}
           handleLogin={handleLogin}
           isRegister={isRegister}
           handleRegister={handleRegister}
         />
-      ) : null}
-      {headerStyle == 2 ? (
-        <Header2
-          scroll={scroll}
-          isMobileMenu={isMobileMenu}
-          handleMobileMenu={handleMobileMenu}
+        <PopupSignup
+          isRegister={isRegister}
+          handleRegister={handleRegister}
+          isLogin={isLogin}
+          handleLogin={handleLogin}
         />
-      ) : null}
-      <MobileMenu
-        isMobileMenu={isMobileMenu}
-        handleMobileMenu={handleMobileMenu}
-      />
-      <Sidebar isSidebar={isSidebar} handleSidebar={handleSidebar} />
 
-      <main className="main">
-        {breadcrumbTitle && <Breadcrumb breadcrumbTitle={breadcrumbTitle} />}
-
-        {children}
-      </main>
-
-      {/* {!footerStyle && <Footer1 />} */}
-      {footerStyle == 1 ? <Footer1 /> : null}
-      {footerStyle == 2 ? <Footer2 /> : null}
-      {footerStyle == 3 ? <Footer3 /> : null}
-      {footerStyle == 4 ? <Footer4 /> : null}
-      {footerStyle == 5 ? <Footer5 /> : null}
-      {footerStyle == 6 ? <Footer6 /> : null}
-
-      {/* <PopupFirstLoad /> */}
-      <PopupSignin
-        isLogin={isLogin}
-        handleLogin={handleLogin}
-        isRegister={isRegister}
-        handleRegister={handleRegister}
-      />
-      <PopupSignup
-        isRegister={isRegister}
-        handleRegister={handleRegister}
-        isLogin={isLogin}
-        handleLogin={handleLogin}
-      />
-
-      <BackToTop target="top" />
+        <BackToTop target="top" />
+      </DynamicProvider>
+      {/* </SessionProvider> */}
     </>
   );
 }

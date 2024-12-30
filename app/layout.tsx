@@ -1,3 +1,4 @@
+"use client";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import "/public/assets/css/style.css";
 import type { Metadata } from "next";
@@ -5,7 +6,15 @@ import { Manrope, Merienda } from "next/font/google";
 import { AppKit } from "@/context/appkit";
 import Layout from "@/components/layout/Layout";
 import { Toaster } from "sonner";
-
+import {
+  DynamicContextProvider,
+  DynamicWidget,
+  getAuthToken,
+} from "@dynamic-labs/sdk-react-core";
+import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
+import ProviderWrapper from "@/components/dynamic-provider";
+import { getCsrfToken } from "next-auth/react";
+import { DynamicProvider } from "@/context/dynamic_provider";
 const manrope_init = Manrope({
   weight: ["300", "400", "500", "600", "700", "800"],
   subsets: ["latin"],
@@ -19,10 +28,10 @@ const merienda_init = Merienda({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Stay Chain",
-  description: "Hotel Management",
-};
+// export const metadata: Metadata = {
+//   title: "Stay Chain",
+//   description: "Hotel Management",
+// };
 
 export default function RootLayout({
   children,
@@ -35,18 +44,23 @@ export default function RootLayout({
       className={`${manrope_init.variable} ${merienda_init.variable}`}
     >
       <body>
-        <AppKit>
-          <Layout headerStyle={1} footerStyle={1}>
-            {children}
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                className: "toast-style",
-                duration: 5000,
-              }}
-            />
-          </Layout>
-        </AppKit>
+        {/* <AppKit> */}
+        {/* <ProviderWrapper> */}
+        {/* <DynamicProvider> */}
+        <Layout headerStyle={1} footerStyle={1}>
+          {children}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              className: "toast-style",
+              duration: 5000,
+            }}
+          />
+        </Layout>
+        {/* </DynamicProvider> */}
+        {/* </ProviderWrapper> */}
+        {/* <DynamicWidget /> */}
+        {/* </AppKit> */}
       </body>
     </html>
   );

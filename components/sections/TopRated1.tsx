@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function TopRated1() {
+  // const hotels = await getHotels();
   const [hotels, setHotels] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -48,7 +49,7 @@ export default function TopRated1() {
     return <div className="flex justify-center">Loading...</div>;
   };
   const displayHotels = () => {
-    console.log(isLoading);
+    // console.log(isLoading);
     // console.log(hotels[0].room[0].price);
     return hotels.map((hotel: any, index: number) => {
       return (
@@ -159,7 +160,7 @@ export default function TopRated1() {
                 <div className="endtime">
                   <div className="card-price">
                     <h6 className="heading-6 neutral-1000">
-                      ${hotel?.room[0]?.price}
+                      {hotel?.room[0]?.price} Stay
                     </h6>
                     <p className="text-md-medium neutral-500">/ person</p>
                   </div>
@@ -216,6 +217,7 @@ export default function TopRated1() {
           <div className="box-swiper mt-30">
             <div className="swiper-container swiper-group-animate swiper-group-journey">
               {isLoading && hotels.length > 0 ? (
+                // {hotels.length > 0 ? (
                 displayLoader()
               ) : (
                 <Swiper {...swiperGroupAnimate}>{displayHotels()}</Swiper>
