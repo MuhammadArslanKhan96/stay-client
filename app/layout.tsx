@@ -47,16 +47,18 @@ export default function RootLayout({
         {/* <AppKit> */}
         {/* <ProviderWrapper> */}
         {/* <DynamicProvider> */}
-        <Layout headerStyle={1} footerStyle={1}>
-          {children}
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              className: "toast-style",
-              duration: 5000,
-            }}
-          />
-        </Layout>
+        <DynamicProvider>
+          <Layout headerStyle={1} footerStyle={1}>
+            {children}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                className: "toast-style",
+                duration: 5000,
+              }}
+            />
+          </Layout>
+        </DynamicProvider>
         {/* </DynamicProvider> */}
         {/* </ProviderWrapper> */}
         {/* <DynamicWidget /> */}

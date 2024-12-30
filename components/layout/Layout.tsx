@@ -100,7 +100,7 @@ export default function Layout({
   return (
     <>
       {/* <SessionProvider session={session}> */}
-      <DynamicProvider>
+      {/* <DynamicProvider> */}
         <div id="top" />
         <ItemCollapse />
         <ButtonClick />
@@ -165,7 +165,7 @@ export default function Layout({
         />
 
         <BackToTop target="top" />
-      </DynamicProvider>
+      {/* </DynamicProvider> */}
       {/* </SessionProvider> */}
     </>
   );
