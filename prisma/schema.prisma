@@ -69,8 +69,9 @@ model Review{
 model User{
   id String @id @default(cuid())
   email String @unique
-  password String
-  userName String @unique
+  wallet String 
+  username String @unique
+  // earlyAccess EarlyAccess?
   reviews Review[]
   bookings Booking[]
   createdAt DateTime @default(now())
@@ -93,4 +94,15 @@ model Booking{
   duration Int
   price Int
   transactionHash String
+}
+
+
+model EarlyAccess{
+  id Int @id @default(autoincrement())
+  email String @unique
+  code Int @unique
+  // user User @relation(fields: [email], references: [email])
+  isUsed Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -1,6 +1,15 @@
+"use client";
 import { getCsrfToken } from "next-auth/react";
-import { DynamicContextProvider, getAuthToken } from "../lib/dynamic";
+import {
+  DynamicContextProvider,
+  getAuthToken,
+  useDynamicContext,
+} from "../lib/dynamic";
 import { EthereumWalletConnectors } from "../lib/dynamic";
+import { validateJWT } from "@/lib/authHelpers";
+import { mintNftOnSignin } from "@/lib/mintNft";
+import { createUser, getUserByEmail } from "@/util/services/user";
+import { toast } from "sonner";
 
 const networks = [
   {
@@ -30,6 +39,26 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
           : "",
         walletConnectors: [EthereumWalletConnectors],
         overrides: { evmNetworks: networks },
+        events: {
+          onAuthSuccess: async (user) => {
+            console.log("onAuthSuccess", user);
+            // if (user.user.email) {
+            //   const getUser = await getUserByEmail(user.user.email);
+            // if (!getUser) {
+            //   const newUser = createUser({
+            //     email: user.user.email,
+            //     name: user.user.name,
+            //   });
+            // }
+            // }
+            const minting = mintNftOnSignin(user.primaryWallet);
+            toast.promise(minting, {
+              loading: "Minting your membership",
+              success: "Welcome to Stay Chain",
+              error: "Error minting NFT",
+            });
+          },
+        },
       }}
     >
       {children}

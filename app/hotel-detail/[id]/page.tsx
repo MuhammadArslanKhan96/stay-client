@@ -21,6 +21,7 @@ import { scanUrl } from "@/app/swap/swap";
 import { config, getContract } from "@/app/swap/constants";
 import { ethers } from "ethers";
 import { getSigner } from "@dynamic-labs/ethers-v6";
+import { updateNft } from "@/lib/mintNft";
 
 const displayDescription = (description: string) => {
   const test = JSON.stringify(description);
@@ -69,7 +70,7 @@ const handleBooking = async (room: any, wallet: any) => {
       data: data,
       value: "0",
     };
-
+    const gasFee = signer.estimateGas;
     const gasEstimate = await signer.estimateGas(transaction);
     const txIns = {
       ...transaction,
@@ -81,11 +82,22 @@ const handleBooking = async (room: any, wallet: any) => {
       config.adminWallet,
       parseEther(amount.toString())
     );
+    // const providerGas = walletClient.connector.getGasPrice();
+    // console.log(providerGas, "provider gas");
     console.log(gas.toString(), "gas");
-    const tx = await contract.transfer(
-      config.adminWallet,
-      parseEther(amount.toString())
-    );
+    let tx;
+    try {
+      tx = await contract.transfer(
+        config.adminWallet,
+        parseEther(amount.toString()),
+        {
+          gasPrice: gas,
+          gasLimit: 210000,
+        }
+      );
+    } catch (error: any) {
+      console.error("error in booking tx: ", error.message);
+    }
     try {
       // hash = await walletClient.sendTransaction(tx);
       hash = tx.hash;
@@ -110,6 +122,21 @@ const handleBooking = async (room: any, wallet: any) => {
       price: room.price,
       hash: hash,
     };
+    try {
+      const bookingCount = await fetch(`/api/booking/id=${reqBody.userId}`, {
+        method: "GET",
+      });
+      const count = await bookingCount.json();
+      if (bookingCount.status != 200) {
+        throw new Error();
+      }
+      if (count >= 2) {
+        const update = await updateNft(wallet, "silver");
+        console.log(update, "update");
+      }
+    } catch (error: any) {
+      console.error("error getting booking count: ", error.message);
+    }
     try {
       const newBooking = await fetch("/api/booking/", {
         method: "POST",
