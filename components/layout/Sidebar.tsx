@@ -113,7 +113,7 @@ export default function Sidebar({ isSidebar, handleSidebar }: any) {
                     <Link href="#">
                       <h6 className="text-md-bold neutral-1000">My Wallet</h6>
                     </Link>
-                    <p className="text-xs neutral-500">$4500</p>
+                    <p className="text-xs neutral-500">$ 550000</p>
                   </div>
                 </div>
                 <div className="item-quicklinks">

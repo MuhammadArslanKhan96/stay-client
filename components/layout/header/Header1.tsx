@@ -330,7 +330,7 @@ export default function Header1({
                       </div>
                     </li>
                     <li className="mega-li-small has-children">
-                      <Link href="/service">Destinations</Link>
+                      <Link href="/destination">Destinations</Link>
                       <div className="mega-menu">
                         <div className="mega-menu-inner mega-menu-inner-small mega-menu-inner-destinations">
                           <h6 className="text-lg-bold neutral-1000">
@@ -372,7 +372,7 @@ export default function Header1({
                       </div>
                     </li>
                     <li className="has-children">
-                      <Link href="#">Activities</Link>
+                      <Link href="/activities">Activities</Link>
                       <ul className="sub-menu">
                         <li>
                           {" "}

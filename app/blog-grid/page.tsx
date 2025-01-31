@@ -9,7 +9,7 @@ export default function Home() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={0} footerStyle={0}> */}
 				<main className="main">
 					<section className="box-section box-breadcrumb background-body">
 						<div className="container">
@@ -507,7 +507,7 @@ export default function Home() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

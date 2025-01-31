@@ -8,7 +8,7 @@ export default function Contact() {
     return (
         <>
 
-            <Layout headerStyle={1} footerStyle={1}>
+            {/* <Layout headerStyle={0} footerStyle={0}> */}
                 <main className="main">
                     <section className="box-section box-breadcrumb background-100">
                         <div className="container">
@@ -41,7 +41,7 @@ export default function Contact() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="row mt-60">
+                            {/* <div className="row mt-60">
                                 <div className="col-lg-3 col-sm-6">
                                     <div className="card-contact">
                                         <div className="card-image">
@@ -122,7 +122,7 @@ export default function Contact() {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </section>
                     <section className="box-section box-contact-form background-body">
@@ -324,7 +324,7 @@ export default function Contact() {
                                 <div className="footer-col-1">
                                     <div className="box-footer-help"><img className="light-mode" alt="StayChain" src="/assets/imgs/template/icons/help-w.svg" /><img className="dark-mode" alt="StayChain" src="/assets/imgs/page/homepage6/help.svg" />
                                         <div className="box-info-support">
-                                            <p className="text-md-medium mb-5 neutral-1000">Need help? Call us</p><Link className="heading-6 phone-support neutral-1000" href="/tel:1-800-222-8888">1-800-222-8888</Link>
+                                            <p className="text-md-medium mb-5 neutral-1000">Need help? Call us</p><Link className="heading-6 phone-support neutral-1000" href="/tel:1-800-222-8888">00000-0000-00</Link>
                                         </div>
                                     </div>
                                 </div>
@@ -347,7 +347,7 @@ export default function Contact() {
                     </section>
                 </main>
 
-            </Layout>
+            {/* </Layout> */}
         </>
     )
 }

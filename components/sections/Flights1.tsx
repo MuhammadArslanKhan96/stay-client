@@ -44,8 +44,8 @@ export default function Flights1() {
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
-                                                    <h6 className="route-name neutral-1000">Denmark</h6><span className="icon-route" />
-                                                    <h6 className="route-name neutral-1000">New York</h6>
+                                                    <h6 className="route-name neutral-1000">karachi</h6><span className="icon-route" />
+                                                    <h6 className="route-name neutral-1000">Brazil</h6>
                                                 </div>
                                                 <div className="card-price">
                                                     <div className="card-price-1">
@@ -74,7 +74,7 @@ export default function Flights1() {
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
                                                     <h6 className="route-name neutral-1000">Denmark</h6><span className="icon-route" />
-                                                    <h6 className="route-name neutral-1000">New York</h6>
+                                                    <h6 className="route-name neutral-1000">Islamabad</h6>
                                                 </div>
                                                 <div className="card-price">
                                                     <div className="card-price-1">
@@ -104,8 +104,8 @@ export default function Flights1() {
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
-                                                    <h6 className="route-name neutral-1000">Denmark</h6><span className="icon-route" />
-                                                    <h6 className="route-name neutral-1000">New York</h6>
+                                                    <h6 className="route-name neutral-1000">skardu</h6><span className="icon-route" />
+                                                    <h6 className="route-name neutral-1000">Karachi</h6>
                                                 </div>
                                                 <div className="card-price">
                                                     <div className="card-price-1">
@@ -133,8 +133,8 @@ export default function Flights1() {
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
-                                                    <h6 className="route-name neutral-1000">Denmark</h6><span className="icon-route" />
-                                                    <h6 className="route-name neutral-1000">New York</h6>
+                                                    <h6 className="route-name neutral-1000">Japan</h6><span className="icon-route" />
+                                                    <h6 className="route-name neutral-1000">China</h6>
                                                 </div>
                                                 <div className="card-price">
                                                     <div className="card-price-1">
@@ -164,7 +164,7 @@ export default function Flights1() {
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
-                                                    <h6 className="route-name neutral-1000">Denmark</h6><span className="icon-route" />
+                                                    <h6 className="route-name neutral-1000">Pakistan</h6><span className="icon-route" />
                                                     <h6 className="route-name neutral-1000">New York</h6>
                                                 </div>
                                                 <div className="card-price">
@@ -193,8 +193,8 @@ export default function Flights1() {
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
-                                                    <h6 className="route-name neutral-1000">Denmark</h6><span className="icon-route" />
-                                                    <h6 className="route-name neutral-1000">New York</h6>
+                                                    <h6 className="route-name neutral-1000">Fineland</h6><span className="icon-route" />
+                                                    <h6 className="route-name neutral-1000">Maldives</h6>
                                                 </div>
                                                 <div className="card-price">
                                                     <div className="card-price-1">

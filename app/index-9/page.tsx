@@ -14,7 +14,7 @@ export default function Home9() {
     return (
         <>
 
-            <Layout headerStyle={1} footerStyle={6}>
+            {/* <Layout headerStyle={1} footerStyle={6}> */}
                 <BannerHome8 />
                 <FeaturedPropoerties />
                 <WhyChooseUs2 />
@@ -24,7 +24,7 @@ export default function Home9() {
                 <Ads />
                 <News7 />
                 <Subscriber3 />
-            </Layout>
+            {/* </Layout> */}
         </>
     )
 }

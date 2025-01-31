@@ -6,7 +6,7 @@ export default function Footer1() {
         <div className="container">
           <div className="footer-top">
             <div className="row align-items-center">
-              <div className="col-md-4 text-center text-md-start">
+              <div className="col-md-4 text-center text-md-center ">
                 <Link className="d-inline-block" href="/">
                   {/* <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -30,12 +30,13 @@ export default function Footer1() {
                   >
                     <text
                       x="5"
-                      y="15"
+                      y="20"
                       fontSize="25px"
                       fill="white"
                       fontWeight="bold"
+                      
                     >
-                      Stay Chain
+                      Stay Chains
                     </text>
                   </svg>
                   {/* <img

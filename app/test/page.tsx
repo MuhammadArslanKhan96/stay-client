@@ -59,7 +59,7 @@ const ToursFilter: React.FC = () => {
 	} = useTourFilter(toursData)
 	return (
 		<>
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<div className='container'>
 					<div className="row">
 						<div className="col-xl-4">
@@ -130,7 +130,7 @@ const ToursFilter: React.FC = () => {
 						</div>
 					</div>
 				</div>
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

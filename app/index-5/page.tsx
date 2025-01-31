@@ -18,7 +18,7 @@ export default function Home5() {
     return (
         <>
 
-            <Layout headerStyle={1} footerStyle={3}>
+            {/* <Layout headerStyle={1} footerStyle={3}> */}
                 <BannerHome4 />
                 <Partners1 />
                 <OurFeatured3 />
@@ -32,7 +32,7 @@ export default function Home5() {
                 <Logos2 />
                 <Subscriber2 />
                 <Media1 />
-            </Layout>
+            {/* </Layout> */}
         </>
     )
 }

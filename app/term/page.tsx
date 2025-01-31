@@ -6,7 +6,7 @@ export default function Term() {
     return (
         <>
 
-            <Layout headerStyle={1} footerStyle={1}>
+            {/* <Layout headerStyle={1} footerStyle={1}> */}
                 <main className="main">
                     <section className="box-section box-breadcrumb background-100">
                         <div className="container">
@@ -70,7 +70,7 @@ export default function Term() {
                     </section>
                 </main>
 
-            </Layout>
+            {/* </Layout> */}
         </>
     )
 }

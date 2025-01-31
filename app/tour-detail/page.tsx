@@ -13,7 +13,7 @@ export default function TourDetail() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<main className="main">
 					<section className="box-section box-breadcrumb background-body">
 						<div className="container">
@@ -593,7 +593,7 @@ export default function TourDetail() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

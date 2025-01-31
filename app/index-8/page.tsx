@@ -15,7 +15,7 @@ export default function Home8() {
     return (
         <>
 
-            <Layout headerStyle={1} footerStyle={6}>
+            {/* <Layout headerStyle={1} footerStyle={6}> */}
                 <BannerHome7 />
                 <Logos3 />
                 <Flights3 />
@@ -26,7 +26,7 @@ export default function Home8() {
                 <Numbers2 />
                 <Faqs3 />
                 <InstallApp3 />
-            </Layout>
+            {/* </Layout> */}
         </>
     )
 }

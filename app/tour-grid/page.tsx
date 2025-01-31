@@ -49,7 +49,7 @@ export default function TourGrid() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<main className="main">
 					<section className="box-section block-banner-tourlist">
 						<div className="container">
@@ -193,7 +193,7 @@ export default function TourGrid() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

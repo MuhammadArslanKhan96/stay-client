@@ -14,7 +14,7 @@ export default function HelpCenter() {
     return (
         <>
 
-            <Layout headerStyle={1} footerStyle={1}>
+            {/* <Layout headerStyle={1} footerStyle={1}> */}
                 <main className="main">
                     <section className="box-section box-breadcrumb background-100">
                         <div className="container">
@@ -526,7 +526,7 @@ export default function HelpCenter() {
                     </section>
                 </main>
 
-            </Layout>
+            {/* </Layout> */}
         </>
     )
 }

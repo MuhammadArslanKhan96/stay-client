@@ -11,7 +11,7 @@ export default function About() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={0} footerStyle={0}> */}
 				<div>
 					<section className="box-section box-breadcrumb background-100">
 						<div className="container">
@@ -191,7 +191,7 @@ export default function About() {
 								</div>
 								<div className="col-md-6 position-relative text-start text-lg-end mb-30 wow fadeInUp">
 									<div className="box-need-help text-start d-inline-block">
-										<p className="need-help neutral-1000 text-lg-bold mb-5">Need help? Call us</p><br /><Link className="heading-6 neutral-1000 phone-support" href="/tel:1-800-222-8888">1-800-222-8888</Link>
+										<p className="need-help neutral-1000 text-lg-bold mb-5">Need help? Call us</p><br /><Link className="heading-6 neutral-1000 phone-support" href="/tel:1-800-222-8888">1-00000-0000-00</Link>
 									</div>
 								</div>
 							</div>
@@ -532,7 +532,7 @@ export default function About() {
 					</section>
 				</div>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

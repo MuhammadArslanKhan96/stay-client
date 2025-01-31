@@ -8,7 +8,7 @@ export default function CommingSoon() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<main className="main">
 					<section className="section-box box-banner-commingsoon background-body">
 						<div className="container">
@@ -117,7 +117,7 @@ export default function CommingSoon() {
 												<div className="card-title"> <Link className="title text-lg-bold" href="#">Call Us</Link>
 													<p className="text-xs-medium neutral-500">Call us to speak to a member of our team.</p>
 												</div>
-												<div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 234 567 89">(+01) 234 567 89 -  456 789 21</Link></div>
+												<div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 234 567 89">(+01) 0000 000 000</Link></div>
 											</div>
 										</div>
 									</div>
@@ -134,7 +134,7 @@ export default function CommingSoon() {
 												<div className="card-title"> <Link className="title text-lg-bold" href="#">Business Department</Link>
 													<p className="text-xs-medium neutral-500">Contact the sales department about cooperation projects</p>
 												</div>
-												<div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 789 456 23">(+01) 789 456 23</Link></div>
+												<div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 789 456 23">(+01) 000 0000 000</Link></div>
 											</div>
 										</div>
 									</div>
@@ -151,7 +151,7 @@ export default function CommingSoon() {
 												<div className="card-title"> <Link className="title text-lg-bold" href="#">Global branch</Link>
 													<p className="text-xs-medium neutral-500">Contact us to open our branches globally.</p>
 												</div>
-												<div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 789 456 23">(+01) 789 456 23</Link></div>
+												<div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 789 456 23">(+01) 000 0000</Link></div>
 											</div>
 										</div>
 									</div>
@@ -161,7 +161,7 @@ export default function CommingSoon() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

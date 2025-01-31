@@ -52,7 +52,7 @@ export default function RentalCar3() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<main className="main">
 					<section className="box-section block-banner-tourlist block-banner-car">
 						<div className="container">
@@ -208,7 +208,7 @@ export default function RentalCar3() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

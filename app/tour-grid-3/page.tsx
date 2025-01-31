@@ -50,7 +50,7 @@ export default function TourGrid3() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<main className="main">
 					<section className="box-section block-banner-tourlist" style={{ backgroundImage: 'url(assets/imgs/page/tour/banner5.png)' }}>
 						<div className="container">
@@ -202,7 +202,7 @@ export default function TourGrid3() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

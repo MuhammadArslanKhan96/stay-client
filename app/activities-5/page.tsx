@@ -49,7 +49,7 @@ export default function Activities5() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<main className="main">
 					<section className="box-section block-banner-tourlist block-banner-activities-3">
 						<div className="container">
@@ -372,7 +372,7 @@ export default function Activities5() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

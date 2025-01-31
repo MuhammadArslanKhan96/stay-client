@@ -8,7 +8,7 @@ export default function Error404() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<div>
 					<section className="section-box box-become-video background-body">
 						<div className="container">
@@ -231,7 +231,7 @@ export default function Error404() {
 					</section>
 				</div>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

@@ -15,7 +15,7 @@ export default function Home2() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={5}>
+			{/* <Layout headerStyle={1} footerStyle={5}> */}
 				<BannerHome1 />
 				<OurFeatured1 />
 				<TopCategory1 />
@@ -26,7 +26,7 @@ export default function Home2() {
 				<RecentLauchedCar />
 				<Testimonials2 />
 				<News2 />
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

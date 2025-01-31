@@ -54,7 +54,7 @@ export default function Tickets() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<main className="main">
 					<section className="box-section block-banner-tickets">
 						<div className="container">
@@ -261,7 +261,7 @@ export default function Tickets() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

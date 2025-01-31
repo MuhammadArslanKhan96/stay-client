@@ -13,7 +13,7 @@ export default function FAQ() {
 	return (
 		<>
 
-			<Layout headerStyle={1} footerStyle={1}>
+			{/* <Layout headerStyle={1} footerStyle={1}> */}
 				<main className="main">
 					<section className="box-section box-breadcrumb background-100">
 						<div className="container">
@@ -198,7 +198,7 @@ export default function FAQ() {
 					</section>
 				</main>
 
-			</Layout>
+			{/* </Layout> */}
 		</>
 	)
 }

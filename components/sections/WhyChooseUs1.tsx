@@ -11,7 +11,7 @@ export default function WhyChooseUs1() {
                             <h2 className="title-why neutral-1000">Dare to live the lift you’ve always wanted</h2>
                             <p className="text-xl-medium neutral-500">Discover how you can offset your adventure's carbon
                                 emissions and support the sustainable initiatives practiced by our operators worldwide.</p>
-                            <div className="download-apps"> <Link href="#"><img src="/assets/imgs/template/googleplay.png" alt="StayChain" /></Link><Link href="#"><img src="/assets/imgs/template/appstore.png" alt="StayChain" /></Link></div>
+                            {/* <div className="download-apps"> <Link href="#"><img src="/assets/imgs/template/googleplay.png" alt="StayChain" /></Link><Link href="#"><img src="/assets/imgs/template/appstore.png" alt="StayChain" /></Link></div> */}
                         </div>
                         <div className="col-lg-6 mb-40">
                             <div className="row">

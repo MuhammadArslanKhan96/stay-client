@@ -20,7 +20,7 @@ export default function Home10() {
     return (
         <>
 
-            <Layout headerStyle={1} footerStyle={1}>
+            {/* <Layout headerStyle={1} footerStyle={1}> */}
                 <BannerHome9 />
                 <SearchAdvanceHome10 />
                 <Logos4 />
@@ -35,7 +35,7 @@ export default function Home10() {
                 <HowItWork3 />
                 <Testimonials7 />
                 <News8 />
-            </Layout>
+            {/* </Layout> */}
         </>
     )
 }

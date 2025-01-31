@@ -48,8 +48,7 @@ export default function YourJourney() {
                                                 <div className="card-left"> <span className="lightning">Exceptional</span></div>
                                                 <div className="card-right"> <span className="rating">5.00</span></div>
                                             </div>
-                                            <div className="card-title"> <Link className="text-32-bold" href="#">California
-                                                Sunset/Twilight Boat Cruise </Link></div>
+                                            <div className="card-title"> <Link className="text-32-bold" href="#">Karachi Tower</Link></div>
                                             <div className="card-program">
                                                 <div className="duration">
                                                     <p className="text-md-medium neutral-500 mb-25">7 days 6 nights - Small
@@ -82,11 +81,11 @@ export default function YourJourney() {
                                                 <div className="card-right"> <span className="rating">4.96 <span className="text-sm-medium neutral-500">(672 reviews)</span></span>
                                                 </div>
                                             </div>
-                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">California Sunset/Twilight Boat Cruise </Link>
+                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">PC Hotel </Link>
                                             </div>
                                             <div className="card-program">
                                                 <div className="duration">
-                                                    <p className="text-md-medium neutral-500">2 days 3 nights - Family</p>
+                                                    <p className="text-md-medium neutral-500">PC Hotel</p>
                                                 </div>
                                                 <div className="endtime">
                                                     <div className="card-price">
@@ -112,10 +111,10 @@ export default function YourJourney() {
                                                 <div className="card-right"> <span className="rating">4.96 <span className="text-sm-medium neutral-500">(672 reviews)</span></span>
                                                 </div>
                                             </div>
-                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">NYC: Food Tastings and Culture Tour</Link></div>
+                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">Alfalah Group</Link></div>
                                             <div className="card-program">
                                                 <div className="duration">
-                                                    <p className="text-md-medium neutral-500">3 days 3 nights - Company</p>
+                                                    <p className="text-md-medium neutral-500">Alfalah Group</p>
                                                 </div>
                                                 <div className="endtime">
                                                     <div className="card-price">
@@ -141,7 +140,7 @@ export default function YourJourney() {
                                                 <div className="card-right"> <span className="rating">4.96 <span className="text-sm-medium neutral-500">(672 reviews)</span></span>
                                                 </div>
                                             </div>
-                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">Grand Canyon Horseshoe Bend 2 days</Link></div>
+                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">Islamabad Avenue</Link></div>
                                             <div className="card-program">
                                                 <div className="duration">
                                                     <p className="text-md-medium neutral-500">7 days 6 nights - Small group</p>
@@ -170,7 +169,7 @@ export default function YourJourney() {
                                                 <div className="card-right"> <span className="rating">4.96 <span className="text-sm-medium neutral-500">(672 reviews)</span></span>
                                                 </div>
                                             </div>
-                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">California Sunset/Twilight Boat Cruise </Link>
+                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">Suburban Studios Brazil</Link>
                                             </div>
                                             <div className="card-program">
                                                 <div className="duration">
@@ -200,7 +199,7 @@ export default function YourJourney() {
                                                 <div className="card-right"> <span className="rating">4.96 <span className="text-sm-medium neutral-500">(672 reviews)</span></span>
                                                 </div>
                                             </div>
-                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">NYC: Food Tastings and Culture Tour</Link></div>
+                                            <div className="card-title"> <Link className="heading-6 neutral-1000" href="/tour-detail">Kashmir Resort</Link></div>
                                             <div className="card-program">
                                                 <div className="duration">
                                                     <p className="text-md-medium neutral-500">3 days 3 nights - Company</p>
