@@ -489,6 +489,15 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       </ul>
                     </li>
                     <li>
+                      <Link href="/showbookings">Show Bookings</Link>
+                    </li>
+                    <li>
+                      <Link href="/referrencedUsers">Referred Users</Link>
+                    </li>
+                    <li>
+                      <Link href="/referral">Referral Link</Link>
+                    </li>
+                    <li>
                       <Link href="/contact">Contact</Link>
                     </li>
                   </ul>

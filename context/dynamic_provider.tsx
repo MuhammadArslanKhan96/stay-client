@@ -11,6 +11,8 @@ import { mintNftOnSignin } from "@/lib/mintNft";
 import { createUser, getUserByEmail } from "@/util/services/user";
 import { toast } from "sonner";
 import { string } from "zod";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const networks = [
   {
@@ -32,6 +34,9 @@ const networks = [
 ];
 
 export function DynamicProvider({ children }: React.PropsWithChildren) {
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get('ref') as string;
+
   return (
     <DynamicContextProvider
       settings={{
@@ -43,32 +48,45 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
         events: {
           onAuthSuccess: async (user) => {
             console.log("onAuthSuccess", user);
-            if (user.user.newUser) {
-              const payload: { email: string; username: string; wallet: any } =
-                {
-                  email: user.user.email ?? "",
-                  username: user.user.firstName ?? "",
-                  wallet: user.primaryWallet ?? "",
-                };
-              // const newUser = await createUser(payload);
-              const newUser = await fetch(
-                `/api/user/signup`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(payload),
-                }
-              );
-              const minting = mintNftOnSignin(user.primaryWallet);
-              toast.promise(minting, {
-                loading: "Minting your membership",
-                success: "Welcome to Stay Chain",
-                error: "Error minting NFT",
-              });
+            if (!user.user.newUser) {
+              console.log("Called AN API");
+              try{
+                  const payload: { email: string; username: string; wallet: any, } =
+                  {
+                    email: user.user.email ?? "",
+                    username: user.user.firstName ?? "",
+                    wallet: user.primaryWallet ?? "",
+                  };
+                  const withReferralCode = {...payload, referralCode}
+                  // const newUser = await createUser(payload);
+                  const response = await fetch(
+                    `/api/user/signup`,
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify(withReferralCode),
+                    }
+                  );
+                  const responseData = await response.json();
+                  // New User is created...
+                  console.log(responseData);
+                  const minting = mintNftOnSignin(user.primaryWallet);
+                  toast.promise(minting, {
+                    loading: "Minting your membership",
+                    success: "Welcome to Stay Chain",
+                    error: "Error minting NFT",
+                  });
+
+              }catch(err){
+                console.log("Error while creating the user...",  err);
+              }
+             
             } else {
               toast.success("Welcome back!");
+              // Save user in session storage/localstorage...
+              const userEmail = user.user.email;
             }
 
             // if (user.user.email) {

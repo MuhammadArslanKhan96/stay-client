@@ -1,7 +1,55 @@
+'use client'
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+
 const handleRegister = () => {};
 const handleLogin = () => {};
 export default function PopupSignup({ isLogin }: any) {
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get('ref') as string;
+
+  const [user, setUser]  = useState({
+    name:'',
+    email:'',
+    password:'',
+    confirmPassword:'',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange=(event:any)=>{
+    const name = event.target.name;
+    const value = event.target.value;
+    setUser(user=>({...user, [name]:value}));
+  }
+
+  const handleFormSubmit = async(event:any)=>{
+    event.preventDefault();
+    if(user.password!==user.confirmPassword){
+      alert("Password does not match.");
+    }else{
+      try{
+        setIsLoading(true);
+        //Sending data:
+        const response = await fetch('/api/user/signup', {
+          method:"POST",
+          body: JSON.stringify({...user, referralCode})
+        });
+        const data = await response.json();
+        if(data.error){
+          throw new Error(data.error);
+        }else{
+          alert("Your account is created.");
+        }
+      }catch(err:any){
+        const errorMessage = err.message || "Could not create account."
+        alert(errorMessage)
+      }finally{
+        setIsLoading(false);
+      }
+    }
+
+  }
   return (
     <>
       {/* <div
@@ -50,21 +98,29 @@ export default function PopupSignup({ isLogin }: any) {
             </Link>
           </div>
           <div className="form-login">
-            <form>
+            <form onSubmit={handleFormSubmit}>
               <div className="form-group">
                 <label className="text-sm-medium">Username *</label>
                 <input
                   className="form-control username"
                   type="text"
                   placeholder="Email / Username"
+                  value={user.name}
+                  name="name"
+                  onChange={handleChange}
+                  required={true}
                 />
               </div>
               <div className="form-group">
                 <label className="text-sm-medium">Your email *</label>
                 <input
                   className="form-control email"
-                  type="text"
+                  type="email"
                   placeholder="Email / Username"
+                  value={user.email}
+                  name="email"
+                  onChange={handleChange}
+                  required={true}
                 />
               </div>
               <div className="row">
@@ -75,6 +131,10 @@ export default function PopupSignup({ isLogin }: any) {
                       className="form-control password"
                       type="password"
                       placeholder="***********"
+                      value={user.password}
+                      name="password"
+                      onChange={handleChange}
+                      required={true}
                     />
                   </div>
                 </div>
@@ -85,10 +145,29 @@ export default function PopupSignup({ isLogin }: any) {
                       className="form-control password"
                       type="password"
                       placeholder="***********"
+                      value={user.confirmPassword}
+                      name="confirmPassword"
+                      onChange={handleChange}
+                      required={true}
                     />
                   </div>
                 </div>
               </div>
+              {
+                referralCode && (<div className="row">
+                <div className="col">
+                  <div className="form-group">
+                    <label className="text-sm-medium">Refferal Code</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      value={referralCode}
+                      disabled={true}
+                    />
+                  </div>
+                </div>
+              </div>)
+              }
               <div className="form-group">
                 <div className="box-remember-forgot">
                   <div className="remeber-me">
@@ -102,7 +181,7 @@ export default function PopupSignup({ isLogin }: any) {
               <div className="form-group mt-45 mb-30">
                 {" "}
                 <button className="btn btn-black-lg" type="submit">
-                  Create New Account
+                  {isLoading ? 'Loading...':(<>Create New Account
                   <svg
                     width={16}
                     height={16}
@@ -116,6 +195,8 @@ export default function PopupSignup({ isLogin }: any) {
                       strokeLinejoin="round"
                     />
                   </svg>
+                  </>
+                  )}
                 </button>
               </div>
               <p className="text-sm-medium neutral-500">

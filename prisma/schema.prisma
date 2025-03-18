@@ -4,105 +4,118 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_URL")
+  url      = env("POSTGRES_URL")
 }
 
 model Hotel {
-  id        String     @id @default(cuid())
-  name     String  @unique
-  city     String
-  image    String[] 
-  rating   Float
+  id           String     @id @default(cuid())
+  name         String     @unique
+  city         String
+  image        String[]
+  rating       Float
   rating_count Int
-  packages String[]
-  description String
-  contact  Contact?
-  room     Room[] 
-  reviews  Review[]
-  bookings Booking[]
+  packages     String[]
+  description  String
+  bookings     Booking[]
+  contact      Contact?
+  Favorite     Favorite[]
+  reviews      Review[]
+  room         Room[]
 }
 
-model Contact{
-  id    String     @id @default(cuid())
+model Contact {
+  id      String @id @default(cuid())
   number  String
-  email String
+  email   String
   hotelId String @unique
-  hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  hotel   Hotel  @relation(fields: [hotelId], references: [id], onDelete: Cascade)
 }
 
 model Room {
-  id   String     @id @default(cuid())
-  name  String
-  people  Int
-  size  Int
-  beds  Int
-  bathroom  Int
-  image  String
-  available Boolean
-  price Int
-  rating Float
+  id           String    @id @default(cuid())
+  name         String
+  people       Int
+  size         Int
+  beds         Int
+  bathroom     Int
+  image        String
+  available    Boolean
+  price        Int
+  rating       Float
   rating_count Int
-  package String
-  reviews Review[]
-  bookings Booking[]
-  hotelId String 
-  hotel Hotel @relation(fields:[hotelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  
+  package      String
+  hotelId      String
+  bookings     Booking[]
+  reviews      Review[]
+  hotel        Hotel     @relation(fields: [hotelId], references: [id], onDelete: Cascade)
 }
 
-model Review{
-  id String @id @default(cuid())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  title String 
-  message String
-  rating Float
-  hotelId String
-  roomId String
-  bookingId String @unique
-  booking Booking @relation(fields: [bookingId], references: [id])
-  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  hotel Hotel @relation(fields: [hotelId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+model Review {
+  id        String  @id @default(cuid())
+  title     String
+  message   String
+  rating    Float
+  hotelId   String
+  roomId    String
+  bookingId String  @unique
+  userId    String
+  booking   Booking @relation(fields: [bookingId], references: [id])
+  hotel     Hotel   @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id])
 }
 
-
-model User{
-  id String @id @default(cuid())
-  email String @unique
-  wallet String 
-  username String @unique
-  // earlyAccess EarlyAccess?
-  reviews Review[]
-  bookings Booking[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  wallet       String?
+  username     String? 
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  referralCode String?    @unique @db.VarChar(255)
+  referredBy   String?    @db.VarChar(255)
+  bookings     Booking[]
+  Favorite     Favorite[]
+  reviews      Review[]
+  User         User?      @relation("UserToUser", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "referredBy_fkey")
+  other_User   User[]     @relation("UserToUser")
 }
 
-model Booking{
-  id String @id @default(cuid())
-  userId String
-  roomId String
-  hotelId String
-  reviewId String ?
-  review Review ?
-  user User @relation(fields: [userId], references: [id])
-  room Room @relation(fields: [roomId], references: [id])
-  hotel Hotel @relation(fields: [hotelId], references: [id])
-  createdAt DateTime @default(now())
-  startTime DateTime
-  endTime DateTime
-  duration Int
-  price Int
+model Booking {
+  id              String   @id @default(cuid())
+  userId          String
+  roomId          String
+  hotelId         String
+  reviewId        String?
+  createdAt       DateTime @default(now())
+  startTime       DateTime
+  endTime         DateTime
+  duration        Int
+  price           Int
   transactionHash String
+  hotel           Hotel    @relation(fields: [hotelId], references: [id])
+  room            Room     @relation(fields: [roomId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
+  review          Review?
 }
 
-
-model EarlyAccess{
-  id Int @id @default(autoincrement())
-  email String @unique
-  code Int @unique
-  // user User @relation(fields: [email], references: [email])
-  isUsed Boolean @default(false)
+model EarlyAccess {
+  email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  code      Int      @unique
+  isUsed    Boolean  @default(false)
+  id        Int      @id @default(autoincrement())
+}
+
+model Favorite {
+  id        String   @id
+  userId    String
+  hotelId   String
+  createdAt DateTime @default(now())
+  userEmail String
+  Hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, hotelId])
 }

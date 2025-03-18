@@ -61,6 +61,7 @@ export default function Sidebar({ isSidebar, handleSidebar }: any) {
                 Logout
               </Link> */}
               <DynamicWidget />
+              
             </div>
             <div className="walletSidebar">{/* <ConnectButton /> */}</div>
             <div className="box-quicklinks">
