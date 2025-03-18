@@ -1060,7 +1060,8 @@ export default function HotelDetail() {
             </div>
           </div>
         </section>
-        <section className="section-box box-picked box-hotel-video background-body">
+        {/* Video section */}
+        {/* <section className="section-box box-picked box-hotel-video background-body">
           <div className="container">
             <div className="row align-items-end">
               <div className="col-md-9 mb-30 wow fadeInUp">
@@ -1176,8 +1177,9 @@ export default function HotelDetail() {
               </div>
             </div>
           </div>
-        </section>
-        <section className="section-box box-testimonials-2 box-testimonials-5 box-testimonials-hotel-detail background-body">
+        </section> */}
+        {/* Testinomials */}
+        {/* <section className="section-box box-testimonials-2 box-testimonials-5 box-testimonials-hotel-detail background-body">
           <div className="container">
             <div className="box-author-testimonials button-bg-2 wow fadeInUp">
               {" "}
@@ -1435,7 +1437,7 @@ export default function HotelDetail() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         <section className="section-box box-media background-body">
           <div className="container-media wow fadeInUp">
             {" "}

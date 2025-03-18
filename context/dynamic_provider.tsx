@@ -52,7 +52,7 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
                 };
               // const newUser = await createUser(payload);
               const newUser = await fetch(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/signup`,
+                `/api/user/signup`,
                 {
                   method: "POST",
                   headers: {

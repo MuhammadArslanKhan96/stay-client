@@ -166,7 +166,7 @@ export default function TopRated1() {
                   </div>
                   <div className="card-button">
                     {" "}
-                    <Link className="btn btn-gray" href="/hotel-detail">
+                    <Link className="btn btn-gray" href={`/hotel-detail/${hotel.id}`}>
                       Book Now
                     </Link>
                   </div>
