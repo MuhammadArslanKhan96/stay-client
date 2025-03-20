@@ -1,5 +1,6 @@
 // app/api/referenced-users/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from "@/prisma/prisma";
 
 
 export async function GET(request: NextRequest) {
@@ -8,8 +9,8 @@ export async function GET(request: NextRequest) {
     if(!userId){
       return NextResponse.json({ message:"Invalid UserID" }, { status: 404 });
     }
-
-    const referencedUsers = await prisma?.user.findMany({ where:{
+    
+    const referencedUsers = await prisma.user.findMany({ where:{
         referredBy: userId
     } });
 

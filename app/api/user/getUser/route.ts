@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from "@/prisma/prisma";
 
 
 export async function GET(request: NextRequest) {
@@ -7,7 +8,7 @@ export async function GET(request: NextRequest) {
     if(!email){
         return NextResponse.json({ status: 404 });
     }
-    const user = await prisma?.user.findUnique({where:{
+    const user = await prisma.user.findUnique({where:{
         email
     }})
     return NextResponse.json(user, { status: 200 });
