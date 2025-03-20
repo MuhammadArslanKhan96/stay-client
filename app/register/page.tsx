@@ -1,11 +1,11 @@
 'use client'
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 const handleRegister = () => {};
 const handleLogin = () => {};
-export default function PopupSignup({ isLogin }: any) {
+function PopupSignup({ isLogin }: any) {
   const searchParams = useSearchParams();
   const referralCode = searchParams.get('ref') as string;
 
@@ -218,5 +218,13 @@ export default function PopupSignup({ isLogin }: any) {
       </div>
       {/* </div> */}
     </>
+  );
+}
+
+export default function SuspenseWrapper(props: any) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PopupSignup {...props} />
+    </Suspense>
   );
 }

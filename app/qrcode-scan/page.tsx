@@ -1,10 +1,10 @@
 // app/scan/page.tsx
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
-export default function ScanPage() {
+function ScanPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get('userId'); // User who generated the QR code
   const qrId = searchParams.get('qrId'); // Unique QR code ID
@@ -118,3 +118,12 @@ const DynamicAuthButton = () => {
   </div>
   );
 };
+
+
+export default function SuspenseWrapper(props: any) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ScanPage {...props} />
+    </Suspense>
+  );
+}

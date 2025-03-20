@@ -11,7 +11,7 @@ import { mintNftOnSignin } from "@/lib/mintNft";
 import { createUser } from "@/util/services/user";
 import { toast } from "sonner";
 import { string } from "zod";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 const networks = [
@@ -101,6 +101,7 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
             const userEmail = user.user.email;
             if(userEmail){
               const dbUser = await getUserByEmail(userEmail);
+              console.log("user to save in ls", dbUser);
               localStorage.setItem('dbuser', JSON.stringify(dbUser));
             }
 
@@ -126,5 +127,14 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
     >
       {children}
     </DynamicContextProvider>
+  );
+}
+
+
+export default function SuspenseWrapper(props: any) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DynamicProvider {...props} />
+    </Suspense>
   );
 }

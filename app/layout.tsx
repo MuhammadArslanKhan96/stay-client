@@ -15,6 +15,7 @@ import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import ProviderWrapper from "@/components/dynamic-provider";
 import { getCsrfToken } from "next-auth/react";
 import { DynamicProvider } from "@/context/dynamic_provider";
+import { Suspense } from "react";
 const manrope_init = Manrope({
   weight: ["300", "400", "500", "600", "700", "800"],
   subsets: ["latin"],
@@ -47,6 +48,7 @@ export default function RootLayout({
         {/* <AppKit> */}
         {/* <ProviderWrapper> */}
         {/* <DynamicProvider> */}
+        <Suspense fallback={<div>Loading...</div>}>
         <DynamicProvider>
           <Layout headerStyle={1} footerStyle={1}>
             {children}
@@ -59,6 +61,8 @@ export default function RootLayout({
             />
           </Layout>
         </DynamicProvider>
+        </Suspense>
+        
         {/* </DynamicProvider> */}
         {/* </ProviderWrapper> */}
         {/* <DynamicWidget /> */}

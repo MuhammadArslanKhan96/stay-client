@@ -23,7 +23,7 @@ export default function ReferencedUsers() {
         const storeJson = JSON.parse(store);
         const email = storeJson?.state?.user?.email;
         if(!email){
-          alert("You are not logged in.");
+          alert("Please login");
           return;
         }
 
@@ -35,6 +35,7 @@ export default function ReferencedUsers() {
           throw new Error('Failed to fetch referenced users');
         }
         const data = await response.json();
+        console.log('Data--- ', data, " : user ID", userId);
         setUsers(data.users);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
