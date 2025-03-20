@@ -8,7 +8,7 @@ import {
 import { EthereumWalletConnectors } from "../lib/dynamic";
 import { validateJWT } from "@/lib/authHelpers";
 import { mintNftOnSignin } from "@/lib/mintNft";
-import { createUser, getUserByEmail } from "@/util/services/user";
+import { createUser } from "@/util/services/user";
 import { toast } from "sonner";
 import { string } from "zod";
 import { useEffect, useState } from "react";
@@ -37,6 +37,17 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
   const searchParams = useSearchParams();
   const referralCode = searchParams.get('ref') as string;
 
+  async function getUserByEmail(email:string){
+    try{
+      const response = await fetch(`/api/user/getUser?email=${email}`);
+      const data = await response.json();
+      return data;
+    }catch(err){
+      console.log(err);
+    }
+    return null;
+  }
+
   return (
     <DynamicContextProvider
       settings={{
@@ -48,45 +59,49 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
         events: {
           onAuthSuccess: async (user) => {
             console.log("onAuthSuccess", user);
-            if (!user.user.newUser) {
-              console.log("Called AN API");
-              try{
-                  const payload: { email: string; username: string; wallet: any, } =
+            try{
+              if (user.user.newUser) {
+                console.log("Called AN API");
+                const payload: { email: string; username: string; wallet: any, } =
+                {
+                  email: user.user.email ?? "",
+                  username: user.user.firstName ?? "",
+                  wallet: user.primaryWallet ?? "",
+                };
+                const withReferralCode = {...payload, referralCode}
+                const response = await fetch(
+                  `/api/user/signup`,
                   {
-                    email: user.user.email ?? "",
-                    username: user.user.firstName ?? "",
-                    wallet: user.primaryWallet ?? "",
-                  };
-                  const withReferralCode = {...payload, referralCode}
-                  // const newUser = await createUser(payload);
-                  const response = await fetch(
-                    `/api/user/signup`,
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify(withReferralCode),
-                    }
-                  );
-                  const responseData = await response.json();
-                  // New User is created...
-                  console.log(responseData);
-                  const minting = mintNftOnSignin(user.primaryWallet);
-                  toast.promise(minting, {
-                    loading: "Minting your membership",
-                    success: "Welcome to Stay Chain",
-                    error: "Error minting NFT",
-                  });
-
-              }catch(err){
-                console.log("Error while creating the user...",  err);
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(withReferralCode),
+                  }
+                );
+                const responseData = await response.json();
+                // New User is created...
+                console.log(responseData);
+                const minting = mintNftOnSignin(user.primaryWallet);
+                toast.promise(minting, {
+                  loading: "Minting your membership",
+                  success: "Welcome to Stay Chain",
+                  error: "Error minting NFT",
+                });
+  
+                
+               
+              } else {
+                toast.success("Welcome back!");
               }
-             
-            } else {
-              toast.success("Welcome back!");
-              // Save user in session storage/localstorage...
-              const userEmail = user.user.email;
+            }catch(err){
+              console.log(err);
+            }
+
+            const userEmail = user.user.email;
+            if(userEmail){
+              const dbUser = await getUserByEmail(userEmail);
+              localStorage.setItem('dbuser', JSON.stringify(dbUser));
             }
 
             // if (user.user.email) {
@@ -106,6 +121,9 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
             //   error: "Error minting NFT",
             // });
           },
+          onWalletAdded:async (param)=>{
+            console.log(param);
+          }
         },
       }}
     >

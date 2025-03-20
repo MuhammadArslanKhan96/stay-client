@@ -498,6 +498,9 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       <Link href="/referral">Referral Link</Link>
                     </li>
                     <li>
+                      <Link href="/qrcode">QR Code</Link>
+                    </li>
+                    <li>
                       <Link href="/contact">Contact</Link>
                     </li>
                   </ul>
