@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import ConnectButton from "../Connect";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
   const [isAccordion, setIsAccordion] = useState(0);
+  const {user} = useDynamicContext();
 
   const handleAccordion = (key: any) => {
     setIsAccordion((prevState) => (prevState === key ? null : key));
@@ -48,7 +50,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                   />
                 </div>
                 <div className="card-info">
-                  <p className="text-md-bold neutral-1000">Alice Roses</p>
+                  <p className="text-md-bold neutral-1000">{user ? user.email?.split('@')[0] :"Login"}</p>
                   <p className="text-xs neutral-1000">London, England</p>
                 </div>
               </div>

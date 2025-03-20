@@ -121,9 +121,6 @@ export function DynamicProvider({ children }: React.PropsWithChildren) {
             //   error: "Error minting NFT",
             // });
           },
-          onWalletAdded:async (param)=>{
-            console.log(param);
-          }
         },
       }}
     >

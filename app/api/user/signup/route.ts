@@ -51,7 +51,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
     // Create the new user
     const newUser = await prisma.user.create({
       data:{
-        username: username||email,
+        username: username||email.split("@")[0],
         email,
         referralCode: newReferralCode,
         referredBy: referredByUserId,
