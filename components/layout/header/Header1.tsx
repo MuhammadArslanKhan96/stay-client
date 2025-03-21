@@ -576,7 +576,7 @@ export default function Header1({
                       </ul>
                     </li> */}
                     <li>
-                      <Link href="/home">Home</Link>
+                      <Link href="/">Home</Link>
                     </li>
                     <li>
                       <Link href="/contact">Contact</Link>

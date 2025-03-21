@@ -491,6 +491,9 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       </ul>
                     </li>
                     <li>
+                      <Link href="/gateway-front">Check in/out</Link>
+                    </li>
+                    <li>
                       <Link href="/showbookings">Show Bookings</Link>
                     </li>
                     <li>
