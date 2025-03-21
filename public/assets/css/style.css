@@ -1,6 +1,6 @@
 /***
- Theme Name: Travila
- Description: Board Finder HTML template
+ Theme Name: Stay Chain
+ Description: Stay Chain
  Version: 1.0
  License: GNU General Public License v2 or later
  License URI: http://www.gnu.org/licenses/gpl-2.0
@@ -1517,8 +1517,9 @@ h6,
 }
 [data-bs-theme="dark"] .box-testimonials-4 {
   background-image: url(../imgs/page/homepage7/bg-testimonial-dark.png);
-  background-position: bottom 20px left 17%;
+  background-position: bottom 20px left 7% ;
 }
+
 [data-bs-theme="dark"] .btn.btn-dropdown-search:after {
   background-image: url(../imgs/page/homepage2/dropdown-w.svg);
 }
@@ -9666,7 +9667,7 @@ a.icon-socials:hover svg {
 
 .box-top-rated {
   background-color: #fff0ec;
-  padding: 80px 0px 50px 0px;
+  padding: 30px 0px 50px 0px;
   background-image: url(../imgs/page/homepage1/bg-top.png);
   background-position: top center;
   background-repeat: no-repeat;
@@ -11214,7 +11215,7 @@ a.icon-socials:hover svg {
 
 .box-testimonials-4 {
   background-image: url(../imgs/page/homepage7/bg-testimonial.png);
-  background-position: bottom 20px left 17%;
+  background-position: bottom 20px left 1%;
   border-bottom: 0px;
   padding-bottom: 0px;
 }
@@ -16467,4 +16468,28 @@ h2 span {
 
 .toast-style{
   padding:1rem;
+}
+
+.height-for-text{
+  height:160px;
+}
+
+.hotel-names{
+  display: -webkit-box;
+  height: 150px;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 3em; /* Adjust based on line height */
+  line-height: 1.5em; /* Adjust based on your design */
+  white-space: normal;
+}
+
+
+.padding-bottoms{
+  margin-bottom: 100px;
+}
+.padding-tops{
+  padding-top: 100px;
 }

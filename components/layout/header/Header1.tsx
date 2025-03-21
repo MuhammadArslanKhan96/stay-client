@@ -74,20 +74,22 @@ export default function Header1({
                 <Link className="d-flex" href="/">
                   <img
                     className="light-mode"
-                    alt="StayChain"
-                    src="/assets/imgs/template/logo.svg"
+                    alt="StayChains"
+                    src="/logo-black.png"
+                    width={200}
                   />
                   <img
                     className="dark-mode"
-                    alt="StayChain"
-                    src="/assets/imgs/template/logo-w.svg"
+                    alt="StayChains"
+                    src="/logo-white.png"
+                    width={200}
                   />
                 </Link>
               </div>
               <div className="header-nav">
                 <nav className="nav-main-menu">
                   <ul className="main-menu">
-                    <li className="mega-li has-children">
+                    {/* <li className="mega-li has-children">
                       <Link className="active" href="/">
                         Home
                       </Link>
@@ -260,7 +262,7 @@ export default function Header1({
                           </div>
                         </div>
                       </div>
-                    </li>
+                    </li> */}
                     {/* <li className="mega-li-small has-children">
                       <Link href="/about">Tours</Link>
                       <div className="mega-menu">
@@ -329,7 +331,7 @@ export default function Header1({
                         </div>
                       </div>
                     </li> */}
-                    <li className="mega-li-small has-children">
+                    {/* <li className="mega-li-small has-children">
                       <Link href="/destination">Destinations</Link>
                       <div className="mega-menu">
                         <div className="mega-menu-inner mega-menu-inner-small mega-menu-inner-destinations">
@@ -449,7 +451,7 @@ export default function Header1({
                         </li>
                       </ul>
                     </li>
-                    {/* <li className="mega-li-small has-children">
+                    <li className="mega-li-small has-children">
                       <Link href="#">Rental</Link>
                       <div className="mega-menu">
                         <div className="mega-menu-inner mega-menu-inner-small">
@@ -506,7 +508,7 @@ export default function Header1({
                           </div>
                         </div>
                       </div>
-                    </li> */}
+                    </li>
                     <li className="has-children">
                       <Link href="/tickets">Tickets</Link>
                       <ul className="sub-menu">
@@ -572,6 +574,9 @@ export default function Header1({
                           <Link href="/blog-detail-2">Blog Details 2</Link>
                         </li>
                       </ul>
+                    </li> */}
+                    <li>
+                      <Link href="/home">Home</Link>
                     </li>
                     <li>
                       <Link href="/contact">Contact</Link>

@@ -23,22 +23,14 @@ export default function Footer1() {
                       strokeLinejoin="round"
                     />
                   </svg> */}
-                  <svg
-                    height="30"
-                    width="200"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <text
-                      x="5"
-                      y="20"
-                      fontSize="25px"
-                      fill="white"
-                      fontWeight="bold"
-                      
-                    >
-                      Stay Chains
-                    </text>
-                  </svg>
+                  
+                      <img
+                    alt="StayChain"
+                    src="/logo-white.png"
+                    
+                  />
+                    
+                
                   {/* <img
                     alt="StayChain"
                     src="/assets/imgs/template/logo-footer.svg"
@@ -129,7 +121,7 @@ export default function Footer1() {
                 <li>
                   <Link href="#">Forum support</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="#"> Help Center</Link>
                 </li>
                 <li>
@@ -146,7 +138,7 @@ export default function Footer1() {
                 </li>
                 <li>
                   <Link href="#">Charges logs</Link>
-                </li>
+                </li> */}
               </ul>
             </div>
             <div className="col-md-2 col-xs-6 footer-3">
@@ -155,10 +147,10 @@ export default function Footer1() {
                 <li>
                   <Link href="#">About Us</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="#">Community Blog</Link>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <Link href="#">Jobs and Careers</Link>
                 </li>
                 <li>
@@ -169,7 +161,7 @@ export default function Footer1() {
                 </li>
                 <li>
                   <Link href="#">Agencies</Link>
-                </li>
+                </li> */}
               </ul>
             </div>
             <div className="col-md-2 col-xs-6 footer-4">
@@ -178,10 +170,10 @@ export default function Footer1() {
                 <li>
                   <Link href="#">Tour Guide</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="#">Tour Booking</Link>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <Link href="#">Hotel Booking</Link>
                 </li>
                 <li>
@@ -189,7 +181,7 @@ export default function Footer1() {
                 </li>
                 <li>
                   <Link href="#">Rental Services</Link>
-                </li>
+                </li> */}
               </ul>
             </div>
             <div className="col-md-3 col-xs-6 footer-5">
@@ -198,7 +190,7 @@ export default function Footer1() {
                 <li>
                   <Link href="#">Terms of Service</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="#">Privacy Policy</Link>
                 </li>
                 <li>
@@ -212,7 +204,7 @@ export default function Footer1() {
                 </li>
                 <li>
                   <Link href="#">Refund Policy</Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

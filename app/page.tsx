@@ -21,7 +21,6 @@ export default function Home() {
       {/* <PopularDestinations1 /> */}
       <TopRated1 />
       <WhyChooseUs1 />
-      <Flights1 />
       <Category />
       <Payments1 />
       <Testimonials1 />

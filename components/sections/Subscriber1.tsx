@@ -2,7 +2,7 @@ export default function Subscriber1() {
     return (
         <>
 
-            <section className="section-box box-subscriber background-body">
+            <section className="section-box box-subscriber background-body padding-tops">
                 <div className="container">
                     <div className="block-subscriber">
                         <div className="subscriber-left"><span className="btn btn-brand-secondary">Join our newsletter</span>
