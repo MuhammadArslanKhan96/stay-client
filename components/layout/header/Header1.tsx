@@ -261,7 +261,7 @@ export default function Header1({
                         </div>
                       </div>
                     </li>
-                    <li className="mega-li-small has-children">
+                    {/* <li className="mega-li-small has-children">
                       <Link href="/about">Tours</Link>
                       <div className="mega-menu">
                         <div className="mega-menu-inner mega-menu-inner-small">
@@ -328,7 +328,7 @@ export default function Header1({
                           </div>
                         </div>
                       </div>
-                    </li>
+                    </li> */}
                     <li className="mega-li-small has-children">
                       <Link href="/destination">Destinations</Link>
                       <div className="mega-menu">
@@ -449,7 +449,7 @@ export default function Header1({
                         </li>
                       </ul>
                     </li>
-                    <li className="mega-li-small has-children">
+                    {/* <li className="mega-li-small has-children">
                       <Link href="#">Rental</Link>
                       <div className="mega-menu">
                         <div className="mega-menu-inner mega-menu-inner-small">
@@ -506,7 +506,7 @@ export default function Header1({
                           </div>
                         </div>
                       </div>
-                    </li>
+                    </li> */}
                     <li className="has-children">
                       <Link href="/tickets">Tickets</Link>
                       <ul className="sub-menu">

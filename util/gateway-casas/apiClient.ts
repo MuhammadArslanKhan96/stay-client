@@ -7,6 +7,7 @@ export const apiClient = async (url: string, options: RequestInit = {}): Promise
     ...options.headers,
     Authorization: `Bearer ${apiToken}`,
   };
+  console.log(apiToken);
 
   const response = await fetch(url, {
     ...options,
