@@ -20,30 +20,18 @@ export async function GET(request:Request) {
     const client_url = new URL(request.url);
     const dateFrom = client_url.searchParams.get('dateFrom') || '';
     const dateTo = client_url.searchParams.get('dateTo') || '';
-    const priceFrom = parseFloat(client_url.searchParams.get('priceFrom') || '0');
-    const priceTo = parseFloat(client_url.searchParams.get('priceTo') || '0');
-    const bedRooms = parseInt(client_url.searchParams.get('bedRooms') || '0', 10);
     const guest = parseInt(client_url.searchParams.get('guest') || '0', 10);
     const language = client_url.searchParams.get('language') || 'en';
     const currencyWished = client_url.searchParams.get('currencyWished') || 'BRL';
-    const country = client_url.searchParams.get('country') || '';
     
+    console.log({
+      dateFrom,
+      dateTo,
+      guest,language, currencyWished
+    });
     if (!dateFrom || !dateTo) {
       return NextResponse.json({ error: 'Missing required parameters: dateFrom and dateTo' }, { status: 400 });
     }
-
-    console.log('Called API with:', { dateFrom, dateTo, priceFrom, priceTo, bedRooms, guest, language, currencyWished, country });
-    const filters: Filters = {
-      dateFrom,
-      dateTo,
-      priceFrom,
-      priceTo,
-      bedRooms,
-      guest,
-      language,
-      currencyWished,
-      country,
-    };
 
     const {url , method} = HOTEL_END_POINT;
 
@@ -54,7 +42,7 @@ export async function GET(request:Request) {
             accept: 'application/json',
             'content-type': 'application/json',
         },
-        body: JSON.stringify(filters)
+        body: JSON.stringify({ dateFrom, dateTo, guest, language, currencyWished })
     }
     const response = await apiClient(url, option);
     const data = await response.json();

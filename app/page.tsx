@@ -1,3 +1,4 @@
+import Check from "@/components/elements/CheckInSearchFilter";
 import Category from "@/components/sections/Category";
 import FilterSearch from "@/components/sections/FilterSearch";
 import Payments1 from "@/components/sections/Payments1";
@@ -15,6 +16,7 @@ export default function Home() {
       {/* <YourJourney /> */}
       {/* <PopularDestinations1 /> */}
       <TopRated2 />
+      <Check/>
       {/* <WhyChooseUs1 /> */}
       {/* <Category /> */}
       {/* <Payments1 /> */}
