@@ -2,40 +2,12 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { swiperGroupAnimate } from "@/util/swiperOption";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
-export default function TopRated2() {
-  // const hotels = await getHotels();
-  const [hotels, setHotels] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    async function getHotels() {
-      try {
-        const res = await fetch("/api/gateway-casas/hotels", {
-          method: "GET",
-        });
-        const data = await res.json();
-        console.log(data);
-        setHotels(data);
-        setIsLoading(false);
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    }
-    getHotels();
-  }, []);
-
-  const displayLoader = () => {
-    // console.log(hotels);
-    console.log(hotels);
-    return <div className="flex justify-center">Loading...</div>;
-  };
+export default function TopRated2({ hotels }: any) {
   const displayHotels = () => {
-
-    let updatedHotels =hotels;
-    if(hotels.length>10){
-        updatedHotels = getFirstTenUniqueNames(hotels);
+    let updatedHotels = hotels;
+    if (hotels.length > 10) {
+      updatedHotels = getFirstTenUniqueNames(hotels);
     }
     return updatedHotels.map((hotel: any, index: number) => {
       return (
@@ -70,17 +42,14 @@ export default function TopRated2() {
                   <span className="rating">
                     {hotel?.rating}{" "}
                     <span className="text-sm-medium neutral-500">
-                      ({hotel?.rating_count || 400} reviews)
+                      ({hotel?.reviews} reviews)
                     </span>
                   </span>
                 </div>
               </div>
               <div className="card-title">
                 {" "}
-                <Link
-                  className="heading-6 neutral-1000"
-                  href={`/hotel-detail`}
-                >
+                <Link className="heading-6 neutral-1000" href={`/hotel-detail`}>
                   {hotel.name || "Hotel"}
                 </Link>
               </div>
@@ -202,9 +171,9 @@ export default function TopRated2() {
         <div className="container-slider box-swiper-padding">
           <div className="box-swiper mt-30">
             <div className="swiper-container swiper-group-animate swiper-group-journey">
-              {isLoading && hotels.length > 0 ? (
+              {hotels?.length < 1 ? (
                 // {hotels.length > 0 ? (
-                displayLoader()
+                <span>hotel not found!</span>
               ) : (
                 <Swiper {...swiperGroupAnimate}>{displayHotels()}</Swiper>
               )}
@@ -971,20 +940,22 @@ export default function TopRated2() {
 }
 
 function getFirstTenUniqueNames<T extends { name: string }>(items: T[]): T[] {
-    const uniqueNames = new Set<string>(); // To track unique names
-    const result: T[] = []; // Array to store the result
-  
-    for (const item of items) {
-      if (!uniqueNames.has(item.name)) { // Check if the name is unique
-        uniqueNames.add(item.name); // Add the name to the Set
-        result.push(item); // Add the entire object to the result array
-  
-        if (result.length === 10) { // Stop when we have 10 unique items
-          return result; // Return immediately
-        }
+  const uniqueNames = new Set<string>(); // To track unique names
+  const result: T[] = []; // Array to store the result
+
+  for (const item of items) {
+    if (!uniqueNames.has(item.name)) {
+      // Check if the name is unique
+      uniqueNames.add(item.name); // Add the name to the Set
+      result.push(item); // Add the entire object to the result array
+
+      if (result.length === 10) {
+        // Stop when we have 10 unique items
+        return result; // Return immediately
       }
     }
-  
-    // If there are fewer than 10 unique items, return all unique items
-    return result;
+  }
+
+  // If there are fewer than 10 unique items, return all unique items
+  return result;
 }
