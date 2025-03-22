@@ -17,7 +17,7 @@ const RoomsPage = () => {
         try {
 
             const queryParams = new URLSearchParams(filters as Record<string, string>).toString();
-            const res = await fetch(`/api/gateway-casas/hotels?${queryParams}`, {
+            const res = await fetch(`/api/gateway-casas/filterHotels?${queryParams}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

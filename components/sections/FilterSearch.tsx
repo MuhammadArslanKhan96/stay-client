@@ -14,44 +14,20 @@ export default function GlobalHotelSearch() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchHotels() {
+    async function getHotels() {
       try {
-        setIsLoading(true);
-        setError(null);
-
-        const res1 = await fetch(
-          "https://api.apify.com/v2/datasets/z1obKFLPGtd8SLyOY/items?token=apify_api_AbF8egMaHyMjh3Hdhtq1CnNjst9QwE2fQM0F&fields=name,stars,rating,reviews,image&format=json"
-        );
-        const apyHotels = await res1.json();
-
-        const res2 = await fetch("/api/hotels");
-        const topRatedHotels = await res2.json();
-
-        const normalizedTopRated = Array.isArray(topRatedHotels)
-          ? topRatedHotels.map((hotel: any) => ({
-              name: hotel.name || hotel.hotelName,
-              stars: hotel.stars || "N/A",
-              rating: hotel.rating || "No rating",
-              reviews: hotel.reviews || 0,
-              image: hotel.image || "/default-hotel.jpg",
-            }))
-          : [];
-
-        const combinedHotels = [
-          ...(Array.isArray(apyHotels) ? apyHotels : []),
-          ...normalizedTopRated,
-        ];
-
-        setHotels(combinedHotels);
+        const res = await fetch("/api/gateway-casas/hotels", {
+          method: "GET",
+        });
+        const data = await res.json();
+        console.log("Serach has" , data);
+        setHotels(data);
         setIsLoading(false);
       } catch (error: any) {
-        console.error(error.message);
-        setError("Failed to load hotels. Please try again.");
-        setIsLoading(false);
+        console.log(error.message);
       }
     }
-
-    fetchHotels();
+    getHotels();
   }, []);
 
   useEffect(() => {
@@ -110,8 +86,8 @@ export default function GlobalHotelSearch() {
                                 <div className="card-journey-small background-card p-0">
                                     <div className="card-image">
                                     <img
-                                        src={(hotel.image)}
-                                        alt={hotel.name || "Hotel Image"}
+                                        src={hotel?.imageSource}
+                                        alt={hotel?.name || "Hotel Image"}
                                     />
                                     </div>
                                     <div className="card-info height-for-text">
