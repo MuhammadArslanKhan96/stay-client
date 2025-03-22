@@ -79,7 +79,7 @@ export default function TopRated2() {
                 {" "}
                 <Link
                   className="heading-6 neutral-1000"
-                  href={`/hotel-detail/${hotel.id}`}
+                  href={`/hotel-detail`}
                 >
                   {hotel.name || "Hotel"}
                 </Link>
@@ -152,7 +152,7 @@ export default function TopRated2() {
                   </div>
                   <div className="card-button">
                     {" "}
-                    <Link className="btn btn-gray" href={`/hotel-detail/${hotel.id}`}>
+                    <Link className="btn btn-gray" href={`/hotel-detail`}>
                       Book Now
                     </Link>
                   </div>

@@ -51,7 +51,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                 </div>
                 <div className="card-info">
                   <p className="text-md-bold neutral-1000">{user ? user.email?.split('@')[0] :"Login"}</p>
-                  <p className="text-xs neutral-1000">London, England</p>
+                  {/* <p className="text-xs neutral-1000">London, England</p> */}
                 </div>
               </div>
               <Link className="btn btn-black" href="#">
@@ -78,9 +78,9 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link className="active" href="/">
+                      {/* <Link className="active" href="/">
                         Home Pages
-                      </Link>
+                      </Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -135,7 +135,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link href="/tour-grid">Tours</Link>
+                      {/* <Link href="/tour-grid">Tours</Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -196,7 +196,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link href="/destination">Destinations</Link>
+                      {/* <Link href="/destination">Destinations</Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -240,7 +240,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link href="/activities">Activities</Link>
+                      {/* <Link href="/activities">Activities</Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -305,7 +305,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link href="/hotel-grid">Hotels</Link>
+                      {/* <Link href="/hotel-grid">Hotels</Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -349,7 +349,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link href="/rental-car">Rental</Link>
+                      {/* <Link href="/rental-car">Rental</Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -390,7 +390,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link href="/tickets">Tickets</Link>
+                      {/* <Link href="/tickets">Tickets</Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -419,7 +419,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link href="/javascript:void(0)">Pages</Link>
+                      {/* <Link href="/javascript:void(0)">Pages</Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -466,7 +466,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                       >
                         <i className="arrow-small-down"></i>
                       </span>
-                      <Link href="/blog-grid">Blog</Link>
+                      {/* <Link href="/blog-grid">Blog</Link> */}
                       <ul
                         className="sub-menu"
                         style={{
@@ -489,6 +489,9 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
                           <Link href="/blog-detail-2">Blog Details 2</Link>
                         </li>
                       </ul>
+                    </li>
+                    <li>
+                      <Link href="/">Home</Link>
                     </li>
                     <li>
                       <Link href="/gateway-front">Check in/out</Link>

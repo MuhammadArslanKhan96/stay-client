@@ -15,12 +15,12 @@ export default function Home() {
       {/* <YourJourney /> */}
       {/* <PopularDestinations1 /> */}
       <TopRated2 />
-      <WhyChooseUs1 />
-      <Category />
-      <Payments1 />
-      <Testimonials1 />
+      {/* <WhyChooseUs1 /> */}
+      {/* <Category /> */}
+      {/* <Payments1 /> */}
+      {/* <Testimonials1 /> */}
       {/* <News1 /> */}
-      <Subscriber1 />
+      {/* <Subscriber1 /> */}
       {/* </Layout> */}
     </>
   );
