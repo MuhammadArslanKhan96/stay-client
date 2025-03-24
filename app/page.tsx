@@ -12,10 +12,11 @@ export default function Home() {
   return (
     <>
       {/* <Layout headerStyle={1} footerStyle={1}> */}
+      <Check />
       <FilterSearch />
       {/* <YourJourney /> */}
       {/* <PopularDestinations1 /> */}
-      <Check />
+
       {/* <WhyChooseUs1 /> */}
       {/* <Category /> */}
       {/* <Payments1 /> */}

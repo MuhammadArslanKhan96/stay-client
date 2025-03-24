@@ -1,18 +1,20 @@
-'use client'
-import Link from 'next/link'
-import Dropdown from 'react-bootstrap/Dropdown'
-import MyDatePicker from './MyDatePicker'
-import { useState } from 'react';
+"use client";
+import Link from "next/link";
+import Dropdown from "react-bootstrap/Dropdown";
+import MyDatePicker from "./MyDatePicker";
+import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { swiperGroupAnimate } from "@/util/swiperOption";
 
-
-export default function Check(){
-    return (
-        <div className="box-search-advance background-card wow fadeInUp background-body" style={{top:"0px", margin:"10px"}}>         
-            <CheckFilter />
-        </div>
-    )
+export default function Check() {
+  return (
+    <div
+      className="box-search-advance background-card wow fadeInUp background-body"
+      style={{ top: "0px", margin: "10px 0px" }}
+    >
+      <CheckFilter />
+    </div>
+  );
 }
 
 // Define types for the GuestSelector component
@@ -27,21 +29,24 @@ interface GuestSelectorProps {
   onGuestsChange: (guests: Guests) => void;
 }
 
-const GuestSelector: React.FC<GuestSelectorProps> = ({ guests, onGuestsChange }) => {
+const GuestSelector: React.FC<GuestSelectorProps> = ({
+  guests,
+  onGuestsChange,
+}) => {
   const [adults, setAdults] = useState<number>(guests.adults);
   const [children, setChildren] = useState<number>(guests.children);
   const [rooms, setRooms] = useState<number>(guests.rooms);
 
   const handleChange = (type: keyof Guests, delta: number) => {
-    if (type === 'adults') {
+    if (type === "adults") {
       const newAdults = Math.max(1, adults + delta);
       setAdults(newAdults);
       onGuestsChange({ adults: newAdults, children, rooms });
-    } else if (type === 'children') {
+    } else if (type === "children") {
       const newChildren = Math.max(0, children + delta);
       setChildren(newChildren);
       onGuestsChange({ adults, children: newChildren, rooms });
-    } else if (type === 'rooms') {
+    } else if (type === "rooms") {
       const newRooms = Math.max(1, rooms + delta);
       setRooms(newRooms);
       onGuestsChange({ adults, children, rooms: newRooms });
@@ -52,26 +57,25 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({ guests, onGuestsChange })
     <div className="guest-selector ps-3">
       <div className="guest-option">
         <span>Adults</span>
-        <button onClick={() => handleChange('adults', -1)}>-</button>
+        <button onClick={() => handleChange("adults", -1)}>-</button>
         <span>{adults}</span>
-        <button onClick={() => handleChange('adults', 1)}>+</button>
+        <button onClick={() => handleChange("adults", 1)}>+</button>
       </div>
       <div className="guest-option">
         <span>Children</span>
-        <button onClick={() => handleChange('children', -1)}>-</button>
+        <button onClick={() => handleChange("children", -1)}>-</button>
         <span>{children}</span>
-        <button onClick={() => handleChange('children', 1)}>+</button>
+        <button onClick={() => handleChange("children", 1)}>+</button>
       </div>
       <div className="guest-option">
         <span>Rooms</span>
-        <button onClick={() => handleChange('rooms', -1)}>-</button>
+        <button onClick={() => handleChange("rooms", -1)}>-</button>
         <span>{rooms}</span>
-        <button onClick={() => handleChange('rooms', 1)}>+</button>
+        <button onClick={() => handleChange("rooms", 1)}>+</button>
       </div>
     </div>
   );
 };
-
 
 interface SearchParams {
   checkIn: string;
@@ -93,49 +97,59 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
   const [hotels, setHotels] = useState<any>([]);
 
   const handleCheckInChange = (date: string) => {
-    setSearchParams((prev) => ({ ...prev, checkIn: new Date(date).toISOString() }));
+    setSearchParams((prev) => ({
+      ...prev,
+      checkIn: new Date(date).toISOString(),
+    }));
   };
 
   const handleCheckOutChange = (date: string) => {
-    setSearchParams((prev) => ({ ...prev, checkOut: new Date(date).toISOString() }));
+    setSearchParams((prev) => ({
+      ...prev,
+      checkOut: new Date(date).toISOString(),
+    }));
   };
 
   const handleGuestsChange = (guests: Guests) => {
     setSearchParams((prev) => ({ ...prev, guests }));
   };
 
-  const handleSearchClick = async() => {
-    try{
-        setLoading(true);
-        const totalGuest = searchParams.guests.adults + searchParams.guests.children;
-        const rooms = searchParams.guests.rooms;
-        const paramsData = {
-            dateFrom: searchParams.checkIn,
-            dateTo:searchParams.checkOut,
-            guest:totalGuest.toString(),
-            bedRooms:rooms.toString()
-        };
-        const queryParams = new URLSearchParams(paramsData).toString();
-        const res = await fetch(`/api/gateway-casas/filterHotels?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        const data = await res.json();
-        console.log("data", data);
-        console.log(data);
-        setHotels(data);
-    }catch(err){
-        console.log(err);
-    }finally{
-        setLoading(false);
+  const handleSearchClick = async () => {
+    try {
+      setLoading(true);
+      const totalGuest =
+        searchParams.guests.adults + searchParams.guests.children;
+      const rooms = searchParams.guests.rooms;
+      const paramsData = {
+        dateFrom: searchParams.checkIn,
+        dateTo: searchParams.checkOut,
+        guest: totalGuest.toString(),
+        bedRooms: rooms.toString(),
+      };
+      const queryParams = new URLSearchParams(paramsData).toString();
+      const res = await fetch(
+        `/api/gateway-casas/filterHotels?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await res.json();
+      console.log("data", data);
+      console.log(data);
+      setHotels(data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
-      <div className="box-bottom-search background-card">
+      <div className="box-bottom-search background-card justify-content-center">
         <div className="item-search item-search-2">
           <label className="text-sm-bold neutral-500">Check In</label>
           <div className="box-calendar-date">
@@ -162,15 +176,27 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
               </Dropdown.Toggle>
               <Dropdown.Menu as="ul" className="dropdown-menu">
                 <li>
-                  <GuestSelector guests={searchParams.guests} onGuestsChange={handleGuestsChange} />
+                  <GuestSelector
+                    guests={searchParams.guests}
+                    onGuestsChange={handleGuestsChange}
+                  />
                 </li>
               </Dropdown.Menu>
             </Dropdown>
           </div>
         )}
         <div className="item-search bd-none d-flex justify-content-end">
-          <button className="btn btn-black-lg" onClick={handleSearchClick} disabled={loading}>
-            <svg width={20} height={20} viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <button
+            className="btn btn-black-lg"
+            onClick={handleSearchClick}
+            disabled={loading}
+          >
+            <svg
+              width={20}
+              height={20}
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 d="M19 19L14.6569 14.6569M14.6569 14.6569C16.1046 13.2091 17 11.2091 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17C11.2091 17 13.2091 16.1046 14.6569 14.6569Z"
                 stroke="#fff"
@@ -180,19 +206,16 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
                 fill="none"
               />
             </svg>
-                {loading ?"Searching":"Search"}
+            {loading ? "Searching" : "Search"}
           </button>
         </div>
       </div>
-      {
-        hotels.length> 0 && <HotelDisplayer hotels={hotels} />
-      }
+      {hotels.length > 0 && <HotelDisplayer hotels={hotels} />}
     </>
   );
 };
 
-function HotelDisplayer({hotels} : any) {
-
+function HotelDisplayer({ hotels }: any) {
   const displayHotels = () => {
     return hotels.map((hotel: any, index: number) => {
       return (
@@ -234,10 +257,7 @@ function HotelDisplayer({hotels} : any) {
               </div>
               <div className="card-title">
                 {" "}
-                <Link
-                  className="heading-6 neutral-1000"
-                  href={`/hotel-detail`}
-                >
+                <Link className="heading-6 neutral-1000" href={`/hotel-detail`}>
                   {hotel.name || "Hotel"}
                 </Link>
               </div>
@@ -321,28 +341,24 @@ function HotelDisplayer({hotels} : any) {
       );
     });
   };
-return (
+  return (
     <>
-    <section className="section-box box-top-rated background-1">
+      <section className="section-box box-top-rated background-1">
         <div className="container">
-            <div className="row align-items-end">
+          <div className="row align-items-end">
             <div className="col-md-6">
-                <h2 className="neutral-1000">Available Hotels</h2>
-               
+              <h2 className="neutral-1000">Available Hotels</h2>
             </div>
-            </div>
+          </div>
         </div>
         <div className="container-slider box-swiper-padding">
-            <div className="box-swiper mt-30">
+          <div className="box-swiper mt-30">
             <div className="swiper-container swiper-group-animate swiper-group-journey">
-                
-            <Swiper {...swiperGroupAnimate}>{displayHotels()}</Swiper>
-            
+              <Swiper {...swiperGroupAnimate}>{displayHotels()}</Swiper>
             </div>
-            </div>
+          </div>
         </div>
-        </section>
+      </section>
     </>
-);
-  
+  );
 }

@@ -15,7 +15,10 @@ export default function TopRated2({ hotels }: any) {
           <div className="card-journey-small background-card">
             <div className="card-image">
               {" "}
-              <Link className="wish" href={`/hotel-detail/${hotel.id}`}>
+              <Link
+                className="wish"
+                href={`/hotel-details/${hotel.idPmsExternal}`}
+              >
                 <svg
                   width={20}
                   height={18}
@@ -49,7 +52,10 @@ export default function TopRated2({ hotels }: any) {
               </div>
               <div className="card-title">
                 {" "}
-                <Link className="heading-6 neutral-1000" href={`/hotel-detail`}>
+                <Link
+                  className="heading-6 neutral-1000"
+                  href={`/hotel-details/${hotel.idPmsExternal}`}
+                >
                   {hotel.name || "Hotel"}
                 </Link>
               </div>
@@ -121,7 +127,10 @@ export default function TopRated2({ hotels }: any) {
                   </div>
                   <div className="card-button">
                     {" "}
-                    <Link className="btn btn-gray" href={`/hotel-detail`}>
+                    <Link
+                      className="btn btn-gray"
+                      href={`/hotel-details/${hotel.idPmsExternal}`}
+                    >
                       Book Now
                     </Link>
                   </div>

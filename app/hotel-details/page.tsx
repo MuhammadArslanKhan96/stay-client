@@ -1107,7 +1107,6 @@ export default function HotelDetail2() {
           </div>
         </section>
       </main>
-
       {/* </Layout> */}
     </>
   );
