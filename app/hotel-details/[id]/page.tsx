@@ -12,6 +12,7 @@ export default function HotelDetail2() {
   useEffect(() => {
     async function getHotel() {
       if (router) {
+        setLoading(true);
         const url = router.split("/");
         const id = url[url.length - 1];
         const response = await fetch(`/api/gateway-casas/hotels/${id}`, {
@@ -35,10 +36,13 @@ export default function HotelDetail2() {
     alert("Reserve the booking.");
   }
   console.log("Hotel , ", hotel);
+  if (loading) {
+    return <h1>Wait, for a moment...</h1>;
+  }
   return (
     <>
       {/* <Layout headerStyle={1} footerStyle={1}> */}
-      <main className="main">
+      <main className="main gap-3">
         {/* <section className="box-section box-breadcrumb background-body">
           <div className="container">
             <ul className="breadcrumbs">
@@ -104,7 +108,6 @@ export default function HotelDetail2() {
                     viewBox="0 0 24 24"
                     width="24"
                     height="24"
-                    className="neutral-1000"
                   >
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 3.72 4 7.87 7 12 3-4.13 7-8.28 7-12 0-3.87-3.13-7-7-7zm0 10c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
                   </svg>
@@ -124,7 +127,7 @@ export default function HotelDetail2() {
         </section>
 
         {/* Pictures Grid */}
-        <section className="box-section box-banner-tour-detail background-body">
+        <section className="box-section box-banner-tour-detail background-body pt-3">
           <div className="block-banner-tour-detail">
             <div className="row">
               <div className="col-xl-4 col-lg-6">
@@ -210,16 +213,17 @@ export default function HotelDetail2() {
         </section>
 
         {/* Description */}
-        <section className="box-section box-banner-tour-detail background-body">
+        <section className="box-section box-banner-tour-detail background-body pt-3">
           <div className="block-banner-tour-detail">
             <div className="row">
               <p
+                className="neutral-500"
                 dangerouslySetInnerHTML={{ __html: hotel?.propertyDescription }}
               />
             </div>
-            <div className="row">
+            <div className="row mt-4 pb-2">
               <div className="card-tags my-2">
-                <h6 className="">Popular Facilities</h6>
+                <h6 className="neutral-1000 mb-2">Popular Facilities</h6>
                 {hotel?.amenities?.map((am: any) => (
                   <Link className="btn btn-tag-border m-1" key={am.id} href="#">
                     {am?.name}
@@ -230,7 +234,7 @@ export default function HotelDetail2() {
           </div>
         </section>
 
-        <section className="box-section block-content-tourlist background-body">
+        <section className="box-section block-content-tourlist background-body pt-3">
           <div className="container">
             <div className="box-content-main-detail">
               <div className="box-grid-hotels box-list-hotels-detail wow fadeIn">
@@ -256,7 +260,10 @@ export default function HotelDetail2() {
                     </Link>
                     <Link href="/room-detail">
                       <img
-                        src="/assets/imgs/page/hotel/hotelRoom.png"
+                        src={
+                          hotel?.featuredPicture?.urlImageRegular ||
+                          "/assets/imgs/page/hotel/hotelRoom.png"
+                        }
                         alt="StayChain"
                       />
                     </Link>
@@ -359,7 +366,10 @@ export default function HotelDetail2() {
             </div>
           </div>
         </section>
-        <section className="d-flex justify-content-center" id="reserveFormID">
+        <section
+          className="d-flex justify-content-center pt-3 background-body"
+          id="reserveFormID"
+        >
           <div className="col-lg-4">
             <div className="booking-form">
               <div className="head-booking-form">

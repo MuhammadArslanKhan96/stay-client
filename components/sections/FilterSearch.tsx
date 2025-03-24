@@ -93,7 +93,7 @@ export default function GlobalHotelSearch() {
                 >
                   {filteredHotels.map((hotel, index) => (
                     <SwiperSlide key={index}>
-                      <div className="card-journey-small background-card p-0">
+                      <div className="card-journey-small background-card p-1">
                         <div className="card-image">
                           <img
                             src={hotel?.imageSource}
@@ -104,7 +104,10 @@ export default function GlobalHotelSearch() {
                           <div className="card-title heading-6 neutral-1000 hotel-names">
                             {hotel.name}
                           </div>
-                          <div className="card-button">
+                          <div
+                            className="card-button"
+                            style={{ marginTop: "-10px" }}
+                          >
                             <Link className="btn btn-gray" href="/hotel-detail">
                               Book Now
                             </Link>
