@@ -25,6 +25,7 @@
     "@web3modal/ethers-5": "^3.2.0-e4fde44",
     "@web3modal/react": "^2.7.1",
     "bcrypt": "^5.1.1",
+    "country-state-city": "^3.2.1",
     "ethers": "^6.13.5",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.11.0",

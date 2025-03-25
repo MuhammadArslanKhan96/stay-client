@@ -56,7 +56,7 @@ export default function TopRated2({ hotels }: any) {
                   className="heading-6 neutral-1000"
                   href={`/hotel-details/${hotel.idPmsExternal}`}
                 >
-                  {hotel.name || "Hotel"}
+                  {hotel.name || "Property"}
                 </Link>
               </div>
               <div className="card-program">
@@ -148,7 +148,7 @@ export default function TopRated2({ hotels }: any) {
         <div className="container">
           <div className="row align-items-end">
             <div className="col-md-6">
-              <h2 className="neutral-1000">Top Rated Hotels</h2>
+              <h2 className="neutral-1000">Top Rated Properties</h2>
               <p className="text-xl-medium neutral-500">
                 Quality as judged by customers. Book at the ideal price!
               </p>

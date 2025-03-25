@@ -21,10 +21,13 @@ export default function GlobalHotelSearch() {
         });
         const data = await res.json();
         console.log("Serach has", data);
-        setHotels(data);
-        setIsLoading(false);
+        if (data) {
+          setHotels(data);
+        }
       } catch (error: any) {
         console.log(error.message);
+      } finally {
+        setIsLoading(false);
       }
     }
     getHotels();
