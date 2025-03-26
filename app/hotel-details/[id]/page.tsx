@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { redirect, usePathname } from "next/navigation";
+import GlobalLoader from "@/components/Loader";
+
 export default function HotelDetail2() {
   const router = usePathname();
-  const [hotel, setHotel] = useState<any>();
-  const [loading, setLoading] = useState(false);
+  const [hotel, setHotel] = useState<any>([]);
+  const [loading, setLoading] = useState(true);
   const [propertyID, setPropertyID] = useState("");
 
   useEffect(() => {
@@ -37,7 +39,14 @@ export default function HotelDetail2() {
   }
   console.log("Hotel , ", hotel);
   if (loading) {
-    return <h1>Wait, for a moment...</h1>;
+    return (
+      <GlobalLoader
+        visible={loading}
+        variant="dots"
+        size="lg"
+        color="#4f46e5" // indigo-600
+      />
+    );
   }
   return (
     <>
