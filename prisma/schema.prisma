@@ -69,7 +69,7 @@ model User {
   id           String     @id @default(cuid())
   email        String     @unique
   wallet       String?
-  username     String? 
+  username     String?    @unique
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   referralCode String?    @unique @db.VarChar(255)
@@ -118,4 +118,39 @@ model Favorite {
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, hotelId])
+}
+
+model BookedProperties {
+  id         String    @id @default(dbgenerated("gen_random_uuid()"))
+  userId     String
+  propertyId String
+  startDate  DateTime  @db.Timestamp(6)
+  endDate    DateTime  @db.Timestamp(6)
+  language   String?
+  currency   String?
+  createdAt  DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model Hotels {
+  id                    String  @id @default(dbgenerated("(gen_random_uuid())::text"))
+  name                  String
+  chainCode             String?
+  accommodationTypeCode String?
+  categoryCode          String?
+  categoryGroupCode     String?
+  description           String?
+  giataCode             Int?
+  countryCode           String?
+  cityCode              String?
+  postalCode            String?
+  latitude              Float?
+  longitude             Float?
+  phoneNumber           String?
+  email                 String?
+  website               String?
+  ranking               Int?
+  lastUpdate            String?
+  license               String?
+  hotelCode             Int?    @unique
 }

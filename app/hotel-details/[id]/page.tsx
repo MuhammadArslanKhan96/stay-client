@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { redirect, usePathname } from "next/navigation";
 import GlobalLoader from "@/components/Loader";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
 export default function HotelDetail2() {
   const router = usePathname();
@@ -128,7 +129,7 @@ export default function HotelDetail2() {
                   className="btn btn-primary rounded"
                   onClick={handleReserveBooking}
                 >
-                  Reserve
+                  Book
                 </button>
               </div>
             </div>
@@ -348,7 +349,7 @@ export default function HotelDetail2() {
                               className="btn btn-gray"
                               href="#"
                             >
-                              Reserve now
+                              Book now
                               <svg
                                 width={16}
                                 height={16}
@@ -398,20 +399,30 @@ function BookingForm({ propertyID, price }: any) {
   const [startTime, setStartTime] = useState(new Date().toISOString());
   const [endTime, setEndTime] = useState(new Date().toISOString());
   const [loading, setLoading] = useState(false);
-  console.log(propertyID, price);
+  const { user } = useDynamicContext();
+  useEffect(() => {}, []);
 
   const handleBooking = async (event: any) => {
     try {
       event.preventDefault();
+      setLoading(true);
+
+      if (!user) {
+        alert("Please login to book the property.");
+        return;
+      }
+
+      const jsonUser: any = localStorage.getItem("dbuser") || {};
+      const dbUser = JSON.parse(jsonUser);
+
       const body = {
+        userId: dbUser?.id,
         checkin: startTime,
         checkout: endTime,
         propertyID,
         currencyWished: "BRL",
         language: "en",
       };
-
-      console.log(body);
 
       const response = await fetch("/api/gateway-casas/reserve-booking", {
         method: "POST",
@@ -506,10 +517,14 @@ function BookingForm({ propertyID, price }: any) {
             </div>
           </>
         ) : (
-          <div className="box-button-book" onClick={handleBooking}>
+          <div
+            className="box-button-book"
+            onClick={handleBooking}
+            aria-disabled={loading}
+          >
             {" "}
             <a className="btn btn-book" href="#">
-              Reserve
+              {loading ? "Booking..." : "Book"}
               <svg
                 width={16}
                 height={16}

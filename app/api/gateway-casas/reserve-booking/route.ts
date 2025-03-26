@@ -1,12 +1,45 @@
 // app/api/example/route.ts
 import { NextResponse } from "next/server";
-import { apiClient } from "@/util/gateway-casas/apiClient";
-import {
-  BOOK_HOTEL_ENDPOINT,
-  RESERVE_BOOKING_POINT,
-} from "@/util/gateway-casas/config";
+import prisma from "../../../../prisma/prisma";
 
 export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    console.log("Body is , ", body);
+    console.log("Saved the data to the db...");
+    console.log("Body is , ", body);
+    const bookProperty = await prisma.bookedProperties.create({
+      data: {
+        userId: body.userId,
+        propertyId: body.propertyID,
+        startDate: body.checkin,
+        endDate: body.checkout,
+        currency: body.currencyWished,
+        language: body.language,
+      },
+    });
+    if (bookProperty) {
+      return NextResponse.json({
+        message: "Booking is saved in DB.",
+        success: true,
+      });
+    } else {
+      return NextResponse.json({
+        message: "Error occured while creating a new booking.",
+        success: true,
+      });
+    }
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to create resource" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * 
+ * export async function POST(request: Request) {
   try {
     const body = await request.json();
     console.log("Body is , ", body);
@@ -42,3 +75,4 @@ export async function POST(request: Request) {
     );
   }
 }
+ */
