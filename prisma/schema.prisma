@@ -133,7 +133,7 @@ model BookedProperties {
 }
 
 model Hotels {
-  id                    String  @id @default(dbgenerated("(gen_random_uuid())::text"))
+  id                    String            @id @default(dbgenerated("(gen_random_uuid())::text"))
   name                  String
   chainCode             String?
   accommodationTypeCode String?
@@ -152,5 +152,59 @@ model Hotels {
   ranking               Int?
   lastUpdate            String?
   license               String?
-  hotelCode             Int?    @unique
+  hotelCode             Int?              @unique
+  HotelAddresses        HotelAddresses[]
+  HotelFacilities       HotelFacilities[]
+  HotelImages           HotelImages[]
+  HotelRooms            HotelRooms[]
+}
+
+model HotelAddresses {
+  id           String  @id @default(dbgenerated("(gen_random_uuid())::text"))
+  hotel_id     String?
+  address      String?
+  phoneNumber  String?
+  phoneType    String?
+  languageCode String?
+  Hotels       Hotels? @relation(fields: [hotel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model HotelImages {
+  id            String  @id @default(dbgenerated("(gen_random_uuid())::text"))
+  hotel_id      String?
+  imageTypeCode String?
+  path          String?
+  roomCode      String?
+  roomType      String?
+  visualOrder   Int?
+  Hotels        Hotels? @relation(fields: [hotel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model HotelRooms {
+  id          String  @id @default(dbgenerated("(gen_random_uuid())::text"))
+  hotel_id    String?
+  roomCode    String
+  roomType    String?
+  description String?
+  Hotels      Hotels? @relation(fields: [hotel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([hotel_id, roomCode])
+}
+
+model HotelFacilities {
+  id           String   @id @default(dbgenerated("(gen_random_uuid())::text"))
+  hotel_id     String?
+  facilityCode Int?
+  facilityName String?
+  description  String?
+  currency     String?
+  ageFrom      Int?
+  ageTo        Int?
+  dateFrom     String?
+  dateTo       String?
+  indFee       Boolean? @default(false)
+  voucher      Boolean? @default(false)
+  Hotels       Hotels?  @relation(fields: [hotel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([hotel_id, facilityCode], map: "unique_facility_per_hotel")
 }

@@ -8,9 +8,16 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SearchFilterBottom from "@/components/elements/SearchFilterBottom";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import RoomAvailabilityChecker from "@/components/sections/RoomAvailabilitySearch";
 export default function HotelDetail() {
   const [hotel, setHotel] = useState<any>([]);
   const router = usePathname();
+  const [loading, setLoading] = useState(false);
+  const [hotelId, setHotelId] = useState("");
+  const [rooms, setRooms] = useState<any>([]);
+
+  const [selectedRooms, setSelectedRooms] = useState<any>([]); // To keep track of selected rooms
+  const [totalPrice, setTotalPrice] = useState(0); // To keep track of the total price
 
   useEffect(() => {
     (async () => {
@@ -19,6 +26,7 @@ export default function HotelDetail() {
           const url = router.split("/");
           const id = url[url.length - 1];
           console.log("HOTEL CODE : ", id);
+          setHotelId(id);
 
           const response = await fetch(`/api/hotelAPi/${id}`);
 
@@ -34,97 +42,176 @@ export default function HotelDetail() {
     })();
   }, []);
 
-  const displayRooms = (wallet: any) => {
-    return hotel?.rooms?.map((room: any) => {
-      return (
-        <div className="col-lg-4 col-md-6 wow fadeInUp" key={room.roomCode}>
-          <div className="card-journey-small card-journey-small-type-3 background-card">
-            <div className="card-image">
-              {" "}
-              <Link className="wish" href="#">
-                <svg
-                  width={20}
-                  height={18}
-                  viewBox="0 0 20 18"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                    stroke=""
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                </svg>
-              </Link>
-              <Link href="/room-detail">
-                <img
-                  src={`/assets/imgs/page/hotel/room${getRandomNumber()}.png`}
-                  alt="StayChain"
-                />
-              </Link>
-            </div>
-            <div className="card-info">
-              <div className="card-rating">
-                <div className="card-left"> </div>
-                <div className="card-right">
-                  {" "}
-                  <span className="rating">
-                    {room.rating}{" "}
-                    <span className="text-sm-medium neutral-500">
-                      ({room.rating_count} reviews)
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div className="card-title">
-                {" "}
-                <Link className="text-lg-bold neutral-1000" href="/room-detail">
-                  {room?.description}
-                </Link>
-              </div>
-              <div className="card-program">
-                <div className="card-facilities">
-                  <div className="item-facilities">
-                    <p className="pax text-md-medium neutral-1000">
-                      {room?.minAdults} - {room?.maxAdults} adults
-                    </p>
-                  </div>
-                  <div className="item-facilities">
-                    <p className="size text-md-medium neutral-1000">
-                      {room.size} sqm
-                    </p>
-                  </div>
-                  <div className="item-facilities">
-                    <p className="bed text-md-medium neutral-1000">
-                      {room.beds} Beds
-                    </p>
-                  </div>
-                  <div className="item-facilities">
-                    <p className="pax text-md-medium neutral-1000">
-                      {room?.maxChildren} children
-                    </p>
-                  </div>
-                </div>
-                <div className="endtime">
-                  <div className="card-price">
-                    <h6 className="heading-6 neutral-1000">
-                      {room.price} Stay
-                    </h6>
-                    <p className="text-md-medium neutral-500">/ night</p>
-                  </div>
-                  <div className="card-button">
-                    {" "}
-                    <div className="btn btn-gray">Book Now</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+  async function handleSearchClick(bodyData: any) {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/hotelAPi/availability`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hotelCode: hotelId, ...bodyData }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const { hotels } = data;
+
+        console.log("hodata...");
+        if (hotels) {
+          console.log(hotels.hotels);
+          const { rooms } = hotels.hotels[0];
+          setRooms(rooms);
+        } else {
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleRoomSelection = (room: any) => {
+    setSelectedRooms((prevSelectedRooms: any) => {
+      if (prevSelectedRooms.some((r: any) => r.roomCode === room.roomCode)) {
+        // If room is already selected, remove it from the selection
+        return prevSelectedRooms.filter(
+          (r: any) => r.roomCode !== room.roomCode
+        );
+      } else {
+        // Add room to the selection
+        return [...prevSelectedRooms, room];
+      }
     });
+  };
+
+  const displayRooms = (wallet: any) => {
+    console.log(wallet);
+    return (
+      <div>
+        {/* Booking Summary */}
+        {selectedRooms.length > 0 && (
+          <div className="booking-summary">
+            <h4>Booking Summary</h4>
+            <p>
+              Rooms Selected: {selectedRooms.length} | Total Price: $
+              {totalPrice}
+            </p>
+
+            <Link href="/checkout">
+              <button className="btn btn-primary">Proceed to Booking</button>
+            </Link>
+          </div>
+        )}
+        {/* Rooms Display */}
+        <div className="row">
+          {hotel?.rooms?.map((room: any) => (
+            <div className="col-lg-4 col-md-6 wow fadeInUp" key={room.roomCode}>
+              <div className="card-journey-small card-journey-small-type-3 background-card">
+                <div className="card-image">
+                  <Link className="wish" href="#">
+                    <svg
+                      width={20}
+                      height={18}
+                      viewBox="0 0 20 18"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
+                        stroke=""
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        fill="none"
+                      />
+                    </svg>
+                  </Link>
+                  <Link href="/room-detail">
+                    <img
+                      src={`/assets/imgs/page/hotel/room${getRandomNumber()}.png`}
+                      alt="StayChain"
+                    />
+                  </Link>
+                </div>
+                <div className="card-info">
+                  <div className="card-rating">
+                    <div className="card-left"> </div>
+                    <div className="card-right">
+                      <span className="rating">
+                        {room.rating}{" "}
+                        <span className="text-sm-medium neutral-500">
+                          ({room.rating_count} reviews)
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="card-title">
+                    <Link
+                      className="text-lg-bold neutral-1000"
+                      href="/room-detail"
+                    >
+                      {room.description}
+                    </Link>
+                  </div>
+                  <div className="card-program">
+                    <div className="card-facilities">
+                      <div className="item-facilities">
+                        <p className="pax text-md-medium neutral-1000">
+                          {room.minAdults} - {room.maxAdults} adults
+                        </p>
+                      </div>
+                      <div className="item-facilities">
+                        <p className="size text-md-medium neutral-1000">
+                          {room.size} sqm
+                        </p>
+                      </div>
+                      <div className="item-facilities">
+                        <p className="bed text-md-medium neutral-1000">
+                          {room.beds} Beds
+                        </p>
+                      </div>
+                      <div className="item-facilities">
+                        <p className="pax text-md-medium neutral-1000">
+                          {room.maxChildren} children
+                        </p>
+                      </div>
+                    </div>
+                    <div className="endtime">
+                      <div className="card-price">
+                        <h6 className="heading-6 neutral-1000">
+                          ${room.price} Stay
+                        </h6>
+                        <p className="text-md-medium neutral-500">/ night</p>
+                      </div>
+                      <div className="card-button">
+                        {/* Add a checkbox to select room */}
+                        <div className="form-check">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id={`room-${room.roomCode}`}
+                            checked={selectedRooms.some(
+                              (r: any) => r.roomCode === room.roomCode
+                            )}
+                            onChange={() => handleRoomSelection(room)}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`room-${room.roomCode}`}
+                          >
+                            Add to Booking
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
   return (
     <>
@@ -530,570 +617,18 @@ export default function HotelDetail() {
         </section>
         <section className="section-box box-top-rated-3 box-nearby best-room-hotel background-body">
           <div className="container">
-            <h2 className="neutral-1000 wow fadeInUp">Our Best Rooms</h2>
+            <h2 className="neutral-1000 wow fadeInUp">Check Availability</h2>
             <p className="text-xl-medium neutral-500 wow fadeInUp">
-              Book online today and look forward to a relaxing stay with usQ
+              Enter details for availability check
             </p>
-            <div className="box-button-tabs wow fadeInUp">
-              {" "}
-              <Link className="btn btn-white" href="#">
-                All
-              </Link>
-              <Link className="btn btn-white" href="#">
-                Luxury
-              </Link>
-              <Link className="btn btn-white" href="#">
-                Standard
-              </Link>
-              <Link className="btn btn-white" href="#">
-                Economy
-              </Link>
-              <Link className="btn btn-white" href="#">
-                Business
-              </Link>
-              <Link className="btn btn-white" href="#">
-                Royal Class
-              </Link>
-              <Link className="btn btn-white" href="#">
-                Superior
-              </Link>
+            <div className="row">
+              <RoomAvailabilityChecker
+                onAvailabilityclick={handleSearchClick}
+                loading={loading}
+              />
             </div>
-            <div className="row mt-65">
+            <div className="row">
               {hotel ? displayRooms("primaryWallet") : null}
-              {/* <div className="col-lg-4 col-md-6 wow fadeInUp">
-                <div className="card-journey-small card-journey-small-type-3 background-card">
-                  <div className="card-image">
-                    {" "}
-                    <Link className="wish" href="#">
-                      <svg
-                        width={20}
-                        height={18}
-                        viewBox="0 0 20 18"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                          stroke=""
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                      </svg>
-                    </Link>
-                    <Link href="/room-detail">
-                      <img
-                        src="/assets/imgs/page/hotel/room.png"
-                        alt="StayChain"
-                      />
-                    </Link>
-                  </div>
-                  <div className="card-info">
-                    <div className="card-rating">
-                      <div className="card-left"> </div>
-                      <div className="card-right">
-                        {" "}
-                        <span className="rating">
-                          4.96{" "}
-                          <span className="text-sm-medium neutral-500">
-                            (672 reviews)
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="card-title">
-                      {" "}
-                      <Link
-                        className="text-lg-bold neutral-1000"
-                        href="/room-detail"
-                      >
-                        Deluxe Queen Room
-                      </Link>
-                    </div>
-                    <div className="card-program">
-                      <div className="card-facilities">
-                        <div className="item-facilities">
-                          <p className="pax text-md-medium neutral-1000">
-                            2 adults{" "}
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="size text-md-medium neutral-1000">
-                            35 sqm
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bed text-md-medium neutral-1000">
-                            2 Beds
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bathroom text-md-medium neutral-1000">
-                            1 Bathrooms
-                          </p>
-                        </div>
-                      </div>
-                      <div className="endtime">
-                        <div className="card-price">
-                          <h6 className="heading-6 neutral-1000">$48.25</h6>
-                          <p className="text-md-medium neutral-500">/ night</p>
-                        </div>
-                        <div className="card-button">
-                          {" "}
-                          <Link className="btn btn-gray" href="#">
-                            Book Now
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6 wow fadeInUp">
-                <div className="card-journey-small card-journey-small-type-3 background-card">
-                  <div className="card-image">
-                    {" "}
-                    <Link className="wish" href="#">
-                      <svg
-                        width={20}
-                        height={18}
-                        viewBox="0 0 20 18"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                          stroke=""
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                      </svg>
-                    </Link>
-                    <Link href="/room-detail">
-                      <img
-                        src="/assets/imgs/page/hotel/room2.png"
-                        alt="StayChain"
-                      />
-                    </Link>
-                  </div>
-                  <div className="card-info">
-                    <div className="card-rating">
-                      <div className="card-left"> </div>
-                      <div className="card-right">
-                        {" "}
-                        <span className="rating">
-                          4.96{" "}
-                          <span className="text-sm-medium neutral-500">
-                            (672 reviews)
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="card-title">
-                      {" "}
-                      <Link
-                        className="text-lg-bold neutral-1000"
-                        href="/room-detail"
-                      >
-                        King Ensuite Room
-                      </Link>
-                    </div>
-                    <div className="card-program">
-                      <div className="card-facilities">
-                        <div className="item-facilities">
-                          <p className="pax text-md-medium neutral-1000">
-                            2 adults{" "}
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="size text-md-medium neutral-1000">
-                            35 sqm
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bed text-md-medium neutral-1000">
-                            2 Beds
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bathroom text-md-medium neutral-1000">
-                            1 Bathrooms
-                          </p>
-                        </div>
-                      </div>
-                      <div className="endtime">
-                        <div className="card-price">
-                          <h6 className="heading-6 neutral-1000">$17.32</h6>
-                          <p className="text-md-medium neutral-500">/ night</p>
-                        </div>
-                        <div className="card-button">
-                          {" "}
-                          <Link className="btn btn-gray" href="#">
-                            Book Now
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6 wow fadeInUp">
-                <div className="card-journey-small card-journey-small-type-3 background-card">
-                  <div className="card-image">
-                    {" "}
-                    <Link className="wish" href="#">
-                      <svg
-                        width={20}
-                        height={18}
-                        viewBox="0 0 20 18"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                          stroke=""
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                      </svg>
-                    </Link>
-                    <Link href="/room-detail">
-                      <img
-                        src="/assets/imgs/page/hotel/room3.png"
-                        alt="StayChain"
-                      />
-                    </Link>
-                  </div>
-                  <div className="card-info">
-                    <div className="card-rating">
-                      <div className="card-left"> </div>
-                      <div className="card-right">
-                        {" "}
-                        <span className="rating">
-                          4.96{" "}
-                          <span className="text-sm-medium neutral-500">
-                            (672 reviews)
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="card-title">
-                      {" "}
-                      <Link
-                        className="text-lg-bold neutral-1000"
-                        href="/room-detail"
-                      >
-                        Deluxe Ensuite Room
-                      </Link>
-                    </div>
-                    <div className="card-program">
-                      <div className="card-facilities">
-                        <div className="item-facilities">
-                          <p className="pax text-md-medium neutral-1000">
-                            2 adults{" "}
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="size text-md-medium neutral-1000">
-                            35 sqm
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bed text-md-medium neutral-1000">
-                            2 Beds
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bathroom text-md-medium neutral-1000">
-                            1 Bathrooms
-                          </p>
-                        </div>
-                      </div>
-                      <div className="endtime">
-                        <div className="card-price">
-                          <h6 className="heading-6 neutral-1000">$15.63</h6>
-                          <p className="text-md-medium neutral-500">/ night</p>
-                        </div>
-                        <div className="card-button">
-                          {" "}
-                          <Link className="btn btn-gray" href="#">
-                            Book Now
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6 wow fadeInUp">
-                <div className="card-journey-small card-journey-small-type-3 background-card">
-                  <div className="card-image">
-                    {" "}
-                    <Link className="wish" href="#">
-                      <svg
-                        width={20}
-                        height={18}
-                        viewBox="0 0 20 18"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                          stroke=""
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                      </svg>
-                    </Link>
-                    <Link href="/room-detail">
-                      <img
-                        src="/assets/imgs/page/hotel/room4.png"
-                        alt="StayChain"
-                      />
-                    </Link>
-                  </div>
-                  <div className="card-info">
-                    <div className="card-rating">
-                      <div className="card-left"> </div>
-                      <div className="card-right">
-                        {" "}
-                        <span className="rating">
-                          4.96{" "}
-                          <span className="text-sm-medium neutral-500">
-                            (672 reviews)
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="card-title">
-                      {" "}
-                      <Link
-                        className="text-lg-bold neutral-1000"
-                        href="/room-detail"
-                      >
-                        Deluxe Queen Room
-                      </Link>
-                    </div>
-                    <div className="card-program">
-                      <div className="card-facilities">
-                        <div className="item-facilities">
-                          <p className="pax text-md-medium neutral-1000">
-                            2 adults{" "}
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="size text-md-medium neutral-1000">
-                            35 sqm
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bed text-md-medium neutral-1000">
-                            2 Beds
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bathroom text-md-medium neutral-1000">
-                            1 Bathrooms
-                          </p>
-                        </div>
-                      </div>
-                      <div className="endtime">
-                        <div className="card-price">
-                          <h6 className="heading-6 neutral-1000">$48.25</h6>
-                          <p className="text-md-medium neutral-500">/ night</p>
-                        </div>
-                        <div className="card-button">
-                          {" "}
-                          <Link className="btn btn-gray" href="#">
-                            Book Now
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6 wow fadeInUp">
-                <div className="card-journey-small card-journey-small-type-3 background-card">
-                  <div className="card-image">
-                    {" "}
-                    <Link className="wish" href="#">
-                      <svg
-                        width={20}
-                        height={18}
-                        viewBox="0 0 20 18"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                          stroke=""
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                      </svg>
-                    </Link>
-                    <Link href="/room-detail">
-                      <img
-                        src="/assets/imgs/page/hotel/room5.png"
-                        alt="StayChain"
-                      />
-                    </Link>
-                  </div>
-                  <div className="card-info">
-                    <div className="card-rating">
-                      <div className="card-left"> </div>
-                      <div className="card-right">
-                        {" "}
-                        <span className="rating">
-                          4.96{" "}
-                          <span className="text-sm-medium neutral-500">
-                            (672 reviews)
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="card-title">
-                      {" "}
-                      <Link
-                        className="text-lg-bold neutral-1000"
-                        href="/room-detail"
-                      >
-                        Deluxe Queen Room
-                      </Link>
-                    </div>
-                    <div className="card-program">
-                      <div className="card-facilities">
-                        <div className="item-facilities">
-                          <p className="pax text-md-medium neutral-1000">
-                            2 adults{" "}
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="size text-md-medium neutral-1000">
-                            35 sqm
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bed text-md-medium neutral-1000">
-                            2 Beds
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bathroom text-md-medium neutral-1000">
-                            1 Bathrooms
-                          </p>
-                        </div>
-                      </div>
-                      <div className="endtime">
-                        <div className="card-price">
-                          <h6 className="heading-6 neutral-1000">$17.32</h6>
-                          <p className="text-md-medium neutral-500">/ night</p>
-                        </div>
-                        <div className="card-button">
-                          {" "}
-                          <Link className="btn btn-gray" href="#">
-                            Book Now
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-4 col-md-6 wow fadeInUp">
-                <div className="card-journey-small card-journey-small-type-3 background-card">
-                  <div className="card-image">
-                    {" "}
-                    <Link className="wish" href="#">
-                      <svg
-                        width={20}
-                        height={18}
-                        viewBox="0 0 20 18"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                          stroke=""
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                      </svg>
-                    </Link>
-                    <Link href="/room-detail">
-                      <img
-                        src="/assets/imgs/page/hotel/room6.png"
-                        alt="StayChain"
-                      />
-                    </Link>
-                  </div>
-                  <div className="card-info">
-                    <div className="card-rating">
-                      <div className="card-left"> </div>
-                      <div className="card-right">
-                        {" "}
-                        <span className="rating">
-                          4.96{" "}
-                          <span className="text-sm-medium neutral-500">
-                            (672 reviews)
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="card-title">
-                      {" "}
-                      <Link
-                        className="text-lg-bold neutral-1000"
-                        href="/room-detail"
-                      >
-                        Deluxe Queen Room
-                      </Link>
-                    </div>
-                    <div className="card-program">
-                      <div className="card-facilities">
-                        <div className="item-facilities">
-                          <p className="pax text-md-medium neutral-1000">
-                            2 adults{" "}
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="size text-md-medium neutral-1000">
-                            35 sqm
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bed text-md-medium neutral-1000">
-                            2 Beds
-                          </p>
-                        </div>
-                        <div className="item-facilities">
-                          <p className="bathroom text-md-medium neutral-1000">
-                            1 Bathrooms
-                          </p>
-                        </div>
-                      </div>
-                      <div className="endtime">
-                        <div className="card-price">
-                          <h6 className="heading-6 neutral-1000">$15.63</h6>
-                          <p className="text-md-medium neutral-500">/ night</p>
-                        </div>
-                        <div className="card-button">
-                          {" "}
-                          <Link className="btn btn-gray" href="#">
-                            Book Now
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> */}
             </div>
           </div>
         </section>
