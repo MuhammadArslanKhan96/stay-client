@@ -6,36 +6,30 @@ export async function POST(request: Request) {
     //Headers
     const bodyObj = await request.json();
 
-    const hotelCode = bodyObj.hotelCode;
-    const checkIn = bodyObj.checkIn.split("T")[0];
-    const checkOut = bodyObj.checkOut.split("T")[0];
-    const rooms = bodyObj.rooms;
-    const adults = bodyObj.adults;
-    const children = bodyObj.children;
+    const holderName = bodyObj.firstName;
+    const holderSurname = bodyObj.lastName;
+    const rateKeys = bodyObj.keys;
+    const clientReference = `HTL-${Date.now()}`.substring(0, 20);
+    console.log(clientReference);
+
+    console.log(rateKeys);
+
+    console.log("Body before...");
+    console.log(bodyObj);
 
     const requestedBody = {
-      stay: {
-        checkIn,
-        checkOut,
+      holder: {
+        name: holderName,
+        surname: holderSurname,
       },
-      occupancies: [
-        {
-          rooms,
-          adults,
-          children,
-        },
-      ],
-
-      hotels: {
-        hotel: [Number(hotelCode)],
-      },
+      clientReference,
     };
 
-    console.log("Requested Body is , ", requestedBody);
+    console.log("Booking Data passed... ", requestedBody);
 
     const headers = generateAuthHeaders();
 
-    const url = `https://api.test.hotelbeds.com/hotel-api/hotels`;
+    const url = `https://api.test.hotelbeds.com/hotel-api/1.0/bookings`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -51,12 +45,12 @@ export async function POST(request: Request) {
 
     const data = await response.json();
 
-    console.log("Data received is, ", data);
+    console.log("Booking result ", data);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error:", error);
     return NextResponse.json(
-      { error: "Failed to create resource" },
+      { error: "Error while confirming the booking." },
       { status: 500 }
     );
   }

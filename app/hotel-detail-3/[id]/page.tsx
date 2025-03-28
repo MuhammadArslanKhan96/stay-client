@@ -50,18 +50,25 @@ export default function HotelDetail() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ hotelCode: hotelId, ...bodyData }),
+        body: JSON.stringify({ hotelCode: Number(hotelId), ...bodyData }),
       });
       if (res.ok) {
         const data = await res.json();
         const { hotels } = data;
 
-        console.log("hodata...");
-        if (hotels) {
-          console.log(hotels.hotels);
-          const { rooms } = hotels.hotels[0];
-          setRooms(rooms);
+        const hotel_s = hotels?.hotels;
+        console.log("Hot:, ", hotel_s);
+        if (hotel_s) {
+          for (let h of hotel_s) {
+            if (h.code === Number(hotelId)) {
+              setRooms(h.rooms);
+              return;
+            }
+          }
         } else {
+          alert("No room is available.");
+          setRooms([]);
+          setSelectedRooms([]);
         }
       }
     } catch (err) {
@@ -73,11 +80,9 @@ export default function HotelDetail() {
 
   const handleRoomSelection = (room: any) => {
     setSelectedRooms((prevSelectedRooms: any) => {
-      if (prevSelectedRooms.some((r: any) => r.roomCode === room.roomCode)) {
+      if (prevSelectedRooms.some((r: any) => r.code === room.code)) {
         // If room is already selected, remove it from the selection
-        return prevSelectedRooms.filter(
-          (r: any) => r.roomCode !== room.roomCode
-        );
+        return prevSelectedRooms.filter((r: any) => r.code !== room.code);
       } else {
         // Add room to the selection
         return [...prevSelectedRooms, room];
@@ -85,28 +90,35 @@ export default function HotelDetail() {
     });
   };
 
+  const handleBtnSubmit = async () => {
+    console.log("Called...");
+    console.log(selectedRooms);
+    console.log(rooms);
+  };
+
   const displayRooms = (wallet: any) => {
-    console.log(wallet);
+    // console.log(wallet);
     return (
       <div>
         {/* Booking Summary */}
-        {selectedRooms.length > 0 && (
-          <div className="booking-summary">
-            <h4>Booking Summary</h4>
-            <p>
-              Rooms Selected: {selectedRooms.length} | Total Price: $
-              {totalPrice}
-            </p>
 
-            <Link href="/checkout">
-              <button className="btn btn-primary">Proceed to Booking</button>
-            </Link>
-          </div>
-        )}
+        <div className="booking-summary my-2">
+          <h4>Booking Summary</h4>
+          <p>Rooms Selected: {selectedRooms.length}</p>
+
+          <button
+            onClick={handleBtnSubmit}
+            className="btn btn-primary"
+            disabled={selectedRooms.length <= 0}
+          >
+            {selectedRooms.length > 0 ? "Proceed to Booking" : "Select Room"}
+          </button>
+        </div>
+
         {/* Rooms Display */}
         <div className="row">
-          {hotel?.rooms?.map((room: any) => (
-            <div className="col-lg-4 col-md-6 wow fadeInUp" key={room.roomCode}>
+          {rooms?.map((room: any) => (
+            <div className="col-lg-4 col-md-6 wow fadeInUp" key={room.code}>
               <div className="card-journey-small card-journey-small-type-3 background-card">
                 <div className="card-image">
                   <Link className="wish" href="#">
@@ -150,14 +162,14 @@ export default function HotelDetail() {
                       className="text-lg-bold neutral-1000"
                       href="/room-detail"
                     >
-                      {room.description}
+                      {room.name}
                     </Link>
                   </div>
                   <div className="card-program">
                     <div className="card-facilities">
                       <div className="item-facilities">
                         <p className="pax text-md-medium neutral-1000">
-                          {room.minAdults} - {room.maxAdults} adults
+                          {room?.rates[0]?.adults} adults
                         </p>
                       </div>
                       <div className="item-facilities">
@@ -172,14 +184,14 @@ export default function HotelDetail() {
                       </div>
                       <div className="item-facilities">
                         <p className="pax text-md-medium neutral-1000">
-                          {room.maxChildren} children
+                          {room?.rates[0]?.children} children
                         </p>
                       </div>
                     </div>
                     <div className="endtime">
                       <div className="card-price">
                         <h6 className="heading-6 neutral-1000">
-                          ${room.price} Stay
+                          {room?.rates[0]?.net || 162} Stay
                         </h6>
                         <p className="text-md-medium neutral-500">/ night</p>
                       </div>
@@ -189,15 +201,15 @@ export default function HotelDetail() {
                           <input
                             type="checkbox"
                             className="form-check-input"
-                            id={`room-${room.roomCode}`}
+                            id={`room-${room.code}`}
                             checked={selectedRooms.some(
-                              (r: any) => r.roomCode === room.roomCode
+                              (r: any) => r.code === room.code
                             )}
                             onChange={() => handleRoomSelection(room)}
                           />
                           <label
-                            className="form-check-label"
-                            htmlFor={`room-${room.roomCode}`}
+                            className="form-check-label neutral-1000"
+                            htmlFor={`room-${room.code}`}
                           >
                             Add to Booking
                           </label>
