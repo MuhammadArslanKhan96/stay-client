@@ -337,11 +337,9 @@ export default function HotelDetail2() {
                             $250
                           </p> */}
                           <h4 className="price-main neutral-1000">
-                            ${hotel?.priceBase}
+                            {hotel?.priceBase}
                           </h4>
-                          <p className="text-md-medium neutral-500">
-                            Per Night
-                          </p>
+                          <p className="text-md-medium neutral-500">Stay</p>
                           <div className="card-button">
                             {" "}
                             <Link
@@ -507,7 +505,7 @@ function BookingForm({ propertyID, price }: any) {
           {" "}
           <strong className="text-md-bold neutral-1000">Total:</strong>
           <div className="line-booking-right">
-            <p className="text-xl-bold neutral-1000">${price}</p>
+            <p className="text-xl-bold neutral-1000">{price}</p>
           </div>
         </div>
         {loading ? (

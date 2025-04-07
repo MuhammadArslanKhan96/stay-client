@@ -8,14 +8,10 @@ export async function POST(request: Request) {
 
     const holderName = bodyObj.firstName;
     const holderSurname = bodyObj.lastName;
-    const rateKeys = bodyObj.keys;
+    const rateKeys = bodyObj.rateKeys;
+    const userId = bodyObj.userId;
+    console.log("user id is: ", userId);
     const clientReference = `HTL-${Date.now()}`.substring(0, 20);
-    console.log(clientReference);
-
-    console.log(rateKeys);
-
-    console.log("Body before...");
-    console.log(bodyObj);
 
     const requestedBody = {
       holder: {
@@ -23,6 +19,8 @@ export async function POST(request: Request) {
         surname: holderSurname,
       },
       clientReference,
+
+      rooms: rateKeys,
     };
 
     console.log("Booking Data passed... ", requestedBody);

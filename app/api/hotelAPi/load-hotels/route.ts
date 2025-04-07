@@ -7,6 +7,10 @@ export async function GET(request: Request) {
   try {
     let recordNumber = 0;
 
+    return NextResponse.json({
+      message: `API is stopped forcefully.`,
+    });
+
     const res = await getTotalCount();
     const totalCount = res.total;
 

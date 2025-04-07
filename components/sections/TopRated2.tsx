@@ -182,7 +182,7 @@ export default function TopRated2({ hotels }: any) {
             <div className="swiper-container swiper-group-animate swiper-group-journey">
               {hotels?.length < 1 ? (
                 // {hotels.length > 0 ? (
-                <span>hotel not found!</span>
+                <span>Properties not found!</span>
               ) : (
                 <Swiper {...swiperGroupAnimate}>{displayHotels()}</Swiper>
               )}

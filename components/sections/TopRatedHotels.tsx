@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 export default function TopRatedHotels() {
   const [hotels, setHotels] = useState<any>([]);
 
+  // Home page auto fetch Top ten hotels...
   useEffect(() => {
     (async () => {
       try {

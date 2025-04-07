@@ -7,14 +7,17 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SearchFilterBottom from "@/components/elements/SearchFilterBottom";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import RoomAvailabilityChecker from "@/components/sections/RoomAvailabilitySearch";
+
 export default function HotelDetail() {
   const [hotel, setHotel] = useState<any>([]);
   const router = usePathname();
   const [loading, setLoading] = useState(false);
   const [hotelId, setHotelId] = useState("");
   const [rooms, setRooms] = useState<any>([]);
+
+  const moveRouter = useRouter();
 
   const [selectedRooms, setSelectedRooms] = useState<any>([]); // To keep track of selected rooms
   const [totalPrice, setTotalPrice] = useState(0); // To keep track of the total price
@@ -91,9 +94,12 @@ export default function HotelDetail() {
   };
 
   const handleBtnSubmit = async () => {
-    console.log("Called...");
-    console.log(selectedRooms);
-    console.log(rooms);
+    console.log("Push...");
+    sessionStorage.setItem("bookedRooms", JSON.stringify(selectedRooms));
+    // window.location.href = `/roombookingform/${hotelId}`;
+    moveRouter.push(`/roombookingform/${hotelId}`);
+    // console.log(selectedRooms);
+    // console.log(rooms);
   };
 
   const displayRooms = (wallet: any) => {

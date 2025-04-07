@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 export default function BookingPage() {
   const router = usePathname();
   const [hotelCode, setHotelCode] = useState("");
+  const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
     (async function () {
@@ -13,34 +14,24 @@ export default function BookingPage() {
         const url = router.split("/");
         const hotelCode = url[url.length - 1];
         console.log("hotel code: ", hotelCode);
+        // Getting rooms:
+        const roomsJson: any = sessionStorage.getItem("bookedRooms");
+        const roomsArray = JSON.parse(roomsJson);
+
+        const rooms = roomsArray.map((room: any) => ({
+          id: room.code,
+          name: room.name,
+          adults: room.rates[0].adults,
+          children: room.rates[0].children,
+          price: room.rates[0].net,
+          rateKey: room.rates[0].rateKey,
+        }));
+        setRooms(rooms);
         setHotelCode(hotelCode);
       } catch (er) {
         console.log(er);
       }
     })();
   }, []);
-  return <BookingForm room={exampleRoom} />;
+  return <BookingForm rooms={rooms} />;
 }
-
-const exampleRoom = {
-  id: 1,
-  name: "Deluxe Ocean View Room",
-  description:
-    "Enjoy breathtaking views of the ocean from your private balcony in our spacious deluxe room. Perfect for couples or small families.",
-  price: 249,
-  capacity: 3,
-  amenities: [
-    "Free WiFi",
-    "Air Conditioning",
-    "King Size Bed",
-    "Ocean View",
-    "Mini Bar",
-    "Coffee Maker",
-    "Safe Deposit Box",
-    "Daily Housekeeping",
-  ],
-  imageUrl:
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
-};
-
-// /home/arsalan/projects/stay-client-admin/stay-client/app/roombookingform/[id]/page.tsx

@@ -1,23 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Button,
   Container,
   Row,
   Col,
-  Card,
   Alert,
+  ListGroup,
 } from "react-bootstrap";
 
 interface RoomDetails {
   id: number;
   name: string;
-  description: string;
-  price: number;
-  capacity: number;
-  amenities: string[];
-  imageUrl: string;
+  price: string;
+  adults: number;
+  children: number;
+  rateKey: string;
 }
 
 interface BookingFormData {
@@ -27,13 +27,15 @@ interface BookingFormData {
   phoneNumber: string;
 }
 
-const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
+const BookingForm: React.FC<{ rooms: RoomDetails[] }> = ({ rooms }) => {
+  // console.log("Rooms in booking,  ", rooms);
   const [formData, setFormData] = useState<BookingFormData>({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
   });
+  const { user } = useDynamicContext();
 
   const [errors, setErrors] = useState<Partial<BookingFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,20 +52,14 @@ const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
   const validateForm = (): boolean => {
     const newErrors: Partial<BookingFormData> = {};
 
-    if (!formData.firstName.trim()) {
+    if (!formData.firstName.trim())
       newErrors.firstName = "First name is required";
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required";
-    }
-
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Please enter a valid email";
     }
-
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = "Phone number is required";
     } else if (
@@ -81,23 +77,33 @@ const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      setIsSubmitting(true);
+    //Checking for user logged in or not:
+    if (!user) {
+      alert("Please login to book the property.");
+      return;
+    }
 
+    const jsonUser: any = localStorage.getItem("dbuser") || {};
+    const dbUser = JSON.parse(jsonUser);
+    const userId = dbUser.id;
+
+    if (validateForm()) {
       try {
+        setIsSubmitting(true);
+        const keys = rooms.map((room: any) => ({
+          rateKey: room.rateKey,
+        }));
+        // Keys to book the rooms....
+        // console.log(keys);
         const response = await fetch("/api/hotelAPi/booking", {
           method: "POST",
-          body: JSON.stringify({ ...formData, room: room.id }),
+          body: JSON.stringify({ ...formData, rateKeys: keys, userId }),
         });
-
+        console.log("here is the response");
+        console.log(response);
         if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-        } else {
-          console.log("Unexpected error occured in booking");
+          setIsSuccess(true);
         }
-      } catch (err) {
-        console.log("Booking error", err);
       } finally {
         setIsSubmitting(false);
       }
@@ -105,47 +111,31 @@ const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
   };
 
   return (
-    <Container className="my-5 background-body neutral-1000 m-2">
+    <Container className="my-5 background-body neutral-1000">
       <Row className="shadow-lg rounded overflow-hidden">
-        {/* Room Details Column */}
-        <Col md={6} className="p-0">
-          <div className="h-100">
-            <img
-              src={room.imageUrl}
-              alt={room.name}
-              className="img-fluid w-100 h-100 object-fit-cover"
-              style={{ minHeight: "300px" }}
-            />
-          </div>
+        {/* Rooms List Column - Display Only */}
+        <Col md={5} className="p-4">
+          <h3 className="mb-4">Selected Rooms</h3>
+          <ListGroup>
+            {rooms.map((room) => (
+              <ListGroup.Item key={room.id} className="mb-2 rounded">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 className="mb-1">{room.name}</h5>
+                    <div className="text-muted small">
+                      Adults: {room.adults} | Children: {room.children}
+                    </div>
+                  </div>
+                  <div className="text-primary fw-bold">{room.price}</div>
+                </div>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
         </Col>
 
         {/* Booking Form Column */}
-        <Col md={6} className="p-4">
-          <h2 className="mb-4">Book {room.name}</h2>
-
-          <div className="mb-4">
-            <h5 className="text-primary">
-              ${room.price} <small className="text-muted">per night</small>
-            </h5>
-            <p className="text-muted mb-2">
-              <i className="bi bi-people me-2"></i>
-              Capacity: {room.capacity} {room.capacity > 1 ? "guests" : "guest"}
-            </p>
-            <p>{room.description}</p>
-            <div className="mt-3">
-              <h6>Amenities:</h6>
-              <ul className="list-unstyled row">
-                {room.amenities.map((amenity, index) => (
-                  <li key={index} className="col-6">
-                    <i className="bi bi-check-circle text-success me-2"></i>
-                    {amenity}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <hr className="my-4" />
+        <Col md={7} className="p-4">
+          <h2 className="mb-4">Booking Form</h2>
 
           {isSuccess ? (
             <Alert
@@ -156,11 +146,11 @@ const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
               <Alert.Heading>Booking Successful!</Alert.Heading>
               <p>
                 Thank you for your booking. We've sent a confirmation to{" "}
-                {formData.email}. Our team will contact you shortly.
+                {formData.email}.
               </p>
             </Alert>
           ) : (
-            <Form onSubmit={handleSubmit}>
+            <Form>
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
@@ -171,7 +161,6 @@ const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
                       value={formData.firstName}
                       onChange={handleChange}
                       isInvalid={!!errors.firstName}
-                      placeholder="Enter your first name"
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.firstName}
@@ -187,7 +176,6 @@ const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
                       value={formData.lastName}
                       onChange={handleChange}
                       isInvalid={!!errors.lastName}
-                      placeholder="Enter your last name"
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.lastName}
@@ -204,7 +192,6 @@ const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
                   value={formData.email}
                   onChange={handleChange}
                   isInvalid={!!errors.email}
-                  placeholder="Enter your email"
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.email}
@@ -219,26 +206,22 @@ const BookingForm: React.FC<{ room: RoomDetails }> = ({ room }) => {
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   isInvalid={!!errors.phoneNumber}
-                  placeholder="Enter your phone number"
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.phoneNumber}
                 </Form.Control.Feedback>
               </Form.Group>
 
-              <Button
-                variant="primary"
-                type="submit"
-                className="w-100 py-3"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Processing..." : "Book Now"}
-              </Button>
-
-              <p className="text-muted small mt-3">
-                * Required fields. By booking, you agree to our terms and
-                conditions.
-              </p>
+              <div className="box-button-book">
+                {" "}
+                <button
+                  className="btn btn-book"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Processing..." : "Book Now"}
+                </button>
+              </div>
             </Form>
           )}
         </Col>

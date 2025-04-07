@@ -54,9 +54,15 @@ export async function POST(request: Request) {
       body: JSON.stringify(requestedBody),
     });
 
-    console.log(response);
-
     const data = await response.json();
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: response.statusText },
+        { status: response.status }
+      );
+    }
+
+    console.log(response);
 
     console.log("Data received is, ", data);
     return NextResponse.json(data);
