@@ -1,22 +1,32 @@
-
-'use client'
-import { useState } from "react"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
+"use client";
+import { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface MyDatePickerProps {
-	onChange: (date: string) => void;
+  onChange: (date: string) => void;
+  selectedDate: string;
 }
 
-export default function MyDatePicker({onChange}:MyDatePickerProps) {
-	const [startDate, setStartDate] = useState(new Date())
-  return (
-	<>
-		<DatePicker selected={startDate} onChange={(date:any) => {
-			onChange(date);
-			setStartDate(date)
+export default function MyDatePicker({
+  onChange,
+  selectedDate,
+}: MyDatePickerProps) {
+  const [startDate, setStartDate] = useState(new Date(selectedDate));
 
-		}} className="search-input datepicker" />
-	</>
-  )
+  useEffect(() => {
+    setStartDate(new Date(selectedDate));
+  }, [selectedDate]);
+  return (
+    <>
+      <DatePicker
+        selected={startDate}
+        onChange={(date: any) => {
+          onChange(date);
+          setStartDate(date);
+        }}
+        className="search-input datepicker"
+      />
+    </>
+  );
 }

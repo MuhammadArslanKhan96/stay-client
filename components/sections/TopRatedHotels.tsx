@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { swiperGroupAnimate } from "@/util/swiperOption";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { IMAGE_BASE_URL } from "@/util/constant";
 
 export default function TopRatedHotels() {
   const [hotels, setHotels] = useState<any>([]);
@@ -52,7 +53,10 @@ export default function TopRatedHotels() {
                   />
                 </svg>
               </Link>
-              <img src={hotel.imageSource} alt="StayChain" />
+              <img
+                src={`${IMAGE_BASE_URL}/${hotel?.images?.[0].path}`}
+                alt="StayChain"
+              />
             </div>
             <div className="card-info">
               <div className="card-rating">
@@ -436,4 +440,12 @@ function getFirstTenUniqueNames<T extends { name: string }>(items: T[]): T[] {
 
   // If there are fewer than 10 unique items, return all unique items
   return result;
+}
+
+function getHotelImages(images: any) {
+  if (!Array.isArray(images)) return [];
+
+  return images
+    .filter((img) => img?.type?.code !== "HAB")
+    .map((img) => img.path);
 }

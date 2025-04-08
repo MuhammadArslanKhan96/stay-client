@@ -427,6 +427,9 @@ function BookingForm({ propertyID, price }: any) {
         body: JSON.stringify(body),
       });
       console.log(response);
+      if (response.ok) {
+        alert("Successfully, property is booked.");
+      }
       const data = await response.json();
       console.log("receive data from the booking endpoint ", data);
       // console.log("Handle Reserve Booking");

@@ -1,7 +1,6 @@
 import generateAuthHeaders from "@/util/hotelAPI/headers";
 import { NextResponse } from "next/server";
 import prisma from "../../../../prisma/prisma";
-import { Next } from "react-bootstrap/esm/PageItem";
 
 export async function GET(request: Request) {
   try {
@@ -81,7 +80,7 @@ export async function GET(request: Request) {
 async function fetchHotels(from: number, to: number) {
   const headers = generateAuthHeaders();
   const response = await fetch(
-    `https://api.test.hotelbeds.com/hotel-content-api/1.0/hotels?from=${from}&to=${to}`,
+    `https://api.test.hotelbeds.com/hotel-content-api/1.0/hotels?from=${from}&to=${to}&countryCode=BR`,
 
     {
       method: "GET",
@@ -104,8 +103,7 @@ async function fetchHotels(from: number, to: number) {
 async function getTotalCount() {
   const headers = generateAuthHeaders();
   const response = await fetch(
-    `https://api.test.hotelbeds.com/hotel-content-api/1.0/hotels`,
-
+    `https://api.test.hotelbeds.com/hotel-content-api/1.0/hotels?countryCode=BR`,
     {
       method: "GET",
       headers: {

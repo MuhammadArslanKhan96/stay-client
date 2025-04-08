@@ -87,7 +87,18 @@ export default function RoomAvailabilityChecker({
     checkOut: new Date().toISOString(),
     guests: { adults: 2, children: 0, rooms: 1 },
   });
-  const [hotels, setHotels] = useState<any>([]);
+  useEffect(() => {
+    const searchFilters: any = sessionStorage.getItem("search_filter");
+    const searchFilterObject = JSON.parse(searchFilters);
+    console.log("Session in hotel-details: ", searchFilterObject);
+    if (searchFilterObject) {
+      setSearchParams(() => ({
+        checkIn: searchFilterObject.checkIn,
+        checkOut: searchFilterObject.checkOut,
+        guests: searchFilterObject.guests,
+      }));
+    }
+  }, []);
 
   const handleCheckInChange = (date: string) => {
     setSearchParams((prev) => ({
@@ -128,13 +139,19 @@ export default function RoomAvailabilityChecker({
           <div className="item-search item-search-2">
             <label className="text-sm-bold neutral-500">Check In</label>
             <div className="box-calendar-date">
-              <MyDatePicker onChange={handleCheckInChange} />
+              <MyDatePicker
+                onChange={handleCheckInChange}
+                selectedDate={searchParams.checkIn}
+              />
             </div>
           </div>
           <div className="item-search item-search-3">
             <label className="text-sm-bold neutral-500">Check Out</label>
             <div className="box-calendar-date">
-              <MyDatePicker onChange={handleCheckOutChange} />
+              <MyDatePicker
+                onChange={handleCheckOutChange}
+                selectedDate={searchParams.checkOut}
+              />
             </div>
           </div>
 

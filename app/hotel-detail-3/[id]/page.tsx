@@ -9,6 +9,7 @@ import SearchFilterBottom from "@/components/elements/SearchFilterBottom";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import RoomAvailabilityChecker from "@/components/sections/RoomAvailabilitySearch";
+import { IMAGE_BASE_URL } from "@/util/constant";
 
 export default function HotelDetail() {
   const [hotel, setHotel] = useState<any>([]);
@@ -36,7 +37,9 @@ export default function HotelDetail() {
           const data = await response.json();
           const { hotel } = data?.data;
           setHotel(hotel);
-          console.log("DAta,  ", data);
+          // Set rooms as well....
+          // setRooms(hotel?.rooms);
+          console.log("Data,  ", data);
           console.log("HOTEL, ", hotel);
         } catch (err) {
           console.log("Error while fetching room data...");
@@ -106,131 +109,139 @@ export default function HotelDetail() {
     // console.log(wallet);
     return (
       <div>
-        {/* Booking Summary */}
-
-        <div className="booking-summary my-2">
-          <h4>Booking Summary</h4>
-          <p>Rooms Selected: {selectedRooms.length}</p>
-
-          <button
-            onClick={handleBtnSubmit}
-            className="btn btn-primary"
-            disabled={selectedRooms.length <= 0}
-          >
-            {selectedRooms.length > 0 ? "Proceed to Booking" : "Select Room"}
-          </button>
-        </div>
-
         {/* Rooms Display */}
         <div className="row">
-          {rooms?.map((room: any) => (
-            <div className="col-lg-4 col-md-6 wow fadeInUp" key={room.code}>
-              <div className="card-journey-small card-journey-small-type-3 background-card">
-                <div className="card-image">
-                  <Link className="wish" href="#">
-                    <svg
-                      width={20}
-                      height={18}
-                      viewBox="0 0 20 18"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                        stroke=""
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        fill="none"
+          {rooms?.map((room: any, index: number) => {
+            const imagePath = getImagePathByRoomCode(hotel?.images, room.code);
+
+            return (
+              <div className="col-lg-4 col-md-6 wow fadeInUp" key={room.code}>
+                <div className="card-journey-small card-journey-small-type-3 background-card">
+                  <div className="card-image">
+                    <Link className="wish" href="#">
+                      <svg
+                        width={20}
+                        height={18}
+                        viewBox="0 0 20 18"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
+                          stroke=""
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          fill="none"
+                        />
+                      </svg>
+                    </Link>
+                    <Link href="/room-detail">
+                      <img
+                        src={`${IMAGE_BASE_URL}/${imagePath}`}
+                        alt="StayChain"
                       />
-                    </svg>
-                  </Link>
-                  <Link href="/room-detail">
-                    <img
-                      src={`/assets/imgs/page/hotel/room${getRandomNumber()}.png`}
-                      alt="StayChain"
-                    />
-                  </Link>
-                </div>
-                <div className="card-info">
-                  <div className="card-rating">
-                    <div className="card-left"> </div>
-                    <div className="card-right">
-                      <span className="rating">
-                        {room.rating}{" "}
-                        <span className="text-sm-medium neutral-500">
-                          ({room.rating_count} reviews)
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="card-title">
-                    <Link
-                      className="text-lg-bold neutral-1000"
-                      href="/room-detail"
-                    >
-                      {room.name}
                     </Link>
                   </div>
-                  <div className="card-program">
-                    <div className="card-facilities">
-                      <div className="item-facilities">
-                        <p className="pax text-md-medium neutral-1000">
-                          {room?.rates[0]?.adults} adults
-                        </p>
-                      </div>
-                      <div className="item-facilities">
-                        <p className="size text-md-medium neutral-1000">
-                          {room.size} sqm
-                        </p>
-                      </div>
-                      <div className="item-facilities">
-                        <p className="bed text-md-medium neutral-1000">
-                          {room.beds} Beds
-                        </p>
-                      </div>
-                      <div className="item-facilities">
-                        <p className="pax text-md-medium neutral-1000">
-                          {room?.rates[0]?.children} children
-                        </p>
+                  <div className="card-info">
+                    <div className="card-rating">
+                      <div className="card-left"> </div>
+                      <div className="card-right">
+                        <span className="rating">
+                          {room.rating}{" "}
+                          <span className="text-sm-medium neutral-500">
+                            ({room.rating_count} reviews)
+                          </span>
+                        </span>
                       </div>
                     </div>
-                    <div className="endtime">
-                      <div className="card-price">
-                        <h6 className="heading-6 neutral-1000">
-                          {room?.rates[0]?.net || 162} Stay
-                        </h6>
-                        <p className="text-md-medium neutral-500">/ night</p>
+                    <div className="card-title">
+                      <Link
+                        className="text-lg-bold neutral-1000"
+                        href="/room-detail"
+                      >
+                        {room.name}
+                      </Link>
+                    </div>
+                    <div className="card-program">
+                      <div className="card-facilities">
+                        <div className="item-facilities">
+                          <p className="pax text-md-medium neutral-1000">
+                            {room?.rates?.[0]?.adults} adults
+                          </p>
+                        </div>
+                        <div className="item-facilities">
+                          <p className="size text-md-medium neutral-1000">
+                            {room.size} sqm
+                          </p>
+                        </div>
+                        <div className="item-facilities">
+                          <p className="bed text-md-medium neutral-1000">
+                            {room.beds} Beds
+                          </p>
+                        </div>
+                        <div className="item-facilities">
+                          <p className="pax text-md-medium neutral-1000">
+                            {room?.rates?.[0]?.children} children
+                          </p>
+                        </div>
                       </div>
-                      <div className="card-button">
-                        {/* Add a checkbox to select room */}
-                        <div className="form-check">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id={`room-${room.code}`}
-                            checked={selectedRooms.some(
-                              (r: any) => r.code === room.code
-                            )}
-                            onChange={() => handleRoomSelection(room)}
-                          />
-                          <label
-                            className="form-check-label neutral-1000"
-                            htmlFor={`room-${room.code}`}
-                          >
-                            Add to Booking
-                          </label>
+                      <div className="endtime">
+                        <div className="card-price">
+                          <h6 className="heading-6 neutral-1000">
+                            {room?.rates?.[0]?.net || 162} Stay
+                          </h6>
+                          <p className="text-md-medium neutral-500">/ night</p>
+                        </div>
+                        <div className="card-button">
+                          {/* Add a checkbox to select room */}
+                          <div className="form-check">
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              id={`room-${room.code}`}
+                              checked={selectedRooms.some(
+                                (r: any) => r.code === room.code
+                              )}
+                              onChange={() => handleRoomSelection(room)}
+                            />
+                            <label
+                              className="form-check-label neutral-1000"
+                              htmlFor={`room-${room.code}`}
+                            >
+                              Add to Booking
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
+        </div>
+
+        {/* Booking Summary */}
+        <div className="booking-summary my-2 background-body neutral-1000">
+          <h4>Booking Summary</h4>
+          <p>Rooms Selected: {selectedRooms.length}</p>
+
+          <button
+            onClick={handleBtnSubmit}
+            className="btn btn-dark"
+            disabled={selectedRooms.length <= 0}
+          >
+            {selectedRooms.length > 0 ? "Proceed to Booking" : "Select Room"}
+          </button>
         </div>
       </div>
     );
   };
+  const numberOfStars = getCategoryNumber(
+    hotel?.category?.description?.content
+  );
+
+  const hotelImages = getHotelImages(hotel?.images);
   return (
     <>
       {/* <Layout headerStyle={1} footerStyle={1}> */}
@@ -296,33 +307,25 @@ export default function HotelDetail() {
                     <div
                       className="item-banner-box"
                       style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/hotel/banner-hotel.png)",
+                        backgroundImage: `url(${
+                          hotelImages?.[0]
+                            ? `${IMAGE_BASE_URL}/${hotelImages[0]}`
+                            : "assets/imgs/page/hotel/banner-hotel.png"
+                        })`,
                       }}
                     >
                       <div className="item-banner-box-inner">
                         {" "}
                         <span className="btn btn-white-sm">
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
+                          {Array.from({ length: numberOfStars }).map(
+                            (_, index: number) => (
+                              <img
+                                key={index}
+                                src="/assets/imgs/page/tour-detail/star-big.svg"
+                                alt="StayChain"
+                              />
+                            )
+                          )}
                         </span>
                         <h1 className="mt-20 mb-20 color-white">
                           Welcome to
@@ -341,33 +344,25 @@ export default function HotelDetail() {
                     <div
                       className="item-banner-box"
                       style={{
-                        backgroundImage:
-                          "url(assets/imgs/page/hotel/banner-hotel.png)",
+                        backgroundImage: `url(${
+                          hotelImages?.[1]
+                            ? `${IMAGE_BASE_URL}/${hotelImages[1]}`
+                            : "assets/imgs/page/hotel/banner-hotel.png"
+                        })`,
                       }}
                     >
                       <div className="item-banner-box-inner">
                         {" "}
                         <span className="btn btn-white-sm">
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
-                          <img
-                            src="/assets/imgs/page/tour-detail/star-big.svg"
-                            alt="StayChain"
-                          />
+                          {Array.from({ length: numberOfStars }).map(
+                            (_, index: number) => (
+                              <img
+                                key={index}
+                                src="/assets/imgs/page/tour-detail/star-big.svg"
+                                alt="StayChain"
+                              />
+                            )
+                          )}
                         </span>
                         <h1 className="mt-20 mb-20 color-white">
                           Welcome to
@@ -1126,5 +1121,31 @@ export default function HotelDetail() {
 }
 
 function getRandomNumber() {
-  return Math.floor(Math.random() * (5 - 2 + 1)) + 2;
+  return Math.floor(Math.random() * 4) + 2;
+}
+
+function getCategoryNumber(stringCat: string) {
+  if (stringCat) {
+    let number = parseInt(stringCat?.trim()?.split(" ")[0], 10);
+    return number;
+  }
+  return 0;
+}
+
+function getImagePathByRoomCode(images: any, targetRoomCode: string) {
+  if (!Array.isArray(images) || !targetRoomCode) return null;
+
+  const match = images.find(
+    (img) => img?.type?.code === "HAB" && img?.roomCode === targetRoomCode
+  );
+
+  return match?.path || null;
+}
+
+function getHotelImages(images: any) {
+  if (!Array.isArray(images)) return [];
+
+  return images
+    .filter((img) => img?.type?.code !== "HAB")
+    .map((img) => img.path);
 }

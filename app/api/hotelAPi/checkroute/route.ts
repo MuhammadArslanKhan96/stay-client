@@ -55,16 +55,14 @@ export async function POST(request: Request) {
     });
 
     const data = await response.json();
+    console.log("data", data);
+    console.log("API response", response);
     if (!response.ok) {
       return NextResponse.json(
         { error: response.statusText },
         { status: response.status }
       );
     }
-
-    console.log(response);
-
-    console.log("Data received is, ", data);
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error:", error);

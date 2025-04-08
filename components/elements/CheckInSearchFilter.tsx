@@ -101,6 +101,16 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
   const [loading, setLoading] = useState(false);
   const [hotels, setHotels] = useState<any>([]);
 
+  useEffect(() => {
+    const searchFilters: any = sessionStorage.getItem("search_filter");
+    const searchFilterObject = JSON.parse(searchFilters);
+    console.log("Filter search... ", searchFilterObject);
+    if (searchFilterObject) {
+      // console.log("session value... ", searchFilterObject);
+      setSearchParams(searchFilterObject);
+    }
+  }, []);
+
   const handleLocationChange = (
     locationName: string,
     coordinates: { lat: number; lng: number } | null
@@ -133,8 +143,11 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
 
   const handleSearchClick = async () => {
     console.log(searchParams);
+    sessionStorage.setItem("search_filter", JSON.stringify(searchParams));
     try {
       setLoading(true);
+
+      // Saving the check in and out in session storage for other pages:
 
       const bodyData = {
         lat: searchParams?.location?.lat,
@@ -153,13 +166,16 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
         },
         body: JSON.stringify(bodyData),
       });
+
+      const data = await res.json();
       if (res.ok) {
-        const data = await res.json();
         const { hotels } = data;
         console.log("Hotels data is here: ");
         console.log(hotels);
         setHotels(hotels?.hotels || []);
       }
+      console.log(res);
+      console.log(data);
     } catch (err) {
       console.log(err);
     } finally {
@@ -183,13 +199,19 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
           <div className="item-search item-search-2">
             <label className="text-sm-bold neutral-500">Check In</label>
             <div className="box-calendar-date">
-              <MyDatePicker onChange={handleCheckInChange} />
+              <MyDatePicker
+                onChange={handleCheckInChange}
+                selectedDate={searchParams.checkIn}
+              />
             </div>
           </div>
           <div className="item-search item-search-3">
             <label className="text-sm-bold neutral-500">Check Out</label>
             <div className="box-calendar-date">
-              <MyDatePicker onChange={handleCheckOutChange} />
+              <MyDatePicker
+                onChange={handleCheckOutChange}
+                selectedDate={searchParams.checkOut}
+              />
             </div>
           </div>
           {!miniField && (
@@ -253,6 +275,7 @@ function HotelDisplayer({ hotels }: any) {
       updatedHotels = hotels.slice(0, 10);
     }
     return updatedHotels.map((hotel: any, index: number) => {
+      const numberOfStars = getCategoryNumber(hotel?.categoryName);
       return (
         <SwiperSlide key={index}>
           <div className="card-journey-small background-card">
@@ -310,64 +333,34 @@ function HotelDisplayer({ hotels }: any) {
                   </p>
 
                   <p className="text-star">
-                    {" "}
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
+                    {Array.from({ length: numberOfStars }).map(
+                      (_, index: number) => (
+                        <img
+                          key={index}
+                          className="light-mode"
+                          src="/assets/imgs/template/icons/star-black.svg"
+                          alt="StayChain"
+                        />
+                      )
+                    )}
+
+                    {Array.from({ length: numberOfStars }).map(
+                      (_, index: number) => (
+                        <img
+                          key={index}
+                          className="dark-mode"
+                          src="/assets/imgs/template/icons/star-w.svg"
+                          alt="StayChain"
+                        />
+                      )
+                    )}
                   </p>
                 </div>
                 <div className="endtime">
                   <div className="card-price">
                     <div className="heading- neutral-1000">
                       <p>Price Range</p>
-                      {hotel?.minRate} - {hotel?.maxRate} {hotel?.currency}
+                      {hotel?.minRate} - {hotel?.maxRate} Stay
                     </div>
                     {/* <p className="text-md-medium neutral-500">/ person</p> */}
                   </div>
@@ -425,10 +418,13 @@ export function LocationSearch({
   const [searchInput, setSearchInput] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [locations, setLocations] = useState<(ICountry | IState | ICity)[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<string>(
-    searchParams.location.name || ""
-  );
+  const [selectedLocation, setSelectedLocation] = useState<string>();
+
   const [flag, setFlag] = useState<any>("");
+
+  useEffect(() => {
+    setSelectedLocation(searchParams?.location?.name);
+  }, [searchParams]);
 
   useEffect(() => {
     if (searchInput.length > 1) {
@@ -597,6 +593,10 @@ export function LocationSearch({
   );
 }
 
+function getCategoryNumber(stringCat: string) {
+  let number = parseInt(stringCat.trim().split(" ")[0], 10);
+  return number;
+}
 /**
  * function HotelDisplayer({ hotels }: any) {
   const displayHotels = () => {
