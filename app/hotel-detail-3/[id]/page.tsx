@@ -32,15 +32,13 @@ export default function HotelDetail() {
           console.log("HOTEL CODE : ", id);
           setHotelId(id);
 
-          const response = await fetch(`/api/hotelAPi/${id}`);
+          const response = await fetch(`/api/db/hotel-detail/${id}`);
 
           const data = await response.json();
-          const { hotel } = data?.data;
+          console.log(data);
+          const hotel = data?.data;
+          console.log("HOTEL DATA FROM DB: ", hotel);
           setHotel(hotel);
-          // Set rooms as well....
-          // setRooms(hotel?.rooms);
-          console.log("Data,  ", data);
-          console.log("HOTEL, ", hotel);
         } catch (err) {
           console.log("Error while fetching room data...");
         }
@@ -237,11 +235,9 @@ export default function HotelDetail() {
       </div>
     );
   };
-  const numberOfStars = getCategoryNumber(
-    hotel?.category?.description?.content
-  );
+  const numberOfStars = getCategoryNumber(hotel?.category_content);
 
-  const hotelImages = getHotelImages(hotel?.images);
+  const hotelImages = getHotelImages(hotel?.api_hotel_images);
   return (
     <>
       {/* <Layout headerStyle={1} footerStyle={1}> */}
@@ -293,7 +289,7 @@ export default function HotelDetail() {
               </li>
               <li>
                 {" "}
-                <span className="text-breadcrumb">{hotel?.name?.content}</span>
+                <span className="text-breadcrumb">{hotel?.name_content}</span>
               </li>
             </ul>
           </div>
@@ -330,7 +326,7 @@ export default function HotelDetail() {
                         <h1 className="mt-20 mb-20 color-white">
                           Welcome to
                           <br className="d-none d-lg-block" />
-                          {hotel?.name?.content}
+                          {hotel?.name_content}
                         </h1>
                         <ul className="list-disc">
                           <li>Spacious and Well-Appointed Rooms</li>
@@ -367,7 +363,7 @@ export default function HotelDetail() {
                         <h1 className="mt-20 mb-20 color-white">
                           Welcome to
                           <br className="d-none d-lg-block" />
-                          {hotel?.name?.content}
+                          {hotel?.name_content}
                         </h1>
                         <ul className="list-disc">
                           <li>Spacious and Well-Appointed Rooms</li>
@@ -544,13 +540,13 @@ export default function HotelDetail() {
               <div className="col-lg-6 mb-30">
                 <div className="box-right-payment">
                   <span className="btn btn-brand-secondary">
-                    Welcome to {hotel?.name?.content}
+                    Welcome to {hotel?.name_content}
                   </span>
                   <h2 className="title-why mb-25 mt-10 neutral-1000">
                     A New Vision of Luxury
                   </h2>
                   <p className="text-lg-medium neutral-500 mb-35">
-                    {hotel?.description?.content}
+                    {hotel?.description_content}
                   </p>
                   <div className="box-telephone-booking">
                     <div className="box-tel-left">
@@ -641,7 +637,12 @@ export default function HotelDetail() {
               />
             </div>
             <div className="row">
-              {hotel ? displayRooms("primaryWallet") : null}
+              {hotel ? (
+                <RoomCardBeforeAvailability
+                  rooms={hotel?.api_hotel_rooms}
+                  images={hotel?.api_hotel_images}
+                />
+              ) : null}
             </div>
           </div>
         </section>
@@ -1126,7 +1127,7 @@ function getRandomNumber() {
 
 function getCategoryNumber(stringCat: string) {
   if (stringCat) {
-    let number = parseInt(stringCat?.trim()?.split(" ")[0], 10);
+    let number = parseInt(stringCat[0], 10);
     return number;
   }
   return 0;
@@ -1135,9 +1136,7 @@ function getCategoryNumber(stringCat: string) {
 function getImagePathByRoomCode(images: any, targetRoomCode: string) {
   if (!Array.isArray(images) || !targetRoomCode) return null;
 
-  const match = images.find(
-    (img) => img?.type?.code === "HAB" && img?.roomCode === targetRoomCode
-  );
+  const match = images.find((img) => img?.room_code === targetRoomCode);
 
   return match?.path || null;
 }
@@ -1146,6 +1145,88 @@ function getHotelImages(images: any) {
   if (!Array.isArray(images)) return [];
 
   return images
-    .filter((img) => img?.type?.code !== "HAB")
+    .filter((img) => img?.image_type_code !== "HAB")
     .map((img) => img.path);
 }
+
+type RoomBeforeAvailability = {
+  room_code: string;
+  room_type: string;
+  characteristic_code?: string;
+  min_pax: number;
+  max_pax: number;
+  max_adults: number;
+  max_children: number;
+};
+
+type Props = {
+  rooms: RoomBeforeAvailability[];
+  images: any;
+};
+
+const RoomCardBeforeAvailability: React.FC<Props> = ({ rooms, images }) => {
+  console.log("Images", images);
+  return (
+    <div className="row">
+      {rooms?.map((room) => {
+        const imagePath = getImagePathByRoomCode(images, room.room_code);
+        console.log(imagePath);
+
+        return (
+          <div className="col-lg-4 col-md-6" key={room.room_code}>
+            <div className="card-journey-small card-journey-small-type-3 background-card">
+              <div className="card-image">
+                <Link href="#">
+                  <img
+                    src={`${IMAGE_BASE_URL}/${imagePath}`}
+                    alt={room.room_type}
+                    // className="img-fluid"
+                  />
+                </Link>
+              </div>
+
+              <div className="card-info">
+                <div className="card-title">
+                  <h5 className="text-lg-bold neutral-1000">
+                    {room.room_type}
+                  </h5>
+                  {room.characteristic_code && (
+                    <p className="text-sm neutral-600">
+                      {room.characteristic_code}
+                    </p>
+                  )}
+                </div>
+
+                <div className="card-program">
+                  <div className="card-facilities">
+                    <div className="item-facilities">
+                      <p className="text-md-medium neutral-1000">
+                        Pax: {room.min_pax} - {room.max_pax}
+                      </p>
+                    </div>
+                    <div className="item-facilities">
+                      <p className="text-md-medium neutral-1000">
+                        Max Adults: {room.max_adults}
+                      </p>
+                    </div>
+                    <div className="item-facilities">
+                      <p className="text-md-medium neutral-1000">
+                        Max Children: {room.max_children}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-footer mt-3">
+                  <p className="text-sm-medium neutral-500">
+                    Enter dates to check availability & pricing
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};

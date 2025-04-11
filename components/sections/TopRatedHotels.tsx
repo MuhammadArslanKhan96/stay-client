@@ -9,19 +9,35 @@ export default function TopRatedHotels() {
   const [hotels, setHotels] = useState<any>([]);
 
   // Home page auto fetch Top ten hotels...
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const response = await fetch("/api/hotelAPi/checkroute");
+  //       const data = await response.json();
+  //       console.log("Response, top10  ", response);
+  //       console.log("Data, top10 ", data);
+  //       const { hotels } = data;
+  //       if (hotels) {
+  //         setHotels(hotels);
+  //       }
+  //     } catch (err) {
+  //       console.log("Error while fetching top rated hotels...");
+  //     }
+  //   })();
+  // }, []);
+
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch("/api/hotelAPi/checkroute");
+        const response = await fetch("/api/db/tophotels");
         const data = await response.json();
-        console.log("Response, top10  ", response);
-        console.log("Data, top10 ", data);
-        const { hotels } = data;
+        console.log("DB DATA hotel ", data);
+        const hotels = data?.data;
         if (hotels) {
           setHotels(hotels);
         }
       } catch (err) {
-        console.log("Error while fetching top rated hotels...");
+        console.log(err);
       }
     })();
   }, []);
@@ -54,7 +70,7 @@ export default function TopRatedHotels() {
                 </svg>
               </Link>
               <img
-                src={`${IMAGE_BASE_URL}/${hotel?.images?.[0].path}`}
+                src={`${IMAGE_BASE_URL}/${hotel?.api_hotel_images?.[0].path}`}
                 alt="StayChain"
               />
             </div>
@@ -77,13 +93,13 @@ export default function TopRatedHotels() {
                   className="heading-6 neutral-1000"
                   href={`/hotel-detail-3/${hotel.code}`}
                 >
-                  {hotel?.name?.content || "Hotel"}
+                  {hotel?.name_content || "Hotel"}
                 </Link>
               </div>
               <div className="card-program">
                 <div className="card-location">
                   <p className="text-location text-md-medium neutral-500">
-                    {hotel?.city?.content}, {hotel?.countryCode}
+                    {hotel?.city_content}, {hotel?.country_code}
                   </p>
                   <p className="text-star">
                     {" "}
@@ -142,7 +158,7 @@ export default function TopRatedHotels() {
                 <div className="endtime">
                   <div className="card-price">
                     <h6 className="heading-6 neutral-1000">
-                      {hotel?.rooms?.length}
+                      {hotel?._count?.api_hotel_rooms || 0}
                     </h6>
                     <p className="text-md-medium neutral-500">Rooms</p>
                   </div>
@@ -150,7 +166,7 @@ export default function TopRatedHotels() {
                     {" "}
                     <Link
                       className="btn btn-gray"
-                      href={`/hotel-detail-3/${hotel.code}`}
+                      href={`/hotel-detail-3/${hotel?.code}`}
                     >
                       Book Now
                     </Link>

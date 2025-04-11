@@ -132,79 +132,178 @@ model BookedProperties {
   updatedAt  DateTime? @default(now()) @db.Timestamp(6)
 }
 
-model Hotels {
-  id                    String            @id @default(dbgenerated("(gen_random_uuid())::text"))
-  name                  String
-  chainCode             String?
-  accommodationTypeCode String?
-  categoryCode          String?
-  categoryGroupCode     String?
-  description           String?
-  giataCode             Int?
-  countryCode           String?
-  cityCode              String?
-  postalCode            String?
-  latitude              Float?
-  longitude             Float?
-  phoneNumber           String?
-  email                 String?
-  website               String?
-  ranking               Int?
-  lastUpdate            String?
-  license               String?
-  hotelCode             Int?              @unique
-  HotelAddresses        HotelAddresses[]
-  HotelFacilities       HotelFacilities[]
-  HotelImages           HotelImages[]
-  HotelRooms            HotelRooms[]
+model api_hotel_board_codes {
+  id         Int         @id @default(autoincrement())
+  hotel_code Int?
+  board_code String      @db.VarChar(5)
+  created_at DateTime?   @default(now()) @db.Timestamptz(6)
+  api_hotels api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([hotel_code], map: "idx_api_hotel_board_codes_hotel_code")
 }
 
-model HotelAddresses {
-  id           String  @id @default(dbgenerated("(gen_random_uuid())::text"))
-  hotel_id     String?
-  address      String?
-  phoneNumber  String?
-  phoneType    String?
-  languageCode String?
-  Hotels       Hotels? @relation(fields: [hotel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model api_hotel_facilities {
+  id                  Int         @id @default(autoincrement())
+  hotel_code          Int?
+  facility_code       Int
+  facility_group_code Int
+  facility_order      Int?
+  number              Int?
+  time_from           String?
+  time_to             String?
+  voucher             Boolean?    @default(false)
+  created_at          DateTime?   @default(now()) @db.Timestamptz(6)
+  api_hotels          api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([hotel_code], map: "idx_api_hotel_facilities_hotel_code")
 }
 
-model HotelImages {
-  id            String  @id @default(dbgenerated("(gen_random_uuid())::text"))
-  hotel_id      String?
-  imageTypeCode String?
-  path          String?
-  roomCode      String?
-  roomType      String?
-  visualOrder   Int?
-  Hotels        Hotels? @relation(fields: [hotel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model api_hotel_images {
+  id                  Int         @id @default(autoincrement())
+  hotel_code          Int?
+  image_type_code     String?     @db.VarChar(10)
+  path                String
+  image_order         Int?
+  visual_order        Int?
+  room_code           String?     @db.VarChar(20)
+  room_type           String?     @db.VarChar(20)
+  characteristic_code String?     @db.VarChar(20)
+  created_at          DateTime?   @default(now()) @db.Timestamptz(6)
+  api_hotels          api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([hotel_code], map: "idx_api_hotel_images_hotel_code")
+  @@index([room_code], map: "idx_api_hotel_images_room_code")
 }
 
-model HotelRooms {
-  id          String  @id @default(dbgenerated("(gen_random_uuid())::text"))
-  hotel_id    String?
-  roomCode    String
-  roomType    String?
-  description String?
-  Hotels      Hotels? @relation(fields: [hotel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model api_hotel_issues {
+  id          Int         @id @default(autoincrement())
+  hotel_code  Int?
+  issue_code  String?     @db.VarChar(20)
+  issue_type  String?     @db.VarChar(20)
+  date_from   String?
+  date_to     String?
+  issue_order Int?
+  alternative Boolean?    @default(false)
+  created_at  DateTime?   @default(now()) @db.Timestamptz(6)
+  api_hotels  api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([hotel_id, roomCode])
+  @@index([hotel_code], map: "idx_api_hotel_issues_hotel_code")
 }
 
-model HotelFacilities {
-  id           String   @id @default(dbgenerated("(gen_random_uuid())::text"))
-  hotel_id     String?
-  facilityCode Int?
-  facilityName String?
-  description  String?
-  currency     String?
-  ageFrom      Int?
-  ageTo        Int?
-  dateFrom     String?
-  dateTo       String?
-  indFee       Boolean? @default(false)
-  voucher      Boolean? @default(false)
-  Hotels       Hotels?  @relation(fields: [hotel_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model api_hotel_phones {
+  id           Int         @id @default(autoincrement())
+  hotel_code   Int?
+  phone_number String      @db.VarChar(20)
+  phone_type   String      @db.VarChar(20)
+  created_at   DateTime?   @default(now()) @db.Timestamptz(6)
+  api_hotels   api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([hotel_id, facilityCode], map: "unique_facility_per_hotel")
+  @@index([hotel_code], map: "idx_api_hotel_phones_hotel_code")
+}
+
+model api_hotel_rooms {
+  id                  Int              @id @default(autoincrement())
+  hotel_code          Int?
+  room_code           String           @db.VarChar(20)
+  is_parent_room      Boolean?         @default(false)
+  min_pax             Int?
+  max_pax             Int?
+  max_adults          Int?
+  max_children        Int?
+  min_adults          Int?
+  room_type           String?          @db.VarChar(20)
+  characteristic_code String?          @db.VarChar(20)
+  created_at          DateTime?        @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?        @default(now()) @db.Timestamptz(6)
+  api_hotels          api_hotels?      @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
+  api_room_stays      api_room_stays[]
+
+  @@index([hotel_code], map: "idx_api_hotel_rooms_hotel_code")
+}
+
+model api_hotel_segment_codes {
+  id           Int         @id @default(autoincrement())
+  hotel_code   Int?
+  segment_code Int
+  created_at   DateTime?   @default(now()) @db.Timestamptz(6)
+  api_hotels   api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([hotel_code], map: "idx_api_hotel_segment_codes_hotel_code")
+}
+
+model api_hotels {
+  id                      Int                       @id @default(autoincrement())
+  code                    Int                       @unique
+  name_content            String
+  description_content     String?
+  country_code            String?                   @db.VarChar(5)
+  state_code              String?                   @db.VarChar(5)
+  destination_code        String?                   @db.VarChar(10)
+  zone_code               Int?
+  longitude               Decimal?                  @db.Decimal(10, 6)
+  latitude                Decimal?                  @db.Decimal(10, 6)
+  category_code           String?                   @db.VarChar(10)
+  category_group_code     String?                   @db.VarChar(10)
+  chain_code              String?                   @db.VarChar(10)
+  accommodation_type_code String?                   @db.VarChar(5)
+  address_content         String?
+  address_street          String?
+  postal_code             String?                   @db.VarChar(20)
+  city_content            String?
+  email                   String?                   @db.VarChar(255)
+  giata_code              Int?
+  web                     String?
+  last_update             String?
+  s2c                     String?                   @db.VarChar(10)
+  ranking                 Int?
+  created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  api_hotel_board_codes   api_hotel_board_codes[]
+  api_hotel_facilities    api_hotel_facilities[]
+  api_hotel_images        api_hotel_images[]
+  api_hotel_issues        api_hotel_issues[]
+  api_hotel_phones        api_hotel_phones[]
+  api_hotel_rooms         api_hotel_rooms[]
+  api_hotel_segment_codes api_hotel_segment_codes[]
+  api_interest_points     api_interest_points[]
+  api_wildcards           api_wildcards[]
+}
+
+model api_interest_points {
+  id                  Int         @id @default(autoincrement())
+  hotel_code          Int?
+  facility_code       Int?
+  facility_group_code Int?
+  point_order         Int?
+  poi_name            String?
+  distance            String?
+  created_at          DateTime?   @default(now()) @db.Timestamptz(6)
+  api_hotels          api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([hotel_code], map: "idx_api_interest_points_hotel_code")
+}
+
+model api_room_stays {
+  id              Int              @id @default(autoincrement())
+  room_id         Int?
+  stay_type       String?          @db.VarChar(20)
+  stay_order      String?          @db.VarChar(10)
+  description     String?
+  created_at      DateTime?        @default(now()) @db.Timestamptz(6)
+  api_hotel_rooms api_hotel_rooms? @relation(fields: [room_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([room_id], map: "idx_api_room_stays_room_id")
+}
+
+model api_wildcards {
+  id                             Int         @id @default(autoincrement())
+  hotel_code                     Int?
+  room_type                      String?     @db.VarChar(20)
+  room_code                      String?     @db.VarChar(20)
+  characteristic_code            String?     @db.VarChar(20)
+  hotel_room_description_content String?
+  created_at                     DateTime?   @default(now()) @db.Timestamptz(6)
+  api_hotels                     api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([hotel_code], map: "idx_api_wildcards_hotel_code")
 }

@@ -143,6 +143,8 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
 
   const handleSearchClick = async () => {
     console.log(searchParams);
+    alert("Right not availability is disabled due to Quota Exceed.");
+    return;
     sessionStorage.setItem("search_filter", JSON.stringify(searchParams));
     try {
       setLoading(true);
