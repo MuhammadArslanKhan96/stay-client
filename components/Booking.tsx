@@ -3,15 +3,6 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Alert, ListGroup } from "react-bootstrap";
 
-interface RoomDetails {
-  id: number;
-  name: string;
-  price: string;
-  adults: number;
-  children: number;
-  rateKey: string;
-}
-
 interface BookingFormData {
   firstName: string;
   lastName: string;
@@ -19,7 +10,7 @@ interface BookingFormData {
   phoneNumber: string;
 }
 
-const BookingForm: React.FC<{ rooms: RoomDetails[] }> = ({ rooms }) => {
+const BookingForm: React.FC<{ room: any }> = ({ room }) => {
   // console.log("Rooms in booking,  ", rooms);
   const [formData, setFormData] = useState<BookingFormData>({
     firstName: "",
@@ -75,6 +66,8 @@ const BookingForm: React.FC<{ rooms: RoomDetails[] }> = ({ rooms }) => {
       return;
     }
 
+    console.log("Room to be booked: ", room);
+
     const jsonUser: any = localStorage.getItem("dbuser") || {};
     const dbUser = JSON.parse(jsonUser);
     const userId = dbUser.id;
@@ -89,34 +82,44 @@ const BookingForm: React.FC<{ rooms: RoomDetails[] }> = ({ rooms }) => {
 
     try {
       setIsSubmitting(true);
-      const keys = rooms.map((room: any) => ({
-        rateKey: room.rateKey,
-      }));
+      const keyRate = room.rateKey;
       // Keys to book the rooms....
       // console.log(keys);
       const response = await fetch("/api/hotelAPi/booking", {
         method: "POST",
-        body: JSON.stringify({ ...userFormData, rateKeys: keys, userId }),
+        body: JSON.stringify({ ...userFormData, rateKey: keyRate, userId }),
       });
       console.log("here is the response");
       console.log(response);
+      const data = await response.json();
+      console.log("Booking response...", data);
       if (response.ok) {
         setIsSuccess(true);
         setFormData((data) => ({ ...data, email: userEmail }));
+      } else {
+        alert("An error occured while saving the booking");
       }
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // function handleSubmit() {
+  //   try {
+  //     alert("Doing booking.");
+  //   } catch (err) {
+  //     console.log("Error while booking...");
+  //   }
+  // }
+
   return (
     <Container className="my-5 background-body neutral-1000">
       <Row className="shadow-lg rounded overflow-hidden">
         {/* Rooms List Column - Display Only */}
         <Col md={12} className="p-4">
-          <h3 className="mb-4">Selected Rooms</h3>
+          <h3 className="mb-4">Room Details</h3>
           <ListGroup>
-            {rooms.map((room) => (
+            {room && (
               <ListGroup.Item key={room.id} className="mb-2 rounded">
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
@@ -125,10 +128,12 @@ const BookingForm: React.FC<{ rooms: RoomDetails[] }> = ({ rooms }) => {
                       Adults: {room.adults} | Children: {room.children}
                     </div>
                   </div>
-                  <div className="text-primary fw-bold">{room.price}</div>
+                  <div className="text-primary fw-bold">
+                    {formatStays(usdToStays(room.price))}
+                  </div>
                 </div>
               </ListGroup.Item>
-            ))}
+            )}
           </ListGroup>
 
           {isSuccess ? (
@@ -232,3 +237,13 @@ const BookingForm: React.FC<{ rooms: RoomDetails[] }> = ({ rooms }) => {
 };
 
 export default BookingForm;
+
+const usdToStays = (usdAmount: string) => {
+  const usd = parseFloat(usdAmount);
+  const stays = usd / 0.2;
+  return Math.round(stays * 100) / 100; // Round to 2 decimal places
+};
+
+const formatStays = (stays: number) => {
+  return `${stays} Stay`;
+};

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function BookingPage() {
   const router = usePathname();
   const [hotelCode, setHotelCode] = useState("");
-  const [rooms, setRooms] = useState([]);
+  const [room, setRoom] = useState<any>({});
 
   useEffect(() => {
     (async function () {
@@ -15,23 +15,23 @@ export default function BookingPage() {
         const hotelCode = url[url.length - 1];
         console.log("hotel code: ", hotelCode);
         // Getting rooms:
-        const roomsJson: any = sessionStorage.getItem("bookedRooms");
-        const roomsArray = JSON.parse(roomsJson);
+        const roomsJson: any = sessionStorage.getItem("bookedRoom");
+        const room = JSON.parse(roomsJson);
 
-        const rooms = roomsArray.map((room: any) => ({
+        const roomData = {
           id: room.code,
           name: room.name,
           adults: room.rates[0].adults,
           children: room.rates[0].children,
           price: room.rates[0].net,
           rateKey: room.rates[0].rateKey,
-        }));
-        setRooms(rooms);
+        };
+        setRoom(roomData);
         setHotelCode(hotelCode);
       } catch (er) {
         console.log(er);
       }
     })();
   }, []);
-  return <BookingForm rooms={rooms} />;
+  return <BookingForm room={room} />;
 }

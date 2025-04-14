@@ -22,8 +22,10 @@ export default function HotelDetail() {
 
   const [selectedRooms, setSelectedRooms] = useState<any>([]); // To keep track of selected rooms
   const [totalPrice, setTotalPrice] = useState(0); // To keep track of the total price
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
 
   useEffect(() => {
+    const isFilterApplied = sessionStorage.getItem("isfilterApplied");
     (async () => {
       if (router) {
         try {
@@ -39,6 +41,14 @@ export default function HotelDetail() {
           const hotel = data?.data;
           console.log("HOTEL DATA FROM DB: ", hotel);
           setHotel(hotel);
+
+          if (id && isFilterApplied === "true") {
+            console.log("Filter is applied...");
+            setIsFilterApplied(true);
+            const filterData: any = sessionStorage.getItem("search_filter");
+            const filterDataObj = JSON.parse(filterData);
+            fetchRooms(filterDataObj, id);
+          }
         } catch (err) {
           console.log("Error while fetching room data...");
         }
@@ -46,7 +56,46 @@ export default function HotelDetail() {
     })();
   }, []);
 
+  async function fetchRooms(checkInfo: any, hotelCode: string) {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/db/rooms-availability`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hotelCode: Number(hotelCode), ...checkInfo }),
+      });
+
+      console.log("Response from hotel beds API... ", res);
+      if (res.ok) {
+        const data = await res.json();
+        const { hotels } = data;
+
+        const hotel_s = hotels?.hotels;
+        console.log("Hot:, ", hotel_s);
+        if (hotel_s) {
+          for (let h of hotel_s) {
+            if (h.code === Number(hotelCode)) {
+              console.log("set rooms with data,", h.rooms);
+              setRooms(h.rooms);
+              return;
+            }
+          }
+        } else {
+          setRooms([]);
+          setSelectedRooms([]);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleSearchClick(bodyData: any) {
+    console.log("Searching hotel from search btn");
     try {
       setLoading(true);
       const res = await fetch(`/api/hotelAPi/availability`, {
@@ -94,9 +143,9 @@ export default function HotelDetail() {
     });
   };
 
-  const handleBtnSubmit = async () => {
+  const handleReserveClick = async (room: Room) => {
     console.log("Push...");
-    sessionStorage.setItem("bookedRooms", JSON.stringify(selectedRooms));
+    sessionStorage.setItem("bookedRoom", JSON.stringify(room));
     // window.location.href = `/roombookingform/${hotelId}`;
     moveRouter.push(`/roombookingform/${hotelId}`);
     // console.log(selectedRooms);
@@ -220,7 +269,7 @@ export default function HotelDetail() {
         </div>
 
         {/* Booking Summary */}
-        <div className="booking-summary my-2 background-body neutral-1000">
+        {/* <div className="booking-summary my-2 background-body neutral-1000">
           <h4>Booking Summary</h4>
           <p>Rooms Selected: {selectedRooms.length}</p>
 
@@ -231,7 +280,7 @@ export default function HotelDetail() {
           >
             {selectedRooms.length > 0 ? "Proceed to Booking" : "Select Room"}
           </button>
-        </div>
+        </div> */}
       </div>
     );
   };
@@ -638,10 +687,18 @@ export default function HotelDetail() {
             </div>
             <div className="row">
               {hotel ? (
-                <RoomCardBeforeAvailability
-                  rooms={hotel?.api_hotel_rooms}
-                  images={hotel?.api_hotel_images}
-                />
+                isFilterApplied ? (
+                  <RoomCardWithAvailability
+                    rooms={rooms}
+                    images={hotel?.api_hotel_images}
+                    onReserve={handleReserveClick}
+                  />
+                ) : (
+                  <RoomCardBeforeAvailability
+                    rooms={hotel?.api_hotel_rooms}
+                    images={hotel?.api_hotel_images}
+                  />
+                )
               ) : null}
             </div>
           </div>
@@ -1165,12 +1222,10 @@ type Props = {
 };
 
 const RoomCardBeforeAvailability: React.FC<Props> = ({ rooms, images }) => {
-  console.log("Images", images);
   return (
     <div className="row">
       {rooms?.map((room) => {
         const imagePath = getImagePathByRoomCode(images, room.room_code);
-        console.log(imagePath);
 
         return (
           <div className="col-lg-4 col-md-6" key={room.room_code}>
@@ -1221,6 +1276,133 @@ const RoomCardBeforeAvailability: React.FC<Props> = ({ rooms, images }) => {
                   <p className="text-sm-medium neutral-500">
                     Enter dates to check availability & pricing
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+interface Rate {
+  rateKey: string;
+  rateClass: string;
+  rateType: string;
+  net: string;
+  allotment: number;
+  paymentType: string;
+  packaging: boolean;
+  boardCode: string;
+  boardName: string;
+  cancellationPolicies: {
+    amount: string;
+    from: string;
+  }[];
+  rooms: number;
+  adults: number;
+  children: number;
+}
+
+interface Room {
+  code: string;
+  name: string;
+  rates: Rate[];
+}
+
+interface PropsRooms {
+  rooms: Room[];
+  images: any[]; // Replace with your actual image type
+  onReserve: (room: Room) => void;
+}
+
+const RoomCardWithAvailability: React.FC<PropsRooms> = ({
+  rooms,
+  images,
+  onReserve,
+}) => {
+  const usdToStays = (usdAmount: string) => {
+    const usd = parseFloat(usdAmount);
+    const stays = usd / 0.2;
+    return Math.round(stays * 100) / 100; // Round to 2 decimal places
+  };
+
+  const formatStays = (stays: number) => {
+    return `${stays} Stay`;
+  };
+
+  console.log("Rooms data in comp", rooms);
+  return (
+    <div className="row">
+      {rooms?.map((room) => {
+        const imagePath = getImagePathByRoomCode(images, room.code);
+        const primaryRate = room.rates[0]; // Assuming we show the first rate
+
+        return (
+          <div className="col-lg-4 col-md-6" key={room.code}>
+            <div className="card-journey-small card-journey-small-type-3 background-card">
+              <div className="card-image">
+                <Link href="#">
+                  <img src={`${IMAGE_BASE_URL}/${imagePath}`} alt={room.name} />
+                </Link>
+              </div>
+
+              <div className="card-info">
+                <div className="card-title">
+                  <h5 className="text-lg-bold neutral-1000">{room.name}</h5>
+                  <p className="text-sm neutral-600">{room.code}</p>
+                </div>
+
+                <div className="card-program">
+                  <div className="card-facilities">
+                    <div className="item-facilities">
+                      <p className="text-md-medium neutral-1000">
+                        Board: {primaryRate.boardName}
+                      </p>
+                    </div>
+                    <div className="item-facilities">
+                      <p className="text-md-medium neutral-1000">
+                        Rooms: {primaryRate.rooms}
+                      </p>
+                    </div>
+                    <div className="item-facilities">
+                      <p className="text-md-medium neutral-1000">
+                        Adults: {primaryRate.adults}
+                      </p>
+                    </div>
+                    {primaryRate.children > 0 && (
+                      <div className="item-facilities">
+                        <p className="text-md-medium neutral-1000">
+                          Children: {primaryRate.children}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="price-section mt-3">
+                  <h4 className="text-lg-bold neutral-1000">
+                    {formatStays(usdToStays(primaryRate.net))}
+                  </h4>
+                  {primaryRate.cancellationPolicies.length > 0 && (
+                    <p className="text-sm neutral-600">
+                      Free cancellation until{" "}
+                      {new Date(
+                        primaryRate.cancellationPolicies[0].from
+                      ).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+
+                <div className="box-button-book ">
+                  {" "}
+                  <button
+                    className="btn btn-book"
+                    onClick={() => onReserve(room)}
+                  >
+                    Reserve
+                  </button>
                 </div>
               </div>
             </div>

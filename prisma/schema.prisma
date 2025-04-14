@@ -215,6 +215,7 @@ model api_hotel_rooms {
   characteristic_code String?          @db.VarChar(20)
   created_at          DateTime?        @default(now()) @db.Timestamptz(6)
   updated_at          DateTime?        @default(now()) @db.Timestamptz(6)
+  api_bookings        api_bookings[]
   api_hotels          api_hotels?      @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
   api_room_stays      api_room_stays[]
 
@@ -258,6 +259,7 @@ model api_hotels {
   ranking                 Int?
   created_at              DateTime?                 @default(now()) @db.Timestamptz(6)
   updated_at              DateTime?                 @default(now()) @db.Timestamptz(6)
+  api_bookings            api_bookings[]
   api_hotel_board_codes   api_hotel_board_codes[]
   api_hotel_facilities    api_hotel_facilities[]
   api_hotel_images        api_hotel_images[]
@@ -306,4 +308,33 @@ model api_wildcards {
   api_hotels                     api_hotels? @relation(fields: [hotel_code], references: [code], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([hotel_code], map: "idx_api_wildcards_hotel_code")
+}
+
+model api_bookings {
+  id               Int             @id @default(autoincrement())
+  reference        String          @unique @db.VarChar(50)
+  client_reference String?         @db.VarChar(50)
+  hotel_id         Int
+  room_id          Int
+  rate_key         String          @db.VarChar(255)
+  check_in         DateTime        @db.Date
+  check_out        DateTime        @db.Date
+  total_amount     Decimal         @db.Decimal(10, 2)
+  currency         String          @default("USD") @db.VarChar(3)
+  holder_name      String          @db.VarChar(100)
+  holder_surname   String          @db.VarChar(100)
+  holder_email     String?         @db.VarChar(100)
+  holder_phone     String?         @db.VarChar(20)
+  status           String          @default("confirmed") @db.VarChar(20)
+  payment_status   String?         @default("pending") @db.VarChar(20)
+  payment_method   String?         @db.VarChar(50)
+  supplier_data    Json?
+  user_id          String          @db.VarChar(30)
+  created_at       DateTime?       @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime?       @default(now()) @db.Timestamptz(6)
+  api_hotels       api_hotels      @relation(fields: [hotel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  api_hotel_rooms  api_hotel_rooms @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([check_in, check_out], map: "idx_api_bookings_dates")
+  @@index([user_id], map: "idx_api_bookings_user_id")
 }

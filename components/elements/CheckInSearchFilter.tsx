@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { swiperGroupAnimate } from "@/util/swiperOption";
 import { ICountry, IState, ICity } from "country-state-city";
 import { Country, State, City } from "country-state-city";
+import { IMAGE_BASE_URL } from "@/util/constant";
 
 export default function Check() {
   return <CheckFilter />;
@@ -143,9 +144,8 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
 
   const handleSearchClick = async () => {
     console.log(searchParams);
-    alert("Right not availability is disabled due to Quota Exceed.");
-    return;
     sessionStorage.setItem("search_filter", JSON.stringify(searchParams));
+    sessionStorage.setItem("isfilterApplied", "true");
     try {
       setLoading(true);
 
@@ -161,7 +161,7 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
         rooms: searchParams.guests.rooms,
       };
 
-      const res = await fetch(`/api/hotelAPi/checkroute`, {
+      const res = await fetch(`/api/db/tophotels`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -171,10 +171,9 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
 
       const data = await res.json();
       if (res.ok) {
-        const { hotels } = data;
-        console.log("Hotels data is here: ");
-        console.log(hotels);
-        setHotels(hotels?.hotels || []);
+        const hotels = data.data;
+        console.log("Available hotels are: ", hotels);
+        setHotels(hotels || []);
       }
       console.log(res);
       console.log(data);
@@ -277,7 +276,8 @@ function HotelDisplayer({ hotels }: any) {
       updatedHotels = hotels.slice(0, 10);
     }
     return updatedHotels.map((hotel: any, index: number) => {
-      const numberOfStars = getCategoryNumber(hotel?.categoryName);
+      const numberOfStars = getCategoryNumber(hotel?.category_code);
+      const hotelImages = getHotelImages(hotel?.api_hotel_images);
       return (
         <SwiperSlide key={index}>
           <div className="card-journey-small background-card">
@@ -301,7 +301,11 @@ function HotelDisplayer({ hotels }: any) {
                 </svg>
               </Link>
               <img
-                src={hotel.imageSource || "/assets/imgs/page/hotel/room.png"}
+                src={
+                  hotelImages?.[0]
+                    ? `${IMAGE_BASE_URL}/${hotelImages[0]}`
+                    : "assets/imgs/page/hotel/banner-hotel.png"
+                }
                 alt="StayChain"
               />
             </div>
@@ -324,14 +328,16 @@ function HotelDisplayer({ hotels }: any) {
                   className="heading-6 neutral-1000"
                   href={`/hotel-detail-3/${hotel.code}`}
                 >
-                  {hotel.name || "Hotel"}
+                  {hotel.name_content || "Hotel"}
                 </Link>
               </div>
-              <p className="neutral-1000">Rooms: {hotel?.rooms?.length}</p>
+              <p className="neutral-1000">
+                Rooms: {hotel?._count?.api_hotel_rooms}
+              </p>
               <div className="card-program">
                 <div className="card-location">
                   <p className="text-location text-md-medium neutral-500">
-                    {hotel?.destinationName}
+                    {hotel?.city_content} ,{hotel?.country_code}
                   </p>
 
                   <p className="text-star">
@@ -359,20 +365,20 @@ function HotelDisplayer({ hotels }: any) {
                   </p>
                 </div>
                 <div className="endtime">
-                  <div className="card-price">
+                  {/* <div className="card-price">
                     <div className="heading- neutral-1000">
                       <p>Price Range</p>
                       {hotel?.minRate} - {hotel?.maxRate} Stay
                     </div>
-                    {/* <p className="text-md-medium neutral-500">/ person</p> */}
-                  </div>
+
+                  </div> */}
                   <div className="card-button">
                     {" "}
                     <Link
                       className="btn btn-gray"
                       href={`/hotel-detail-3/${hotel.code}`}
                     >
-                      Book Now
+                      Check Availability
                     </Link>
                   </div>
                 </div>
@@ -596,9 +602,18 @@ export function LocationSearch({
 }
 
 function getCategoryNumber(stringCat: string) {
-  let number = parseInt(stringCat.trim().split(" ")[0], 10);
+  let number = parseInt(stringCat?.trim().split(" ")[0], 10);
   return number;
 }
+
+function getHotelImages(images: any) {
+  if (!Array.isArray(images)) return [];
+
+  return images
+    .filter((img) => img?.image_type_code !== "HAB")
+    .map((img) => img.path);
+}
+
 /**
  * function HotelDisplayer({ hotels }: any) {
   const displayHotels = () => {
