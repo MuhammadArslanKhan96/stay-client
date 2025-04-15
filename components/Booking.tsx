@@ -1,6 +1,7 @@
 "use client";
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { Container, Row, Col, Alert, ListGroup } from "react-bootstrap";
 
 interface BookingFormData {
@@ -12,6 +13,7 @@ interface BookingFormData {
 
 const BookingForm: React.FC<{ room: any }> = ({ room }) => {
   // console.log("Rooms in booking,  ", rooms);
+  const moveRouter = useRouter();
   const [formData, setFormData] = useState<BookingFormData>({
     firstName: "",
     lastName: "",
@@ -96,6 +98,8 @@ const BookingForm: React.FC<{ room: any }> = ({ room }) => {
       if (response.ok) {
         setIsSuccess(true);
         setFormData((data) => ({ ...data, email: userEmail }));
+
+        moveRouter.push(`/showbookings`);
       } else {
         alert("An error occured while saving the booking");
       }

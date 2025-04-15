@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import RoomAvailabilityChecker from "@/components/sections/RoomAvailabilitySearch";
 import { IMAGE_BASE_URL } from "@/util/constant";
+import GlobalLoader from "@/components/Loader";
 
 export default function HotelDetail() {
   const [hotel, setHotel] = useState<any>([]);
@@ -17,17 +18,20 @@ export default function HotelDetail() {
   const [loading, setLoading] = useState(false);
   const [hotelId, setHotelId] = useState("");
   const [rooms, setRooms] = useState<any>([]);
+  const [isReserveLoading, setIsReserveLoading] = useState(false);
 
   const moveRouter = useRouter();
 
   const [selectedRooms, setSelectedRooms] = useState<any>([]); // To keep track of selected rooms
   const [totalPrice, setTotalPrice] = useState(0); // To keep track of the total price
   const [isFilterApplied, setIsFilterApplied] = useState(false);
+  const [initialLoader, setInitialLoader] = useState(false);
 
   useEffect(() => {
     const isFilterApplied = sessionStorage.getItem("isfilterApplied");
     (async () => {
       if (router) {
+        setInitialLoader(true);
         try {
           const url = router.split("/");
           const id = url[url.length - 1];
@@ -51,6 +55,8 @@ export default function HotelDetail() {
           }
         } catch (err) {
           console.log("Error while fetching room data...");
+        } finally {
+          setInitialLoader(false);
         }
       }
     })();
@@ -110,16 +116,18 @@ export default function HotelDetail() {
         const { hotels } = data;
 
         const hotel_s = hotels?.hotels;
-        console.log("Hot:, ", hotel_s);
+        console.log("Handle Search Click hotels ... , ", hotel_s);
         if (hotel_s) {
           for (let h of hotel_s) {
             if (h.code === Number(hotelId)) {
+              setIsFilterApplied(true);
+              console.log("Setting rooms on handle search...");
               setRooms(h.rooms);
               return;
             }
           }
         } else {
-          alert("No room is available.");
+          // alert("No room is available on such dates.");
           setRooms([]);
           setSelectedRooms([]);
         }
@@ -145,6 +153,7 @@ export default function HotelDetail() {
 
   const handleReserveClick = async (room: Room) => {
     console.log("Push...");
+    setIsReserveLoading(true);
     sessionStorage.setItem("bookedRoom", JSON.stringify(room));
     // window.location.href = `/roombookingform/${hotelId}`;
     moveRouter.push(`/roombookingform/${hotelId}`);
@@ -1173,13 +1182,15 @@ export default function HotelDetail() {
         </section>
       </main>
 
-      {/* </Layout> */}
+      {isReserveLoading && (
+        <GlobalLoader variant="spinner" message="Reserving" visible={true} />
+      )}
+
+      {initialLoader && (
+        <GlobalLoader variant="spinner" message="Loading" visible={true} />
+      )}
     </>
   );
-}
-
-function getRandomNumber() {
-  return Math.floor(Math.random() * 4) + 2;
 }
 
 function getCategoryNumber(stringCat: string) {
@@ -1193,7 +1204,7 @@ function getCategoryNumber(stringCat: string) {
 function getImagePathByRoomCode(images: any, targetRoomCode: string) {
   if (!Array.isArray(images) || !targetRoomCode) return null;
 
-  const match = images.find((img) => img?.room_code === targetRoomCode);
+  const match = images.find((img) => img?.room_code?.includes(targetRoomCode));
 
   return match?.path || null;
 }
@@ -1233,7 +1244,7 @@ const RoomCardBeforeAvailability: React.FC<Props> = ({ rooms, images }) => {
               <div className="card-image">
                 <Link href="#">
                   <img
-                    src={`${IMAGE_BASE_URL}/${imagePath}`}
+                    src={`${IMAGE_BASE_URL}/bigger/${imagePath}`}
                     alt={room.room_type}
                     // className="img-fluid"
                   />
@@ -1243,7 +1254,7 @@ const RoomCardBeforeAvailability: React.FC<Props> = ({ rooms, images }) => {
               <div className="card-info">
                 <div className="card-title">
                   <h5 className="text-lg-bold neutral-1000">
-                    {room.room_type}
+                    {room.room_code}
                   </h5>
                   {room.characteristic_code && (
                     <p className="text-sm neutral-600">
@@ -1335,80 +1346,92 @@ const RoomCardWithAvailability: React.FC<PropsRooms> = ({
   console.log("Rooms data in comp", rooms);
   return (
     <div className="row">
-      {rooms?.map((room) => {
-        const imagePath = getImagePathByRoomCode(images, room.code);
-        const primaryRate = room.rates[0]; // Assuming we show the first rate
+      {rooms?.length === 0 ? (
+        <>
+          <h5 className="neutral-1000">
+            On these dates, no room is available.
+          </h5>
+          <span className="neurtal-1000">Please, search for other hotels.</span>
+        </>
+      ) : (
+        rooms?.map((room) => {
+          const imagePath = getImagePathByRoomCode(images, room.code);
+          const primaryRate = room.rates[0]; // Assuming we show the first rate
 
-        return (
-          <div className="col-lg-4 col-md-6" key={room.code}>
-            <div className="card-journey-small card-journey-small-type-3 background-card">
-              <div className="card-image">
-                <Link href="#">
-                  <img src={`${IMAGE_BASE_URL}/${imagePath}`} alt={room.name} />
-                </Link>
-              </div>
-
-              <div className="card-info">
-                <div className="card-title">
-                  <h5 className="text-lg-bold neutral-1000">{room.name}</h5>
-                  <p className="text-sm neutral-600">{room.code}</p>
+          return (
+            <div className="col-lg-4 col-md-6" key={room.code}>
+              <div className="card-journey-small card-journey-small-type-3 background-card">
+                <div className="card-image">
+                  <Link href="#">
+                    <img
+                      src={`${IMAGE_BASE_URL}/${imagePath}`}
+                      alt={room.name}
+                    />
+                  </Link>
                 </div>
 
-                <div className="card-program">
-                  <div className="card-facilities">
-                    <div className="item-facilities">
-                      <p className="text-md-medium neutral-1000">
-                        Board: {primaryRate.boardName}
-                      </p>
-                    </div>
-                    <div className="item-facilities">
-                      <p className="text-md-medium neutral-1000">
-                        Rooms: {primaryRate.rooms}
-                      </p>
-                    </div>
-                    <div className="item-facilities">
-                      <p className="text-md-medium neutral-1000">
-                        Adults: {primaryRate.adults}
-                      </p>
-                    </div>
-                    {primaryRate.children > 0 && (
+                <div className="card-info">
+                  <div className="card-title">
+                    <h5 className="text-lg-bold neutral-1000">{room.name}</h5>
+                    <p className="text-sm neutral-600">{room.code}</p>
+                  </div>
+
+                  <div className="card-program">
+                    <div className="card-facilities">
                       <div className="item-facilities">
                         <p className="text-md-medium neutral-1000">
-                          Children: {primaryRate.children}
+                          Board: {primaryRate.boardName}
                         </p>
                       </div>
+                      <div className="item-facilities">
+                        <p className="text-md-medium neutral-1000">
+                          Rooms: {primaryRate.rooms}
+                        </p>
+                      </div>
+                      <div className="item-facilities">
+                        <p className="text-md-medium neutral-1000">
+                          Adults: {primaryRate.adults}
+                        </p>
+                      </div>
+                      {primaryRate.children > 0 && (
+                        <div className="item-facilities">
+                          <p className="text-md-medium neutral-1000">
+                            Children: {primaryRate.children}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="price-section mt-3">
+                    <h4 className="text-lg-bold neutral-1000">
+                      {formatStays(usdToStays(primaryRate.net))}
+                    </h4>
+                    {primaryRate.cancellationPolicies.length > 0 && (
+                      <p className="text-sm neutral-600">
+                        Free cancellation until{" "}
+                        {new Date(
+                          primaryRate.cancellationPolicies[0].from
+                        ).toLocaleDateString()}
+                      </p>
                     )}
                   </div>
-                </div>
 
-                <div className="price-section mt-3">
-                  <h4 className="text-lg-bold neutral-1000">
-                    {formatStays(usdToStays(primaryRate.net))}
-                  </h4>
-                  {primaryRate.cancellationPolicies.length > 0 && (
-                    <p className="text-sm neutral-600">
-                      Free cancellation until{" "}
-                      {new Date(
-                        primaryRate.cancellationPolicies[0].from
-                      ).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
-
-                <div className="box-button-book ">
-                  {" "}
-                  <button
-                    className="btn btn-book"
-                    onClick={() => onReserve(room)}
-                  >
-                    Reserve
-                  </button>
+                  <div className="box-button-book ">
+                    {" "}
+                    <button
+                      className="btn btn-book"
+                      onClick={() => onReserve(room)}
+                    >
+                      Reserve
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      )}
     </div>
   );
 };

@@ -47,6 +47,10 @@ export default function TopRatedHotels() {
       updatedHotels = getFirstTenUniqueNames(hotels);
     }
     return updatedHotels.map((hotel: any, index: number) => {
+      const hotelImagePath = getHotelImage(hotel.api_hotel_images);
+      !hotelImagePath &&
+        console.log("NOT IMAGE found for " + hotel.name_content);
+
       return (
         <SwiperSlide key={index}>
           <div className="card-journey-small background-card">
@@ -70,7 +74,7 @@ export default function TopRatedHotels() {
                 </svg>
               </Link>
               <img
-                src={`${IMAGE_BASE_URL}/${hotel?.api_hotel_images?.[0].path}`}
+                src={`${IMAGE_BASE_URL}/${hotelImagePath}`}
                 alt="StayChain"
               />
             </div>
@@ -458,10 +462,9 @@ function getFirstTenUniqueNames<T extends { name: string }>(items: T[]): T[] {
   return result;
 }
 
-function getHotelImages(images: any) {
-  if (!Array.isArray(images)) return [];
+function getHotelImage(images: any) {
+  if (!Array.isArray(images)) return null;
 
-  return images
-    .filter((img) => img?.type?.code !== "HAB")
-    .map((img) => img.path);
+  const matchedImage = images.find((img) => img?.type?.code !== "HAB");
+  return matchedImage?.path || null;
 }
