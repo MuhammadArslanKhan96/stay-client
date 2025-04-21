@@ -8,9 +8,24 @@ import { swiperGroupAnimate } from "@/util/swiperOption";
 import { ICountry, IState, ICity } from "country-state-city";
 import { Country, State, City } from "country-state-city";
 import { IMAGE_BASE_URL } from "@/util/constant";
+import { useRouter } from "next/navigation";
 
-export default function Check() {
-  return <CheckFilter />;
+export default function SearchFilterTop() {
+  return (
+    <section className="box-section block-banner-property">
+      <div className="container">
+        <div className="text-center">
+          <h3>Journey with Stay Chain - Begin Your Story!</h3>
+          <h6 className="heading-6-medium">
+            Easily search for top properties offered by our professional network
+          </h6>
+        </div>
+        <div className="box-search-advance box-search-advance-3 background-card wow fadeInUp">
+          <CheckFilter />
+        </div>
+      </div>
+    </section>
+  );
 }
 
 // Define types for the GuestSelector component
@@ -101,6 +116,7 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
   });
   const [loading, setLoading] = useState(false);
   const [hotels, setHotels] = useState<any>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const searchFilters: any = sessionStorage.getItem("search_filter");
@@ -143,125 +159,99 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
   };
 
   const handleSearchClick = async () => {
-    console.log(searchParams);
+    // console.log(searchParams);
     sessionStorage.setItem("search_filter", JSON.stringify(searchParams));
     sessionStorage.setItem("isfilterApplied", "true");
-    try {
-      setLoading(true);
 
-      // Saving the check in and out in session storage for other pages:
+    const { location, checkIn, checkOut, guests } = searchParams;
 
-      const bodyData = {
-        lat: searchParams?.location?.lat,
-        lng: searchParams?.location?.lng,
-        checkIn: searchParams.checkIn,
-        checkOut: searchParams.checkOut,
-        adults: searchParams.guests.adults,
-        children: 0,
-        rooms: searchParams.guests.rooms,
-      };
+    const query = new URLSearchParams({
+      locationName: location.name,
+      lat: location.lat,
+      lng: location.lng,
+      checkIn,
+      checkOut,
+      adults: guests.adults.toString(),
+      children: guests.children.toString(),
+      rooms: guests.rooms.toString(),
+    });
 
-      const res = await fetch(`/api/db/tophotels`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bodyData),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        const hotels = data.data;
-        console.log("Available hotels are: ", hotels);
-        setHotels(hotels || []);
-      }
-      console.log(res);
-      console.log(data);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
+    router.push(`/available-hotels?${query.toString()}`);
   };
 
   return (
     <>
-      <div
-        className="box-search-advance background-card wow fadeInUp background-body"
-        style={{ top: "0px", margin: "10px 0px" }}
-      >
-        <div className="box-bottom-search background-card justify-content-center">
-          {!miniField && (
-            <LocationSearch
-              searchParams={searchParams}
-              onLocationChange={handleLocationChange}
+      <div className="box-bottom-search background-card">
+        {!miniField && (
+          <LocationSearch
+            searchParams={searchParams}
+            onLocationChange={handleLocationChange}
+          />
+        )}
+        <div className="item-search item-search-2">
+          <label className="text-sm-bold neutral-500">Check In</label>
+          <div className="box-calendar-date">
+            <MyDatePicker
+              onChange={handleCheckInChange}
+              selectedDate={searchParams.checkIn}
             />
-          )}
-          <div className="item-search item-search-2">
-            <label className="text-sm-bold neutral-500">Check In</label>
-            <div className="box-calendar-date">
-              <MyDatePicker
-                onChange={handleCheckInChange}
-                selectedDate={searchParams.checkIn}
-              />
-            </div>
           </div>
-          <div className="item-search item-search-3">
-            <label className="text-sm-bold neutral-500">Check Out</label>
-            <div className="box-calendar-date">
-              <MyDatePicker
-                onChange={handleCheckOutChange}
-                selectedDate={searchParams.checkOut}
-              />
-            </div>
+        </div>
+        <div className="item-search item-search-3">
+          <label className="text-sm-bold neutral-500">Check Out</label>
+          <div className="box-calendar-date">
+            <MyDatePicker
+              onChange={handleCheckOutChange}
+              selectedDate={searchParams.checkOut}
+            />
           </div>
-          {!miniField && (
-            <div className="item-search bd-none">
-              <label className="text-sm-bold neutral-500">Guest</label>
-              <Dropdown className="dropdown">
-                <Dropdown.Toggle
-                  className="btn btn-secondary dropdown-toggle btn-dropdown-search passenger-search"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  {`${searchParams.guests.adults} adults, ${searchParams.guests.children} children, ${searchParams.guests.rooms} rooms`}
-                </Dropdown.Toggle>
-                <Dropdown.Menu as="ul" className="dropdown-menu">
-                  <li>
-                    <GuestSelector
-                      guests={searchParams.guests}
-                      onGuestsChange={handleGuestsChange}
-                    />
-                  </li>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-          )}
-          <div className="item-search bd-none d-flex justify-content-end">
-            <button
-              className="btn btn-black-lg"
-              onClick={handleSearchClick}
-              disabled={loading}
-            >
-              <svg
-                width={20}
-                height={20}
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
+        </div>
+        {!miniField && (
+          <div className="item-search bd-none">
+            <label className="text-sm-bold neutral-500">Guest</label>
+            <Dropdown className="dropdown">
+              <Dropdown.Toggle
+                className="btn btn-secondary dropdown-toggle btn-dropdown-search passenger-search"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
               >
-                <path
-                  d="M19 19L14.6569 14.6569M14.6569 14.6569C16.1046 13.2091 17 11.2091 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17C11.2091 17 13.2091 16.1046 14.6569 14.6569Z"
-                  stroke="#fff"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                />
-              </svg>
-              {loading ? "Searching" : "Search"}
-            </button>
+                {`${searchParams.guests.adults} adults, ${searchParams.guests.children} children, ${searchParams.guests.rooms} rooms`}
+              </Dropdown.Toggle>
+              <Dropdown.Menu as="ul" className="dropdown-menu">
+                <li>
+                  <GuestSelector
+                    guests={searchParams.guests}
+                    onGuestsChange={handleGuestsChange}
+                  />
+                </li>
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
+        )}
+        <div className="item-search bd-none d-flex justify-content-end">
+          <button
+            className="btn btn-black-lg"
+            onClick={handleSearchClick}
+            disabled={loading}
+          >
+            <svg
+              width={20}
+              height={20}
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 19L14.6569 14.6569M14.6569 14.6569C16.1046 13.2091 17 11.2091 17 9C17 4.58172 13.4183 1 9 1C4.58172 1 1 4.58172 1 9C1 13.4183 4.58172 17 9 17C11.2091 17 13.2091 16.1046 14.6569 14.6569Z"
+                stroke="#fff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+            {loading ? "Searching" : "Search"}
+          </button>
         </div>
       </div>
       {hotels.length > 0 && <HotelDisplayer hotels={hotels} />}
@@ -277,7 +267,7 @@ function HotelDisplayer({ hotels }: any) {
     }
     return updatedHotels.map((hotel: any, index: number) => {
       const numberOfStars = getCategoryNumber(hotel?.category_code);
-      const hotelImages = getHotelImages(hotel?.api_hotel_images);
+      const hotelImage = getHotelImage(hotel?.api_hotel_images);
       return (
         <SwiperSlide key={index}>
           <div className="card-journey-small background-card">
@@ -302,8 +292,8 @@ function HotelDisplayer({ hotels }: any) {
               </Link>
               <img
                 src={
-                  hotelImages?.[0]
-                    ? `${IMAGE_BASE_URL}/${hotelImages[0]}`
+                  hotelImage
+                    ? `${IMAGE_BASE_URL}/${hotelImage}`
                     : "assets/imgs/page/hotel/banner-hotel.png"
                 }
                 alt="StayChain"
@@ -606,12 +596,11 @@ function getCategoryNumber(stringCat: string) {
   return number;
 }
 
-function getHotelImages(images: any) {
-  if (!Array.isArray(images)) return [];
+function getHotelImage(images: any) {
+  if (!Array.isArray(images)) return null;
 
-  return images
-    .filter((img) => img?.image_type_code !== "HAB")
-    .map((img) => img.path);
+  const matchedImage = images.findLast((img) => img?.type?.code !== "HAB");
+  return matchedImage?.path || null;
 }
 
 /**

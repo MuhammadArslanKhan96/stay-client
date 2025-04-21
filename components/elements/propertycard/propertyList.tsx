@@ -1,10 +1,13 @@
 import Link from "next/link";
+import React from "react";
 
-export default function PropertyCard1({ property }: any) {
+export default function PropertyList({ property }: any) {
+  //   console.log("Property, ", property);
   return (
     <>
-      <div className="card-journey-small card-grid-real background-card">
+      <div className="card-journey-small background-card">
         <div className="card-image">
+          {" "}
           <Link className="wish" href="#">
             <svg
               width={20}
@@ -22,64 +25,43 @@ export default function PropertyCard1({ property }: any) {
               />
             </svg>
           </Link>
-          <img src={`${property.image}`} alt="StayChain" />
+          <img src={property?.image} alt="StayChain" />
         </div>
-        <div className="card-info">
+        <div className="card-info background-card">
           <div className="card-rating">
             <div className="card-left"> </div>
             <div className="card-right">
               {" "}
-              <span className="rating">
-                {property?.rating}
-                <span className="text-sm-medium neutral-500">
-                  {/* (672 reviews) */}
-                </span>
-              </span>
+              <span className="rating">{property?.rating} </span>
             </div>
           </div>
           <div className="card-title">
             {" "}
             <Link
               className="text-lg-bold neutral-1000"
-              href={`/hotel-detail-3/${property.code}`}
+              href={`/hotel-detail-3//${property.code}`}
             >
-              {property.name}
+              {property?.name}{" "}
             </Link>
           </div>
           <div className="card-program">
-            <div className="card-location">
-              <p className="text-location text-sm-medium neutral-500">
-                {property?.location}
+            <div className="card-duration-tour">
+              <p className="icon-duration text-sm-medium neutral-500">
+                {property?.rooms} Rooms
               </p>
-            </div>
-            <div className="card-facilities">
-              <div className="item-facilities">
-                <p className="room text-md-medium neutral-1000">
-                  {property?.rooms} rooms
-                </p>
-              </div>
-              <div className="item-facilities">
-                <p className="size text-md-medium neutral-1000">168 m2</p>
-              </div>
-              <div className="item-facilities">
-                <p className="bed text-md-medium neutral-1000">5 Beds</p>
-              </div>
-              <div className="item-facilities">
-                <p className="bathroom text-md-medium neutral-1000">
-                  2 Bathrooms
-                </p>
-              </div>
+              {/* <p className="icon-guest text-sm-medium neutral-500">B</p> */}
             </div>
             <div className="endtime">
               <div className="card-price">
-                <h6 className="heading-6 neutral-1000">{property?.price}</h6>
-                <p className="text-md-medium neutral-500">Stay</p>
+                <h6 className="heading-6 neutral-1000">
+                  {property?.price} Stay
+                </h6>
               </div>
               <div className="card-button">
                 {" "}
                 <Link
                   className="btn btn-gray"
-                  href={`/hotel-detail-3/${property.code}`}
+                  href={`hotel-detail-3/${property.code}`}
                 >
                   Book Now
                 </Link>

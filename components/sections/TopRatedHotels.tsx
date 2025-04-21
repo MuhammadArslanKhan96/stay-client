@@ -7,6 +7,7 @@ import { IMAGE_BASE_URL } from "@/util/constant";
 
 export default function TopRatedHotels() {
   const [hotels, setHotels] = useState<any>([]);
+  const [showNameIndex, setShowNameIndex] = useState<any>(-1);
 
   // Home page auto fetch Top ten hotels...
   // useEffect(() => {
@@ -51,6 +52,14 @@ export default function TopRatedHotels() {
       !hotelImagePath &&
         console.log("NOT IMAGE found for " + hotel.name_content);
 
+      const hotelname = hotel?.name_content;
+      const length = hotelname?.length;
+      let subHotelName = hotelname;
+      if (length > 20) {
+        const lengthPivot = 20;
+        subHotelName = hotelname?.substring(0, lengthPivot) + "...";
+      }
+
       return (
         <SwiperSlide key={index}>
           <div className="card-journey-small background-card">
@@ -91,13 +100,21 @@ export default function TopRatedHotels() {
                   </span>
                 </div>
               </div>
-              <div className="card-title">
+              <div
+                className="card-title"
+                onMouseEnter={() => {
+                  setShowNameIndex(index);
+                }}
+                onMouseOut={() => {
+                  setShowNameIndex(-1);
+                }}
+              >
                 {" "}
                 <Link
                   className="heading-6 neutral-1000"
                   href={`/hotel-detail-3/${hotel.code}`}
                 >
-                  {hotel?.name_content || "Hotel"}
+                  {showNameIndex === index ? hotelname : subHotelName}
                 </Link>
               </div>
               <div className="card-program">
@@ -465,6 +482,6 @@ function getFirstTenUniqueNames<T extends { name: string }>(items: T[]): T[] {
 function getHotelImage(images: any) {
   if (!Array.isArray(images)) return null;
 
-  const matchedImage = images.find((img) => img?.type?.code !== "HAB");
+  const matchedImage = images.findLast((img) => img?.type?.code !== "HAB");
   return matchedImage?.path || null;
 }
