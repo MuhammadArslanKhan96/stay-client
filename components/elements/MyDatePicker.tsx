@@ -25,6 +25,7 @@ export default function MyDatePicker({
           onChange(date);
           setStartDate(date);
         }}
+        minDate={new Date()} // disabled previous dated
         className="search-input datepicker"
       />
     </>
