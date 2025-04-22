@@ -5,12 +5,15 @@ import SwiperGroupPaymentSlider from "@/components/slider/SwiperGroupPaymentSlid
 import { swiperGroup1, swiperGroupAnimate } from "@/util/swiperOption";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SearchFilterBottom from "@/components/elements/SearchFilterBottom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import RoomAvailabilityChecker from "@/components/sections/RoomAvailabilitySearch";
 import { IMAGE_BASE_URL } from "@/util/constant";
 import GlobalLoader from "@/components/Loader";
+import {
+  getRoomImages,
+  getHotelImages as getClearHotelImages,
+} from "@/util/hotelImages";
 
 export default function HotelDetail() {
   const [hotel, setHotel] = useState<any>([]);
@@ -23,7 +26,6 @@ export default function HotelDetail() {
   const moveRouter = useRouter();
 
   const [selectedRooms, setSelectedRooms] = useState<any>([]); // To keep track of selected rooms
-  const [totalPrice, setTotalPrice] = useState(0); // To keep track of the total price
   const [isFilterApplied, setIsFilterApplied] = useState(false);
   const [initialLoader, setInitialLoader] = useState(false);
 
@@ -61,6 +63,14 @@ export default function HotelDetail() {
       }
     })();
   }, []);
+
+  const hotelImagesPath = useMemo(() => {
+    return getClearHotelImages(hotel?.api_hotel_images, "original");
+  }, [hotel]);
+
+  const threeNumbers = useMemo(() => {
+    return getRandomNumbers(hotelImagesPath.length);
+  }, [hotelImagesPath]);
 
   async function fetchRooms(checkInfo: any, hotelCode: string) {
     try {
@@ -295,7 +305,8 @@ export default function HotelDetail() {
   };
   const numberOfStars = getCategoryNumber(hotel?.category_content);
 
-  const hotelImages = getHotelImages(hotel?.api_hotel_images);
+  console.log("Hotel images data", hotelImagesPath);
+
   return (
     <>
       {/* <Layout headerStyle={1} footerStyle={1}> */}
@@ -357,80 +368,45 @@ export default function HotelDetail() {
             <div className="box-swiper mt-0">
               <div className="swiper-container swiper-group-1">
                 <Swiper {...swiperGroup1}>
-                  <SwiperSlide>
-                    <div
-                      className="item-banner-box"
-                      style={{
-                        backgroundImage: `url(${
-                          hotelImages?.[0]
-                            ? `${IMAGE_BASE_URL}/${hotelImages[0]}`
-                            : "assets/imgs/page/hotel/banner-hotel.png"
-                        })`,
-                      }}
-                    >
-                      <div className="item-banner-box-inner">
-                        {" "}
-                        <span className="btn btn-white-sm">
-                          {Array.from({ length: numberOfStars }).map(
-                            (_, index: number) => (
-                              <img
-                                key={index}
-                                src="/assets/imgs/page/tour-detail/star-big.svg"
-                                alt="StayChain"
-                              />
-                            )
-                          )}
-                        </span>
-                        <h1 className="mt-20 mb-20 color-white">
-                          Welcome to
-                          <br className="d-none d-lg-block" />
-                          {hotel?.name_content}
-                        </h1>
-                        <ul className="list-disc">
-                          <li>Spacious and Well-Appointed Rooms</li>
-                          <li>Fine Dining Restaurants</li>
-                          <li>Exclusive Spa and Wellness Facilities</li>
-                        </ul>
+                  {hotelImagesPath.map((imageData) => (
+                    <SwiperSlide key={imageData?.url}>
+                      <div
+                        className="item-banner-box"
+                        style={{
+                          backgroundImage: `url(${
+                            imageData?.url
+                              ? imageData.url
+                              : "assets/imgs/page/hotel/banner-hotel.png"
+                          })`,
+                        }}
+                      >
+                        <div className="item-banner-box-inner">
+                          {" "}
+                          <span className="btn btn-white-sm">
+                            {Array.from({ length: numberOfStars }).map(
+                              (_, index: number) => (
+                                <img
+                                  key={index}
+                                  src="/assets/imgs/page/tour-detail/star-big.svg"
+                                  alt="StayChain"
+                                />
+                              )
+                            )}
+                          </span>
+                          <h1 className="mt-20 mb-20 color-white">
+                            Welcome to
+                            <br className="d-none d-lg-block" />
+                            {hotel?.name_content}
+                          </h1>
+                          <ul className="list-disc">
+                            <li>Spacious and Well-Appointed Rooms</li>
+                            <li>Fine Dining Restaurants</li>
+                            <li>Exclusive Spa and Wellness Facilities</li>
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <div
-                      className="item-banner-box"
-                      style={{
-                        backgroundImage: `url(${
-                          hotelImages?.[1]
-                            ? `${IMAGE_BASE_URL}/${hotelImages[1]}`
-                            : "assets/imgs/page/hotel/banner-hotel.png"
-                        })`,
-                      }}
-                    >
-                      <div className="item-banner-box-inner">
-                        {" "}
-                        <span className="btn btn-white-sm">
-                          {Array.from({ length: numberOfStars }).map(
-                            (_, index: number) => (
-                              <img
-                                key={index}
-                                src="/assets/imgs/page/tour-detail/star-big.svg"
-                                alt="StayChain"
-                              />
-                            )
-                          )}
-                        </span>
-                        <h1 className="mt-20 mb-20 color-white">
-                          Welcome to
-                          <br className="d-none d-lg-block" />
-                          {hotel?.name_content}
-                        </h1>
-                        <ul className="list-disc">
-                          <li>Spacious and Well-Appointed Rooms</li>
-                          <li>Fine Dining Restaurants</li>
-                          <li>Exclusive Spa and Wellness Facilities</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </SwiperSlide>
+                    </SwiperSlide>
+                  ))}
                 </Swiper>
                 <div className="swiper-pagination swiper-pagination-group-1 swiper-pagination-style-1" />
               </div>
@@ -600,9 +576,9 @@ export default function HotelDetail() {
                   <span className="btn btn-brand-secondary">
                     Welcome to {hotel?.name_content}
                   </span>
-                  <h2 className="title-why mb-25 mt-10 neutral-1000">
+                  {/* <h2 className="title-why mb-25 mt-10 neutral-1000">
                     A New Vision of Luxury
-                  </h2>
+                  </h2> */}
                   <p className="text-lg-medium neutral-500 mb-35">
                     {hotel?.description_content}
                   </p>
@@ -643,7 +619,7 @@ export default function HotelDetail() {
                       </Link>
                     </div>
                   </div>
-                  <div className="payment-method">
+                  {/* <div className="payment-method">
                     <p className="text-sm-bold neutral-500">
                       Payments accepted
                     </p>
@@ -652,28 +628,41 @@ export default function HotelDetail() {
                         <SwiperGroupPaymentSlider />
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-lg-6 mb-30 text-center text-lg-end">
                 <div className="box-image-vision">
                   {" "}
                   <img
-                    className="w-100"
-                    src="/assets/imgs/page/hotel/img-vision.png"
+                    className="w-100 "
+                    src={
+                      hotelImagesPath?.[threeNumbers[0]]?.url
+                        ? hotelImagesPath?.[threeNumbers[0]]?.url
+                        : `//assets/imgs/page/hotel/img-vision.png`
+                    }
+                    height={"600px"}
                     alt="StayChain"
                   />
                   <div className="image-vision-1">
                     <img
                       className="w-100 mb-15"
-                      src="/assets/imgs/page/hotel/img-vision2.png"
+                      src={
+                        hotelImagesPath?.[threeNumbers[1]]?.url
+                          ? hotelImagesPath?.[threeNumbers[1]]?.url
+                          : "/assets/imgs/page/hotel/img-vision2.png"
+                      }
                       alt="StayChain"
                     />
                   </div>
                   <div className="image-vision-2">
                     <img
                       className="w-100"
-                      src="/assets/imgs/page/hotel/img-vision3.png"
+                      src={
+                        hotelImagesPath?.[threeNumbers[2]]?.url
+                          ? hotelImagesPath?.[threeNumbers[2]]?.url
+                          : "/assets/imgs/page/hotel/img-vision3.png"
+                      }
                       alt="StayChain"
                     />
                   </div>
@@ -790,384 +779,6 @@ export default function HotelDetail() {
             </div>
           </div>
         </section>
-        {/* Video section */}
-        {/* <section className="section-box box-picked box-hotel-video background-body">
-          <div className="container">
-            <div className="row align-items-end">
-              <div className="col-md-9 mb-30 wow fadeInUp">
-                <h2 className="neutral-1000">Our Video Gallery</h2>
-                <p className="text-xl-medium neutral-500">
-                  Quality as judged by customers. Book at the ideal price!
-                </p>
-              </div>
-              <div className="col-md-3 mb-30 wow fadeInUp">
-                <div className="d-flex justify-content-center justify-content-md-end">
-                  <Link className="btn btn-black-lg" href="#">
-                    View More
-                    <svg
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M8 15L15 8L8 1M15 8L1 8"
-                        stroke=""
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        fill="none"
-                      />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <div className="box-videos-small wow fadeInUp">
-              <div className="bg-video background-2" />
-              <div className="row">
-                <div className="col-lg-7">
-                  <div className="card-grid-video">
-                    <div className="card-image">
-                      <VideoPopup vdocls="btn btn-play popup-youtube" />
-                      <img
-                        className="mr-10"
-                        src="/assets/imgs/page/homepage7/img-video.png"
-                        alt="Travile"
-                      />
-                    </div>
-                    <div className="card-info">
-                      <h4>The Venetian and The Palazzo - Las Vegas, USA</h4>
-                      <p className="text-md-medium">8 Resort. 24 rooms</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-lg-5">
-                  <div className="list-videos-small">
-                    <div className="item-video-small">
-                      <div className="item-image">
-                        <VideoPopup vdocls="btn btn-play-sm popup-youtube" />
-
-                        <img
-                          className="mr-10"
-                          src="/assets/imgs/page/homepage7/img-video.png"
-                          alt="Travile"
-                        />
-                      </div>
-                      <div className="item-info">
-                        {" "}
-                        <Link className="heading-6" href="#">
-                          The Burj Al Arab Dubai, UAE
-                        </Link>
-                        <p className="text-md-medium neutral-500">
-                          8 Resort. 24 rooms
-                        </p>
-                      </div>
-                    </div>
-                    <div className="item-video-small">
-                      <div className="item-image">
-                        <VideoPopup vdocls="btn btn-play-sm popup-youtube" />
-                        <img
-                          className="mr-10"
-                          src="/assets/imgs/page/homepage7/img-video2.png"
-                          alt="Travile"
-                        />
-                      </div>
-                      <div className="item-info">
-                        {" "}
-                        <Link className="heading-6" href="#">
-                          The Burj Al Arab Dubai, UAE
-                        </Link>
-                        <p className="text-md-medium neutral-500">
-                          8 Resort. 24 rooms
-                        </p>
-                      </div>
-                    </div>
-                    <div className="item-video-small">
-                      <div className="item-image">
-                        <VideoPopup vdocls="btn btn-play-sm popup-youtube" />
-                        <img
-                          className="mr-10"
-                          src="/assets/imgs/page/homepage7/img-video3.png"
-                          alt="Travile"
-                        />
-                      </div>
-                      <div className="item-info">
-                        {" "}
-                        <Link className="heading-6" href="#">
-                          The Burj Al Arab Dubai, UAE
-                        </Link>
-                        <p className="text-md-medium neutral-500">
-                          8 Resort. 24 rooms
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section> */}
-        {/* Testinomials */}
-        {/* <section className="section-box box-testimonials-2 box-testimonials-5 box-testimonials-hotel-detail background-body">
-          <div className="container">
-            <div className="box-author-testimonials button-bg-2 wow fadeInUp">
-              {" "}
-              <img
-                src="/assets/imgs/page/homepage1/testimonial.png"
-                alt="StayChain"
-              />
-              <img
-                src="/assets/imgs/page/homepage1/testimonial2.png"
-                alt="StayChain"
-              />
-              <img
-                src="/assets/imgs/page/homepage1/testimonial3.png"
-                alt="StayChain"
-              />
-              Testimonials
-            </div>
-            <h2 className="mt-8 mb-25 neutral-1000">What they say about us?</h2>
-          </div>
-          <div className="block-testimonials">
-            <div className="container-testimonials wow fadeInUp">
-              <div className="container-slider">
-                <div className="box-swiper mt-0">
-                  <div className="swiper-container swiper-group-animate swiper-group-journey">
-                    <Swiper {...swiperGroupAnimate}>
-                      <SwiperSlide>
-                        <div className="card-testimonial background-card">
-                          <div className="card-info">
-                            <p className="text-xl-bold card-title neutral-1000">
-                              The best booking system
-                            </p>
-                            <p className="neutral-500">
-                              I've been using the hotel booking system for
-                              several years now, and it's become my go-to
-                              platform for planning my trips. The interface is
-                              user-friendly, and I appreciate the detailed
-                              information and real-time availability of hotels.
-                            </p>
-                          </div>
-                          <div className="card-top">
-                            <div className="card-author">
-                              <div className="card-image">
-                                {" "}
-                                <img
-                                  src="/assets/imgs/page/homepage1/author.png"
-                                  alt="StayChain"
-                                />
-                              </div>
-                              <div className="card-info">
-                                <p className="text-lg-bold neutral-1000">
-                                  Sara Mohamed
-                                </p>
-                                <p className="text-sm neutral-1000">Jakatar</p>
-                              </div>
-                            </div>
-                            <div className="card-rate">
-                              {" "}
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <div className="card-testimonial background-card">
-                          <div className="card-info">
-                            <p className="text-xl-bold card-title neutral-1000">
-                              The best booking system
-                            </p>
-                            <p className="neutral-500">
-                              I've been using the hotel booking system for
-                              several years now, and it's become my go-to
-                              platform for planning my trips. The interface is
-                              user-friendly, and I appreciate the detailed
-                              information and real-time availability of hotels.
-                            </p>
-                          </div>
-                          <div className="card-top">
-                            <div className="card-author">
-                              <div className="card-image">
-                                {" "}
-                                <img
-                                  src="/assets/imgs/page/homepage1/author2.png"
-                                  alt="StayChain"
-                                />
-                              </div>
-                              <div className="card-info">
-                                <p className="text-lg-bold neutral-1000">
-                                  Atend John
-                                </p>
-                                <p className="text-sm neutral-1000">
-                                  Califonia
-                                </p>
-                              </div>
-                            </div>
-                            <div className="card-rate">
-                              {" "}
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <div className="card-testimonial background-card">
-                          <div className="card-info">
-                            <p className="text-xl-bold card-title neutral-1000">
-                              The best booking system
-                            </p>
-                            <p className="neutral-500">
-                              I've been using the hotel booking system for
-                              several years now, and it's become my go-to
-                              platform for planning my trips. The interface is
-                              user-friendly, and I appreciate the detailed
-                              information and real-time availability of hotels.
-                            </p>
-                          </div>
-                          <div className="card-top">
-                            <div className="card-author">
-                              <div className="card-image">
-                                {" "}
-                                <img
-                                  src="/assets/imgs/page/homepage1/author.png"
-                                  alt="StayChain"
-                                />
-                              </div>
-                              <div className="card-info">
-                                <p className="text-lg-bold neutral-1000">
-                                  Sara Mohamed
-                                </p>
-                                <p className="text-sm neutral-1000">Jakatar</p>
-                              </div>
-                            </div>
-                            <div className="card-rate">
-                              {" "}
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                      <SwiperSlide>
-                        <div className="card-testimonial background-card">
-                          <div className="card-info">
-                            <p className="text-xl-bold card-title neutral-1000">
-                              The best booking system
-                            </p>
-                            <p className="neutral-500">
-                              I've been using the hotel booking system for
-                              several years now, and it's become my go-to
-                              platform for planning my trips. The interface is
-                              user-friendly, and I appreciate the detailed
-                              information and real-time availability of hotels.
-                            </p>
-                          </div>
-                          <div className="card-top">
-                            <div className="card-author">
-                              <div className="card-image">
-                                {" "}
-                                <img
-                                  src="/assets/imgs/page/homepage1/author2.png"
-                                  alt="StayChain"
-                                />
-                              </div>
-                              <div className="card-info">
-                                <p className="text-lg-bold neutral-1000">
-                                  Sara Mohamed
-                                </p>
-                                <p className="text-sm neutral-1000">Jakatar</p>
-                              </div>
-                            </div>
-                            <div className="card-rate">
-                              {" "}
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                              <img
-                                src="/assets/imgs/template/icons/star.svg"
-                                alt="StayChain"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </SwiperSlide>
-                    </Swiper>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section> */}
         <section className="section-box box-media background-body">
           <div className="container-media wow fadeInUp">
             {" "}
@@ -1209,14 +820,6 @@ function getImagePathByRoomCode(images: any, targetRoomCode: string) {
   return match?.path || null;
 }
 
-function getHotelImages(images: any) {
-  if (!Array.isArray(images)) return [];
-
-  return images
-    .filter((img) => img?.image_type_code !== "HAB")
-    .map((img) => img.path);
-}
-
 type RoomBeforeAvailability = {
   room_code: string;
   room_type: string;
@@ -1235,8 +838,15 @@ type Props = {
 const RoomCardBeforeAvailability: React.FC<Props> = ({ rooms, images }) => {
   return (
     <div className="row">
-      {rooms?.map((room) => {
-        const imagePath = getImagePathByRoomCode(images, room.room_code);
+      {rooms?.map((room, index) => {
+        const images_data = getRoomImages(images, room.room_code);
+
+        if (images_data.length > 0) {
+          // console.log("Images from rooms method: ", images_data);
+        } else {
+          // console.log("Image not found for room code: ", room.room_code);
+          return null;
+        }
 
         return (
           <div className="col-lg-4 col-md-6" key={room.room_code}>
@@ -1244,7 +854,7 @@ const RoomCardBeforeAvailability: React.FC<Props> = ({ rooms, images }) => {
               <div className="card-image">
                 <Link href="#">
                   <img
-                    src={`${IMAGE_BASE_URL}/bigger/${imagePath}`}
+                    src={images_data?.[0]?.url}
                     alt={room.room_type}
                     // className="img-fluid"
                   />
@@ -1355,7 +965,10 @@ const RoomCardWithAvailability: React.FC<PropsRooms> = ({
         </>
       ) : (
         rooms?.map((room) => {
-          const imagePath = getImagePathByRoomCode(images, room.code);
+          const images_data = getRoomImages(images, room?.code);
+
+          if (images_data.length === 0) return null;
+
           const primaryRate = room.rates[0]; // Assuming we show the first rate
 
           return (
@@ -1363,16 +976,21 @@ const RoomCardWithAvailability: React.FC<PropsRooms> = ({
               <div className="card-journey-small card-journey-small-type-3 background-card">
                 <div className="card-image">
                   <Link href="#">
-                    <img
-                      src={`${IMAGE_BASE_URL}/${imagePath}`}
-                      alt={room.name}
-                    />
+                    <img src={images_data[0]?.url} alt={room.name} />
                   </Link>
                 </div>
 
                 <div className="card-info">
                   <div className="card-title">
                     <h5 className="text-lg-bold neutral-1000">{room.name}</h5>
+                    {primaryRate.cancellationPolicies.length > 0 && (
+                      <p className="text-sm neutral-600">
+                        Free cancellation until{" "}
+                        {new Date(
+                          primaryRate.cancellationPolicies[0].from
+                        ).toLocaleDateString()}
+                      </p>
+                    )}
                     <p className="text-sm neutral-600">{room.code}</p>
                   </div>
 
@@ -1407,14 +1025,6 @@ const RoomCardWithAvailability: React.FC<PropsRooms> = ({
                     <h4 className="text-lg-bold neutral-1000">
                       {formatStays(usdToStays(primaryRate.net))}
                     </h4>
-                    {primaryRate.cancellationPolicies.length > 0 && (
-                      <p className="text-sm neutral-600">
-                        Free cancellation until{" "}
-                        {new Date(
-                          primaryRate.cancellationPolicies[0].from
-                        ).toLocaleDateString()}
-                      </p>
-                    )}
                   </div>
 
                   <div className="box-button-book ">
@@ -1435,3 +1045,11 @@ const RoomCardWithAvailability: React.FC<PropsRooms> = ({
     </div>
   );
 };
+
+function getRandomNumbers(n: number) {
+  return [
+    Math.floor(Math.random() * n),
+    Math.floor(Math.random() * n),
+    Math.floor(Math.random() * n),
+  ];
+}

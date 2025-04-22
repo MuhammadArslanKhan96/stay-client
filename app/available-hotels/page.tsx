@@ -95,8 +95,6 @@ export default function AvailabilityComponent({
     }
   }
 
-  console.log(uniqueLocations);
-
   return (
     <>
       {/* <Layout headerStyle={1} footerStyle={1}> */}
@@ -139,7 +137,7 @@ export default function AvailabilityComponent({
                     <div className="row">
                       {paginatedProperties.map((property) => (
                         <div
-                          className="col-lg-4 col-md-6 wow fadeInUp"
+                          className="col-lg-4 col-md-6 wow fadeInUp mb-4"
                           key={property.id}
                         >
                           <PropertyCard1 property={property} />

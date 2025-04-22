@@ -3,11 +3,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { swiperGroupAnimate } from "@/util/swiperOption";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { IMAGE_BASE_URL } from "@/util/constant";
-
+import { getHotelImages } from "@/util/hotelImages";
 export default function TopRatedHotels() {
   const [hotels, setHotels] = useState<any>([]);
-  const [showNameIndex, setShowNameIndex] = useState<any>(-1);
 
   // Home page auto fetch Top ten hotels...
   // useEffect(() => {
@@ -48,17 +46,13 @@ export default function TopRatedHotels() {
       updatedHotels = getFirstTenUniqueNames(hotels);
     }
     return updatedHotels.map((hotel: any, index: number) => {
-      const hotelImagePath = getHotelImage(hotel.api_hotel_images);
+      const hotelImages = getHotelImages(hotel.api_hotel_images, "original");
+      const hotelImagePath = hotelImages[1]?.url;
+
       !hotelImagePath &&
         console.log("NOT IMAGE found for " + hotel.name_content);
 
       const hotelname = hotel?.name_content;
-      const length = hotelname?.length;
-      let subHotelName = hotelname;
-      if (length > 20) {
-        const lengthPivot = 20;
-        subHotelName = hotelname?.substring(0, lengthPivot) + "...";
-      }
 
       return (
         <SwiperSlide key={index}>
@@ -82,10 +76,7 @@ export default function TopRatedHotels() {
                   />
                 </svg>
               </Link>
-              <img
-                src={`${IMAGE_BASE_URL}/${hotelImagePath}`}
-                alt="StayChain"
-              />
+              <img src={hotelImagePath ? hotelImagePath : ""} alt="StayChain" />
             </div>
             <div className="card-info">
               <div className="card-rating">
@@ -100,21 +91,13 @@ export default function TopRatedHotels() {
                   </span>
                 </div>
               </div>
-              <div
-                className="card-title"
-                onMouseEnter={() => {
-                  setShowNameIndex(index);
-                }}
-                onMouseOut={() => {
-                  setShowNameIndex(-1);
-                }}
-              >
+              <div className="card-title">
                 {" "}
                 <Link
                   className="heading-6 neutral-1000"
                   href={`/hotel-detail-3/${hotel.code}`}
                 >
-                  {showNameIndex === index ? hotelname : subHotelName}
+                  {hotelname}
                 </Link>
               </div>
               <div className="card-program">
@@ -479,9 +462,6 @@ function getFirstTenUniqueNames<T extends { name: string }>(items: T[]): T[] {
   return result;
 }
 
-function getHotelImage(images: any) {
-  if (!Array.isArray(images)) return null;
-
-  const matchedImage = images.findLast((img) => img?.type?.code !== "HAB");
-  return matchedImage?.path || null;
+function getRandomIndex(n: number) {
+  return Math.floor(Math.random() * n);
 }

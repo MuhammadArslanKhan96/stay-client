@@ -1,4 +1,5 @@
-import { IMAGE_BASE_URL } from "@/util/constant";
+import { getHotelImages } from "@/util/hotelImages";
+import { capitalizeWords } from "@/util/wordCapitals";
 
 type GetHotelsParams = {
   location?: string;
@@ -14,7 +15,7 @@ type GetHotelsParams = {
 export const getHotels = async (params: GetHotelsParams) => {
   const query = new URLSearchParams(params as any).toString();
 
-  console.log("URL Query: ", query);
+  // console.log("URL Query: ", query);
 
   const res = await fetch(`/api/db/tophotels?${query}`, {
     cache: "no-store",
@@ -31,7 +32,7 @@ export const getHotels = async (params: GetHotelsParams) => {
 
 function transformHotels(dbHotels: any[]) {
   return dbHotels.map((hotel) => {
-    const path = getHotelImage(hotel?.api_hotel_images);
+    const path = getHotelImages(hotel?.api_hotel_images, "original")?.[0].url;
 
     return {
       id: hotel.id,
@@ -42,8 +43,8 @@ function transformHotels(dbHotels: any[]) {
       amenities: "Wi-Fi",
       rating: (hotel.ranking / 10).toFixed(1),
       fuelType: "Vacation",
-      location: hotel.city_content || "Unknown",
-      image: path ? `${IMAGE_BASE_URL}/${path}` : "real1.png",
+      location: capitalizeWords(hotel.city_content || "Unknown"),
+      image: path ? path : "real1.png",
       name: hotel.name_content,
       rooms: hotel?._count?.api_hotel_rooms,
     };
@@ -52,7 +53,8 @@ function transformHotels(dbHotels: any[]) {
 
 function getHotelImage(images: any) {
   if (!Array.isArray(images)) return null;
+  console.log("Hotel images inside the available api, ", images);
 
-  const matchedImage = images.findLast((img) => img?.type?.code !== "HAB");
+  const matchedImage = images.findLast((img) => img?.image_type_code !== "HAB");
   return matchedImage?.path || null;
 }

@@ -1,13 +1,9 @@
 "use client";
-import Link from "next/link";
 import Dropdown from "react-bootstrap/Dropdown";
 import MyDatePicker from "./MyDatePicker";
-import { useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { swiperGroupAnimate } from "@/util/swiperOption";
+import { useEffect, useState, useTransition } from "react";
 import { ICountry, IState, ICity } from "country-state-city";
 import { Country, State, City } from "country-state-city";
-import { IMAGE_BASE_URL } from "@/util/constant";
 import { useRouter } from "next/navigation";
 
 export default function SearchFilterTop() {
@@ -114,8 +110,7 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
     checkOut: new Date().toISOString(),
     guests: { adults: 2, children: 0, rooms: 1 },
   });
-  const [loading, setLoading] = useState(false);
-  const [hotels, setHotels] = useState<any>([]);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   useEffect(() => {
@@ -162,6 +157,7 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
     // console.log(searchParams);
     sessionStorage.setItem("search_filter", JSON.stringify(searchParams));
     sessionStorage.setItem("isfilterApplied", "true");
+    console.log("Search filter is clicked");
 
     const { location, checkIn, checkOut, guests } = searchParams;
 
@@ -176,17 +172,24 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
       rooms: guests.rooms.toString(),
     });
 
-    router.push(`/available-hotels?${query.toString()}`);
+    startTransition(() => {
+      router.push(`/available-hotels?${query.toString()}`);
+    });
   };
 
   return (
     <>
       <div className="box-bottom-search background-card">
         {!miniField && (
-          <LocationSearch
-            searchParams={searchParams}
-            onLocationChange={handleLocationChange}
-          />
+          <div className="item-search item-search-1">
+            <label className="text-sm-bold neutral-500">Location</label>
+            {/* <div className="box-calendar-date"> */}
+            <LocationSearch
+              searchParams={searchParams}
+              onLocationChange={handleLocationChange}
+            />
+            {/* </div> */}
+          </div>
         )}
         <div className="item-search item-search-2">
           <label className="text-sm-bold neutral-500">Check In</label>
@@ -211,12 +214,13 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
             <label className="text-sm-bold neutral-500">Guest</label>
             <Dropdown className="dropdown">
               <Dropdown.Toggle
-                className="btn btn-secondary dropdown-toggle btn-dropdown-search passenger-search"
+                className="btn btn-secondary dropdown-toggle d-flex justify-content-between align-items-center  btn-dropdown-search location-search"
                 type="button"
-                data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                {`${searchParams.guests.adults} adults, ${searchParams.guests.children} children, ${searchParams.guests.rooms} rooms`}
+                <p>
+                  {`${searchParams.guests.adults} Adults, ${searchParams.guests.children} children, ${searchParams.guests.rooms} Rooms`}
+                </p>
               </Dropdown.Toggle>
               <Dropdown.Menu as="ul" className="dropdown-menu">
                 <li>
@@ -233,7 +237,7 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
           <button
             className="btn btn-black-lg"
             onClick={handleSearchClick}
-            disabled={loading}
+            disabled={isPending}
           >
             <svg
               width={20}
@@ -250,156 +254,13 @@ const CheckFilter: React.FC<CheckFilterProps> = ({ miniField }) => {
                 fill="none"
               />
             </svg>
-            {loading ? "Searching" : "Search"}
+            {isPending ? "Searching" : "Search"}
           </button>
         </div>
       </div>
-      {hotels.length > 0 && <HotelDisplayer hotels={hotels} />}
     </>
   );
 };
-
-function HotelDisplayer({ hotels }: any) {
-  const displayHotels = () => {
-    let updatedHotels = hotels;
-    if (hotels.length > 10) {
-      updatedHotels = hotels.slice(0, 10);
-    }
-    return updatedHotels.map((hotel: any, index: number) => {
-      const numberOfStars = getCategoryNumber(hotel?.category_code);
-      const hotelImage = getHotelImage(hotel?.api_hotel_images);
-      return (
-        <SwiperSlide key={index}>
-          <div className="card-journey-small background-card">
-            <div className="card-image">
-              {" "}
-              <Link className="wish" href={`/hotel-detail-3/${hotel.code}`}>
-                <svg
-                  width={20}
-                  height={18}
-                  viewBox="0 0 20 18"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                    stroke=""
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                </svg>
-              </Link>
-              <img
-                src={
-                  hotelImage
-                    ? `${IMAGE_BASE_URL}/${hotelImage}`
-                    : "assets/imgs/page/hotel/banner-hotel.png"
-                }
-                alt="StayChain"
-              />
-            </div>
-            <div className="card-info">
-              <div className="card-rating">
-                <div className="card-left"> </div>
-                <div className="card-right">
-                  {" "}
-                  <span className="rating">
-                    {hotel?.rating}{" "}
-                    <span className="text-sm-medium neutral-500">
-                      ({hotel?.rating_count || 40} reviews)
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div className="card-title">
-                {" "}
-                <Link
-                  className="heading-6 neutral-1000"
-                  href={`/hotel-detail-3/${hotel.code}`}
-                >
-                  {hotel.name_content || "Hotel"}
-                </Link>
-              </div>
-              <p className="neutral-1000">
-                Rooms: {hotel?._count?.api_hotel_rooms}
-              </p>
-              <div className="card-program">
-                <div className="card-location">
-                  <p className="text-location text-md-medium neutral-500">
-                    {hotel?.city_content} ,{hotel?.country_code}
-                  </p>
-
-                  <p className="text-star">
-                    {Array.from({ length: numberOfStars }).map(
-                      (_, index: number) => (
-                        <img
-                          key={index}
-                          className="light-mode"
-                          src="/assets/imgs/template/icons/star-black.svg"
-                          alt="StayChain"
-                        />
-                      )
-                    )}
-
-                    {Array.from({ length: numberOfStars }).map(
-                      (_, index: number) => (
-                        <img
-                          key={index}
-                          className="dark-mode"
-                          src="/assets/imgs/template/icons/star-w.svg"
-                          alt="StayChain"
-                        />
-                      )
-                    )}
-                  </p>
-                </div>
-                <div className="endtime">
-                  {/* <div className="card-price">
-                    <div className="heading- neutral-1000">
-                      <p>Price Range</p>
-                      {hotel?.minRate} - {hotel?.maxRate} Stay
-                    </div>
-
-                  </div> */}
-                  <div className="card-button">
-                    {" "}
-                    <Link
-                      className="btn btn-gray"
-                      href={`/hotel-detail-3/${hotel.code}`}
-                    >
-                      Check Availability
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </SwiperSlide>
-      );
-    });
-  };
-  return (
-    <>
-      <section className="section-box box-top-rated background-1">
-        <div className="container">
-          <div className="row align-items-end">
-            <div className="col-md-6">
-              <h2 className="neutral-1000">Available Hotels</h2>
-            </div>
-          </div>
-        </div>
-        <div className="container-slider box-swiper-padding">
-          <div className="box-swiper mt-30">
-            <div className="swiper-container swiper-group-animate swiper-group-journey">
-              <Swiper {...swiperGroupAnimate}>{displayHotels()}</Swiper>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
 
 export function LocationSearch({
   miniField = false,
@@ -475,20 +336,6 @@ export function LocationSearch({
       console.log("could not find coordinates...");
     }
 
-    // Add state/country context if available
-    if ("stateCode" in location) {
-      const state = State.getStateByCodeAndCountry(
-        location.stateCode,
-        location.countryCode
-      );
-      if (state) displayText += `, ${state.name}`;
-    }
-
-    if ("countryCode" in location) {
-      const country = Country.getCountryByCode(location.countryCode);
-      if (country) displayText += `, ${country.name}`;
-    }
-
     setSelectedLocation(displayText);
     setSearchInput("");
     setLocations([]);
@@ -513,242 +360,93 @@ export function LocationSearch({
   if (miniField) return null;
 
   return (
-    <div className="item-search">
-      <label className="text-sm-bold neutral-500">Location</label>
-      <Dropdown
-        show={showDropdown}
-        onToggle={(isOpen) => setShowDropdown(isOpen)}
-        className="dropdown"
+    <Dropdown
+      show={showDropdown}
+      onToggle={(isOpen) => setShowDropdown(isOpen)}
+      className="dropdown"
+    >
+      <Dropdown.Toggle
+        className="btn btn-secondary dropdown-toggle d-flex justify-content-between align-items-center w-100 btn-dropdown-search location-search"
+        type="button"
+        aria-expanded="false"
       >
-        <Dropdown.Toggle
-          className="btn btn-secondary dropdown-toggle btn-dropdown-search location-search"
-          type="button"
-          aria-expanded="false"
-        >
+        <p>
           <span className="me-1">{flag}</span>
-          {selectedLocation || "Select location"}
-        </Dropdown.Toggle>
+          <span>{selectedLocation || "Select location"}</span>
+        </p>
+      </Dropdown.Toggle>
 
-        <Dropdown.Menu className="w-100">
-          <div className="p-2">
-            <input
-              type="text"
-              placeholder="Search country, state or city..."
-              className="form-control"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              autoFocus
-            />
-          </div>
+      <Dropdown.Menu className="w-100">
+        <div className="p-2">
+          <input
+            type="text"
+            placeholder="Search country, state or city..."
+            className="form-control"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            autoFocus
+          />
+        </div>
 
-          {locations.length > 0 ? (
-            <div
-              className="location-results"
-              style={{ maxHeight: "300px", overflowY: "auto" }}
-            >
-              {locations.map((location, index) => (
-                <Dropdown.Item
-                  key={`${location.name}-${index}`}
-                  onClick={() => handleSelect(location)}
-                  className="px-3 py-2"
-                >
-                  <div>
-                    <span className="me-2">
-                      {"countryCode" in location && location.countryCode
-                        ? getCountryFlag(location.countryCode)
-                        : "flag" in location && location.flag}
-                    </span>
-                    {location.name}
-                    {"isoCode" in location && (
-                      <span className="text-muted ms-2">
-                        ({location.isoCode})
-                      </span>
-                    )}
-                    {"stateCode" in location && location.stateCode && (
-                      <span className="text-muted ms-2">
-                        {location.stateCode}
-                      </span>
-                    )}
-                    {"countryCode" in location && location.countryCode && (
-                      <span className="text-muted ms-2">
-                        {location.countryCode}
-                      </span>
-                    )}
-                  </div>
-                </Dropdown.Item>
-              ))}
-            </div>
-          ) : (
-            <Dropdown.ItemText className="px-3 py-2 text-muted">
-              {searchInput.length > 1
-                ? "No results found"
-                : "Start typing to search locations"}
-            </Dropdown.ItemText>
-          )}
-        </Dropdown.Menu>
-      </Dropdown>
-    </div>
-  );
-}
-
-function getCategoryNumber(stringCat: string) {
-  let number = parseInt(stringCat?.trim().split(" ")[0], 10);
-  return number;
-}
-
-function getHotelImage(images: any) {
-  if (!Array.isArray(images)) return null;
-
-  const matchedImage = images.findLast((img) => img?.type?.code !== "HAB");
-  return matchedImage?.path || null;
-}
-
-/**
- * function HotelDisplayer({ hotels }: any) {
-  const displayHotels = () => {
-    return hotels.map((hotel: any, index: number) => {
-      return (
-        <SwiperSlide key={index}>
-          <div className="card-journey-small background-card">
-            <div className="card-image">
-              {" "}
-              <Link className="wish" href={`/hotel-detail/${hotel.id}`}>
-                <svg
-                  width={20}
-                  height={18}
-                  viewBox="0 0 20 18"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                    stroke=""
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                </svg>
-              </Link>
-              <img src={hotel.imageSource} alt="StayChain" />
-            </div>
-            <div className="card-info">
-              <div className="card-rating">
-                <div className="card-left"> </div>
-                <div className="card-right">
-                  {" "}
-                  <span className="rating">
-                    {hotel?.rating}{" "}
-                    <span className="text-sm-medium neutral-500">
-                      ({hotel?.rating_count || 400} reviews)
-                    </span>
+        {locations.length > 0 ? (
+          <div
+            className="location-results"
+            style={{ maxHeight: "300px", overflowY: "auto" }}
+          >
+            {locations.map((location, index) => (
+              <Dropdown.Item
+                key={`${location.name}-${index}`}
+                onClick={() => handleSelect(location)}
+                className="px-3 py-2"
+              >
+                <div>
+                  <span className="me-2">
+                    {"countryCode" in location && location.countryCode
+                      ? getCountryFlag(location.countryCode)
+                      : "flag" in location && location.flag}
                   </span>
+                  {location.name}
+                  {"isoCode" in location && (
+                    <span className="text-muted ms-2">
+                      ({location.isoCode})
+                    </span>
+                  )}
+                  {"stateCode" in location && location.stateCode && (
+                    <span className="text-muted ms-2">
+                      {location.stateCode}
+                    </span>
+                  )}
+                  {"countryCode" in location && location.countryCode && (
+                    <span className="text-muted ms-2">
+                      {location.countryCode}
+                    </span>
+                  )}
                 </div>
-              </div>
-              <div className="card-title">
-                {" "}
-                <Link className="heading-6 neutral-1000" href={`/hotel-detail`}>
-                  {hotel.name || "Hotel"}
-                </Link>
-              </div>
-              <div className="card-program">
-                <div className="card-location">
-                  <p className="text-location text-md-medium neutral-500">
-                    {hotel.city}, {hotel.country}
-                  </p>
-                  <p className="text-star">
-                    {" "}
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="light-mode"
-                      src="/assets/imgs/template/icons/star-black.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                    <img
-                      className="dark-mode"
-                      src="/assets/imgs/template/icons/star-w.svg"
-                      alt="StayChain"
-                    />
-                  </p>
-                </div>
-                <div className="endtime">
-                  <div className="card-price">
-                    <h6 className="heading-6 neutral-1000">
-                      {hotel?.pricePerNightBase} Stay
-                    </h6>
-                    <p className="text-md-medium neutral-500">/ person</p>
-                  </div>
-                  <div className="card-button">
-                    {" "}
-                    <Link className="btn btn-gray" href={`/hotel-detail`}>
-                      Book Now
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </Dropdown.Item>
+            ))}
           </div>
-        </SwiperSlide>
-      );
-    });
-  };
-  return (
-    <>
-      <section className="section-box box-top-rated background-1">
-        <div className="container">
-          <div className="row align-items-end">
-            <div className="col-md-6">
-              <h2 className="neutral-1000">Available Hotels</h2>
-            </div>
-          </div>
-        </div>
-        <div className="container-slider box-swiper-padding">
-          <div className="box-swiper mt-30">
-            <div className="swiper-container swiper-group-animate swiper-group-journey">
-              <Swiper {...swiperGroupAnimate}>{displayHotels()}</Swiper>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+        ) : (
+          <Dropdown.ItemText className="px-3 py-2 text-muted">
+            {searchInput.length > 1
+              ? "No results found"
+              : "Start typing to search locations"}
+          </Dropdown.ItemText>
+        )}
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }
- */
+
+// // Add state/country context if available
+// if ("stateCode" in location) {
+//   const state = State.getStateByCodeAndCountry(
+//     location.stateCode,
+//     location.countryCode
+//   );
+//   if (state) displayText += `, ${state.name}`;
+// }
+
+// if ("countryCode" in location) {
+//   const country = Country.getCountryByCode(location.countryCode);
+//   if (country) displayText += `, ${country.name}`;
+// }
